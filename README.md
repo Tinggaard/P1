@@ -1,8 +1,34 @@
-### P1 projekt
+# P1 projekt
 
 P1 projekt løsningen skal handle om at informere den bedvidste forbruger om hvilken indkøbsmulighed der er billigst ud fra deres indkøbsliste
 
 Her er lidt grim pseudokode, som ikke er færdigt:
+
+### file structures
+
+`normal_prices.txt`
+```
+item, price
+ost, 50
+```
+
+`discounts.txt`
+```
+store, item, price
+rema, ost, 40
+```
+
+`distances.txt`
+```
+store, distance
+rema, 1000
+```
+
+`shopping_list.txt`
+```
+item
+ost
+```
 
 ```
 struct vare 
@@ -34,3 +60,4 @@ if aller billigste
 			Hvis billigste
 				Handel
 ```
+
