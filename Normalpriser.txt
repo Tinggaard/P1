@@ -2,7 +2,29 @@ Ost 34
 Havregryn 11
 Æg 10
 Oksekød 43
+svinekød 25
 Rugbrød 19
-Jens_maleri 250
+Jens maleri 250
 Toiletpapir 20
-Porsche 100000
+mælk 12
+håndsæbe 15
+kylling 35
+frosne bær 20
+frossen grøntsagsblanding 8
+kakaomælk 17
+kartofler 8
+gulerødder 8
+æble 1.5
+løg 10
+banan 1
+Salatblanding 12
+Chips 22
+Opvaskemiddel 18
+Smør 25
+Skyr 30
+Yoghurt 22
+Spegepølse 10
+Coca cola 15
+Fisk 20
+
+
