@@ -1,4 +1,4 @@
-**# P1 projekt**
+### P1 projekt
 
 P1 projekt løsningen skal handle om at informere den bedvidste forbruger om hvilken indkøbsmulighed der er billigst ud fra deres indkøbsliste
 
