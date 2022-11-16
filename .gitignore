@@ -65,3 +65,7 @@ compile_commands.json
 CTestTestfile.cmake
 _deps
 
+# CLion
+cmake-build*
+.idea
+
