@@ -4,6 +4,7 @@ P1 projekt løsningen skal handle om at informere den bedvidste forbruger om hvi
 
 Her er lidt grim pseudokode, som ikke er færdigt:
 
+```
 struct vare 
 	char 	navn[]
 	int 	pris
@@ -32,8 +33,4 @@ if aller billigste
 		for alle tilbud
 			Hvis billigste
 				Handel
-		
-
-		
-
-	
+```
