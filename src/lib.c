@@ -2,14 +2,37 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+
+//ved ikke om den behøves at komme med ind i lib.h? det kan være at den kan være nyttig i fremtiden
+//men den her kan finde antal new lines i et dokument, ved igen ikke om det er relevent men nu er det her.
+int get_file_size(char* filename){
+    //tæller antal linjer i filen
+    int count = 0;
+    char c;
+    FILE * adr;
+    adr = fopen(filename, "r");
+    if (adr == NULL){
+        printf("Could not open file");
+        return 0;
+    }
+    for (c = getc(adr); c != EOF; c = getc(adr))
+        if (c == '\n') //tæller antal new lines
+            count++;
+    fclose(adr);
+    return count;
+}
+
 store_s* load_distances(void) { // read from file
+    char* filename = "C:\\Users\\Maxnm\\CLionProjects\\P1\\src\\files\\distances.txt";
+    int numstores =get_file_size(filename);
+
     FILE* distances;
-    distances = fopen("src/files/distances.txt", "r");
+    distances = fopen(filename, "r");
     if (NULL == distances){
         exit(EXIT_FAILURE);
     }
     store_s static store[5] ;
-    for (int i = 0; i < 5 ; ++i) {
+    for (int i = 0; i <= numstores ; i++){
         fscanf(distances, "%[^,], %d\n", store[i].name, &store[i].distance);
     }
     fclose(distances);
