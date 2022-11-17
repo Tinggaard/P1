@@ -8,9 +8,10 @@
 int main(void) {
     store_s* stores = load_distances();
     shoppinglist* list = load_shopping_list();
-    for (int i = 0; i < N_STORES; ++i) {
-        printf("%s\n", list[i].item);
-    }
+    //debug shoppinglist
+    //for (int i = 0; i < N_STORES; ++i) {
+    //    printf("%s\n", list[i].item);
+    //}
 
 //    // debug
 //    for (int i = 0; i < N_STORES; ++i) {
@@ -18,25 +19,26 @@ int main(void) {
 //    }
 
     load_normal_prices(stores, N_STORES);
-    for (int i = 0; i < 5; i++) {
-        node_t* current_item = stores[i].first_item;
-        while (current_item != NULL){
-            printf("%s: %s %lf\n", stores[i].name, current_item->item.name, current_item->item.price);
-            current_item = current_item->next;
-        }
-    }
+    //debug normal prices
+    //for (int i = 0; i < 5; i++) {
+    //    node_t* current_item = stores[i].first_item;
+    //    while (current_item != NULL){
+    //        printf("%s: %s %lf\n", stores[i].name, current_item->item.name, current_item->item.price);
+    //        current_item = current_item->next;
+    //    }
+    //}
 
     // load discounts
     load_discounts(stores);
 
     // debug
-    for (int i = 0; i < 5; i++) {
-        node_t* current_item = stores[i].first_item;
-        while (current_item != NULL){
-            printf("%s: %s %lf\n", stores[i].name, current_item->item.name, current_item->item.price);
-            current_item = current_item->next;
-        }
-    }
+    //for (int i = 0; i < 5; i++) {
+    //    node_t* current_item = stores[i].first_item;
+    //    while (current_item != NULL){
+    //        printf("%s: %s %lf\n", stores[i].name, current_item->item.name, current_item->item.price);
+    //        current_item = current_item->next;
+    //    }
+   // }
 
     free(stores);
     free(list);
