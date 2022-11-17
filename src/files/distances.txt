@@ -1,0 +1,5 @@
+Netto, 500
+Rema, 1200
+Lidl, 700
+Spar, 2000
+Coop 365, 1500
