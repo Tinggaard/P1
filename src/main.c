@@ -6,6 +6,9 @@
 #define N_STORES 5
 
 int main(void) {
+    char* filename = "src/files/distances.txt";
+    int n_stores = get_new_lines(filename);
+    //printf("%d", n_stores);
     store_s* stores = load_distances();
     shoppinglist* list = load_shopping_list();
     //debug shoppinglist
@@ -18,7 +21,7 @@ int main(void) {
 //        printf("%s %d\n", stores[i].name, stores[i].distance);
 //    }
 
-    load_normal_prices(stores, N_STORES);
+    load_normal_prices(stores, n_stores);
     //debug normal prices
     //for (int i = 0; i < 5; i++) {
     //    node_t* current_item = stores[i].first_item;

@@ -30,3 +30,4 @@ store_s* load_distances(void); // read from file
 void load_discounts(store_s stores[]); // read from file
 shoppinglist* load_shopping_list(void); // read from file
 void add_item(store_s* store, char* name, double price); // load normal prices
+int get_new_lines(char* filename);

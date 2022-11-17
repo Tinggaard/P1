@@ -64,7 +64,6 @@ void load_normal_prices(store_s stores[], int store_count) { // read from file
     double price;
     char item_name[MAX_NAME_SIZE];
     while (!feof(f)) {
-
         fscanf(f, "%[A-Za-z ], %lf\n", item_name, &price);
         // add it to all stores
         for (int i = 0; i < store_count; i++){
