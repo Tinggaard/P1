@@ -6,38 +6,30 @@
 #define N_STORES 5
 
 int main(void) {
-    store_s*  store= load_distances();
+    store_s* stores = load_distances();
 
-    for (int i = 0; i < 5; ++i) {
-        printf("%s  ", store[i].name);
-        printf("%d\n", store[i].distance);
-    }
+//    // debug
+//    for (int i = 0; i < N_STORES; ++i) {
+//        printf("%s %d\n", stores[i].name, stores[i].distance);
+//    }
 
-/*
-    store_s stores[N_STORES];
-    stores[0].distance = 10;
-    strcpy(stores[0].name, "rema");
-    //add_item(&stores[0], "ost", 10);
-    // load distances
     load_normal_prices(stores, N_STORES);
 
-    node_t* current_item = stores[0].first_item;
-    // printf("'%s' %lf", current_item->item.name, current_item->item.price);
-
-    int k = 0; //current_item->next != NULL
-    while (current_item->next != NULL){
-        printf("'%s' %lf", current_item->item.name, current_item->item.price);
-
-        current_item = current_item->next;
-        k++;
-    }
+//    // debug
+//    for (int i = 0; i < 5; i++) {
+//        node_t* current_item = stores[i].first_item;
+//        while (current_item != NULL){
+//            printf("%s: %s %lf\n", stores[i].name, current_item->item.name, current_item->item.price);
+//            current_item = current_item->next;
+//        }
+//    }
 
     // load normal_prices
     // for item in normal_prices: add_item(item)
 
     // load discounts
-*/
-    free(store);
-    printf("store´> %d", store[2].distance);
+
+    free(stores);
+
     return 0;
 }

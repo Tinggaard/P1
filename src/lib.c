@@ -9,10 +9,10 @@ int get_new_lines(char* filename){
     //tæller antal linjer i filen
     int count = 0;
     char c;
-    FILE * adr;
+    FILE *adr;
     adr = fopen(filename, "r");
     if (adr == NULL){
-        printf("Could not open file");
+        printf("Could not open file '%s'", filename);
         return 0;
     }
     for (c = getc(adr); c != EOF; c = getc(adr))
@@ -22,48 +22,53 @@ int get_new_lines(char* filename){
     return count+1;
 }
 
+/**
+ * load_distances() loads the distances to the stores
+ * @return returns the stores in a list, as structs
+ */
 store_s* load_distances(void) { // read from file
     char* filename = "src/files/distances.txt";
-    int numstores =get_new_lines(filename);
+    int numstores = get_new_lines(filename);
 
     FILE* distances;
     distances = fopen(filename, "r");
-    if (NULL == distances){
+    if (NULL == distances) {
+        printf("Could not open file '%s'", filename);
         exit(EXIT_FAILURE);
     }
     store_s* store;
     store = malloc(numstores * sizeof(store_s));
-    for (int i = 0; i <= numstores ; i++){
+    for (int i = 0; i <= numstores ; i++) {
         fscanf(distances, "%[^,], %d\n", store[i].name, &store[i].distance);
+        store[i].first_item = NULL;
     }
     fclose(distances);
-return store;
+    return store;
 }
 
-
+/**
+ * load_normal_prices() loads the normal prices into the store array.
+ * @param stores array of stores
+ * @param store_count amount of stores
+ */
 void load_normal_prices(store_s stores[], int store_count) { // read from file
-    FILE* f = fopen("files/normal_prices.txt", "r");
+    FILE* f = fopen("src/files/normal_prices.txt", "r");
 
     if (f == NULL){
-        printf("File not found");
+        printf("Could not open file '%s'", "src/files/normal_prices.txt");
         exit(EXIT_FAILURE);
     }
 
     double price;
     char item_name[MAX_NAME_SIZE];
-    while (1){
-        if (feof(f)){
-            break;
-        }
+    while (!feof(f)) {
 
         fscanf(f, "%[^,], %lf\n", item_name, &price);
-        //printf("'%s' %lf\n", item_name, price);
-        for (int i = 0; i < 1; i++){
+        // add it to all stores
+        for (int i = 0; i < store_count; i++){
             add_item(&stores[i], item_name, price);
         }
     }
-
-
     fclose(f);
 }
 
