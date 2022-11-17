@@ -22,7 +22,7 @@ typedef struct {
 } cart_item;
 
 void load_distances(void); // read from file
-void load_normal_prices(void); // read from file
+void load_normal_prices(store_s stores[], int store_count); // read from file
 void load_discounts(void); // read from file
 void load_shopping_list(void); // read from file
 void add_item(store_s* store, char* name, double price); // load normal prices

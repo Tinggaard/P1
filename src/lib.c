@@ -1,13 +1,38 @@
 #include "lib.h"
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 void load_distances(void) { // read from file
 
 }
-void load_normal_prices(void) { // read from file
 
+void load_normal_prices(store_s stores[], int store_count) { // read from file
+    FILE* f = fopen("files/normal_prices.txt", "r");
+
+    if (f == NULL){
+        printf("File not found");
+        exit(EXIT_FAILURE);
+    }
+
+    double price;
+    char item_name[MAX_NAME_SIZE];
+    while (1){
+        if (feof(f)){
+            break;
+        }
+
+        fscanf(f, "%[^,], %lf\n", item_name, &price);
+        //printf("'%s' %lf\n", item_name, price);
+        for (int i = 0; i < 1; i++){
+            add_item(&stores[i], item_name, price);
+        }
+    }
+
+
+    fclose(f);
 }
+
 void load_discounts(void) { // read from file
 
 }
