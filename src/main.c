@@ -5,9 +5,11 @@
 #define N_STORES 5
 
 int main(void) {
-    store_s  store= load_distances();
+    store_s*  store= load_distances();
 
-    printf("%s", store.name);
+    printf("%s", store[0].name);
+    printf("%d", store[0].distance);
+
 /*
     store_s stores[N_STORES];
     stores[0].distance = 10;

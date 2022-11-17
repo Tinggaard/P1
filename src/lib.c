@@ -2,7 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
-store_s load_distances(void) { // read from file
+store_s* load_distances(void) { // read from file
     FILE* distances;
     distances = fopen("C:\\Users\\armin\\CLionProjects\\P1_nice\\src\\files\\distances.txt", "r");
     if (NULL == distances){
