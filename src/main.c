@@ -1,4 +1,3 @@
-#include <string.h>
 #include "lib.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -6,26 +5,34 @@
 #define N_STORES 5
 
 int main(void) {
-    store_s*  store= load_distances();
+    char* filename = "src/files/distances.txt";
+    store_s* stores = load_distances();
+    int n_stores = get_new_lines(filename);
+//    // debug
+//    for (int i = 0; i < n_stores; ++i) {
+//        printf("%s %d\n", stores[i].name, stores[i].distance);
+//    }
 
-    for (int i = 0; i < 5; ++i) {
-        printf("%s  ", store[i].name);
-        printf("%d\n", store[i].distance);
-    }
-
-/*
-    store_s stores[N_STORES];
-    stores[0].distance = 10;
-    strcpy(stores[0].name, "rema");
-    add_item(&stores[0], "ost", 10);
-    // load distances
-
-    // load normal_prices
-    // for item in normal_prices: add_item(item)
+    load_normal_prices(stores, n_stores);
 
     // load discounts
-*/
-    free(store);
-    printf("store´> %d", store[2].distance);
+    load_discounts(stores);
+//    // debug
+//    for (int i = 0; i < 5; i++) {
+//        node_t* current_item = stores[i].first_item;
+//        while (current_item != NULL){
+//            printf("%s: %s %lf\n", stores[i].name, current_item->item.name, current_item->item.price);
+//            current_item = current_item->next;
+//        }
+//    }
+
+
+    // free up all items in each store
+    for (int i = 0; i < 5; i++) {
+        deallocate_list(&stores[i]);
+    }
+    // free up the store array
+    free(stores);
+
     return 0;
 }

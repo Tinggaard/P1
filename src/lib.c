@@ -3,56 +3,121 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-//ved ikke om den behøves at komme med ind i lib.h? det kan være at den kan være nyttig i fremtiden
-//men den her kan finde antal new lines i et dokument, ved igen ikke om det er relevent men nu er det her.
+/**
+ * get_new_lines() counts number of lines in a given file
+ * @param filename file to parse
+ * @return number of lines is given file
+ */
 int get_new_lines(char* filename){
-    //tæller antal linjer i filen
     int count = 0;
     char c;
-    FILE * adr;
-    adr = fopen(filename, "r");
-    if (adr == NULL){
-        printf("Could not open file");
-        return 0;
+    FILE *f;
+    f = fopen(filename, "r");
+    if (f == NULL){
+        printf("Could not open file '%s'", filename);
+        exit(EXIT_FAILURE);
     }
-    for (c = getc(adr); c != EOF; c = getc(adr))
-        if (c == '\n') //tæller antal new lines
+    for (c = getc(f); c != EOF; c = getc(f))
+        if (c == '\n') // counts new lines
             count++;
-    fclose(adr);
+    fclose(f);
     return count+1;
 }
 
+/**
+ * load_distances() loads the distances to the stores
+ * @return returns stores in an array, as structs (store_s)
+ */
 store_s* load_distances(void) { // read from file
     char* filename = "src/files/distances.txt";
-    int numstores =get_new_lines(filename);
+    int store_count = get_new_lines(filename);
 
     FILE* distances;
     distances = fopen(filename, "r");
-    if (NULL == distances){
+    if (NULL == distances) {
+        printf("Could not open file '%s'", filename);
         exit(EXIT_FAILURE);
     }
     store_s* store;
-    store = malloc(numstores * sizeof(store_s));
-    for (int i = 0; i <= numstores ; i++){
+    store = malloc(store_count * sizeof(store_s));
+    for (int i = 0; i <= store_count; i++) {
         fscanf(distances, "%[^,], %d\n", store[i].name, &store[i].distance);
+        store[i].first_item = NULL;
     }
     fclose(distances);
-return store;
+    return store;
 }
 
-void load_normal_prices(void) { // read from file
+/**
+ * load_normal_prices() loads the normal prices into the store array.
+ * @param stores array of store_s
+ * @param store_count amount of stores
+ */
+void load_normal_prices(store_s stores[], int store_count) { // read from file
+    char filename[] = "src/files/normal_prices.txt";
+    FILE* f = fopen(filename, "r");
+
+    if (f == NULL){
+        printf("Could not open file '%s'", filename);
+        exit(EXIT_FAILURE);
+    }
+
+    double price;
+    char item_name[MAX_NAME_SIZE];
+    while (!feof(f)) {
+
+        fscanf(f, "%[^,], %lf\n", item_name, &price);
+        // add it to all stores
+        for (int i = 0; i < store_count; i++){
+            add_item(&stores[i], item_name, price);
+        }
+    }
+    fclose(f);
+}
+
+/**
+ * load_discounts() overrides the discounts to their respective stores
+ * @param stores array of store_s
+ */
+void load_discounts(store_s stores[]) { // read from file
+    char filename[] = "src/files/discounts.txt";
+    FILE* f = fopen(filename, "r");
+
+    if (f == NULL){
+        printf("Could not open file '%s'", filename);
+        exit(EXIT_FAILURE);
+    }
+
+    char current_store[MAX_NAME_SIZE];
+    char current_item[MAX_NAME_SIZE];
+    double current_price;
+    int i;
+
+    while (!feof(f)) {
+        i = 0;
+        fscanf(f, "%[^,], %[^,], %lf\n", current_store, current_item, &current_price);
+
+        // get index of store
+        while (strcmp(stores[i].name, current_store)) {
+            i++;
+        }
+        // get item in list
+        node_t *item = stores[i].first_item;
+        while (strcmp(item->item.name, current_item)) {
+            item = item->next;
+        }
+        item->item.price = current_price;
+    }
 
 }
-void load_discounts(void) { // read from file
 
-}
 void load_shopping_list(void) { // read from file
 
 }
 
 /**
  * add_item is used for declaring which items exist in the store
- * @param store the store to add
+ * @param store the store_s to add
  * @param name name of the item
  * @param price price of said item
  */
@@ -67,6 +132,18 @@ void add_item(store_s* store, char* name, double price) {
     store->first_item = new_node;
 }
 
-void update_item(void) { // discounts
-
+/**
+ * deallocate_list() deallocates the memory used by items
+ * @param store store_s to deallocate
+ */
+void deallocate_list(store_s* store) {
+    node_t* current = store->first_item;
+    while(current != NULL) // we know that the NULL pointer signals the end of the list
+    {
+        node_t* next = current->next; // we need to copy out the value "next" before we deallocate!
+        free(current);
+        current = next; // move to the next
+    }
+    // remember to reset the list pointer
+    store->first_item = NULL;
 }
