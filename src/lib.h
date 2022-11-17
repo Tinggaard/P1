@@ -21,8 +21,12 @@ typedef struct {
     item_s item;
 } cart_item;
 
+typedef struct{
+    char item[MAX_NAME_SIZE];
+}shoppinglist;
+
 void load_normal_prices(store_s stores[], int store_count); // read from file
 store_s* load_distances(void); // read from file
 void load_discounts(store_s stores[]); // read from file
-void load_shopping_list(void); // read from file
+shoppinglist* load_shopping_list(void); // read from file
 void add_item(store_s* store, char* name, double price); // load normal prices

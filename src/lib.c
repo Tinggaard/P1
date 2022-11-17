@@ -51,6 +51,7 @@ store_s* load_distances(void) { // read from file
  * @param stores array of stores
  * @param store_count amount of stores
  */
+
 void load_normal_prices(store_s stores[], int store_count) { // read from file
     char filename[] = "src/files/normal_prices.txt";
     FILE* f = fopen(filename, "r");
@@ -64,7 +65,7 @@ void load_normal_prices(store_s stores[], int store_count) { // read from file
     char item_name[MAX_NAME_SIZE];
     while (!feof(f)) {
 
-        fscanf(f, "%[^,], %lf\n", item_name, &price);
+        fscanf(f, "%[A-Za-z ], %lf\n", item_name, &price);
         // add it to all stores
         for (int i = 0; i < store_count; i++){
             add_item(&stores[i], item_name, price);
@@ -102,11 +103,28 @@ void load_discounts(store_s stores[]) { // read from file
         }
         item->item.price = current_price;
     }
+    fclose(f);
 
 }
 
-void load_shopping_list(void) { // read from file
+shoppinglist* load_shopping_list(void) { // read from file
+    char* filename = "src/files/shopping_list.txt";
+    int numberofitems = get_new_lines(filename);
 
+    FILE* f;
+    f = fopen(filename, "r");
+    if(f == NULL){
+        exit(EXIT_FAILURE);
+    }
+
+     shoppinglist * s_list;
+     s_list = malloc(numberofitems * sizeof(shoppinglist));
+
+     for (int i = 0; i <= numberofitems; i++) {
+         fscanf(f, "%s\n",s_list[i].item);
+     }
+     fclose(f);
+     return s_list;
 }
 
 /**
