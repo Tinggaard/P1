@@ -1,10 +1,45 @@
 #include "lib.h"
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
 
-void load_distances(void) { // read from file
-
+//ved ikke om den behøves at komme med ind i lib.h? det kan være at den kan være nyttig i fremtiden
+//men den her kan finde antal new lines i et dokument, ved igen ikke om det er relevent men nu er det her.
+int get_new_lines(char* filename){
+    //tæller antal linjer i filen
+    int count = 0;
+    char c;
+    FILE * adr;
+    adr = fopen(filename, "r");
+    if (adr == NULL){
+        printf("Could not open file");
+        return 0;
+    }
+    for (c = getc(adr); c != EOF; c = getc(adr))
+        if (c == '\n') //tæller antal new lines
+            count++;
+    fclose(adr);
+    return count+1;
 }
+
+store_s* load_distances(void) { // read from file
+    char* filename = "src/files/distances.txt";
+    int numstores =get_new_lines(filename);
+
+    FILE* distances;
+    distances = fopen(filename, "r");
+    if (NULL == distances){
+        exit(EXIT_FAILURE);
+    }
+    store_s* store;
+    store = malloc(numstores * sizeof(store_s));
+    for (int i = 0; i <= numstores ; i++){
+        fscanf(distances, "%[^,], %d\n", store[i].name, &store[i].distance);
+    }
+    fclose(distances);
+return store;
+}
+
 void load_normal_prices(void) { // read from file
 
 }
