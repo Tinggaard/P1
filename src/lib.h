@@ -21,7 +21,7 @@ typedef struct {
     item_s item;
 } cart_item;
 
-void load_distances(void); // read from file
+store_s load_distances(void); // read from file
 void load_normal_prices(void); // read from file
 void load_discounts(void); // read from file
 void load_shopping_list(void); // read from file

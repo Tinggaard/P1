@@ -1,10 +1,21 @@
 #include "lib.h"
 #include <string.h>
 #include <stdlib.h>
-
-void load_distances(void) { // read from file
-
+#include <stdio.h>
+store_s load_distances(void) { // read from file
+    FILE* distances;
+    distances = fopen("C:\\Users\\armin\\CLionProjects\\P1_nice\\src\\files\\distances.txt", "r");
+    if (NULL == distances){
+        printf("error");
+    }
+    store_s store[5] ;
+    for (int i = 0; i < 5 ; ++i) {
+        fscanf(distances, "%[^,], %d\n", store[i].name, &store[i].distance);
+    }
+    fclose(distances);
+return store;
 }
+
 void load_normal_prices(void) { // read from file
 
 }
