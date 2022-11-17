@@ -9,7 +9,7 @@ Lidl, eggs, 12
 Lidl, chicken breast, 35
 Spar, salami, 24
 Spar, chips, 14
-spar, cheese, 20
+Spar, cheese, 20
 Coop 365, chips, 10
 Coop 365, chocolate milk, 12
 Coop 365, carrots, 5

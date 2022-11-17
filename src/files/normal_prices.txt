@@ -8,4 +8,3 @@ salami, 25
 chips, 15
 chocolate milk, 20
 chicken breast, 45
-
