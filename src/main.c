@@ -1,4 +1,3 @@
-#include <string.h>
 #include "lib.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -17,7 +16,6 @@ int main(void) {
 
     // load discounts
     load_discounts(stores);
-
 //    // debug
 //    for (int i = 0; i < 5; i++) {
 //        node_t* current_item = stores[i].first_item;
@@ -27,6 +25,12 @@ int main(void) {
 //        }
 //    }
 
+
+    // free up all items in each store
+    for (int i = 0; i < 5; i++) {
+        deallocate_list(&stores[i]);
+    }
+    // free up the store array
     free(stores);
 
     return 0;
