@@ -6,7 +6,14 @@
 #define N_STORES 5
 
 int main(void) {
+    store_s*  store= load_distances();
 
+    for (int i = 0; i < 5; ++i) {
+        printf("%s  ", store[i].name);
+        printf("%d\n", store[i].distance);
+    }
+
+/*
     store_s stores[N_STORES];
     stores[0].distance = 10;
     strcpy(stores[0].name, "rema");
@@ -29,6 +36,8 @@ int main(void) {
     // for item in normal_prices: add_item(item)
 
     // load discounts
-
+*/
+    free(store);
+    printf("store´> %d", store[2].distance);
     return 0;
 }
