@@ -19,7 +19,7 @@ int get_file_size(char* filename){
         if (c == '\n') //tæller antal new lines
             count++;
     fclose(adr);
-    return count;
+    return count+1;
 }
 
 store_s* load_distances(void) { // read from file
@@ -31,7 +31,8 @@ store_s* load_distances(void) { // read from file
     if (NULL == distances){
         exit(EXIT_FAILURE);
     }
-    store_s static store[5] ;
+    store_s* store;
+    store = malloc(numstores * sizeof(store_s));
     for (int i = 0; i <= numstores ; i++){
         fscanf(distances, "%[^,], %d\n", store[i].name, &store[i].distance);
     }

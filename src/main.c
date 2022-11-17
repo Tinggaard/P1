@@ -1,6 +1,7 @@
 #include <string.h>
 #include "lib.h"
 #include <stdio.h>
+#include <stdlib.h>
 
 #define N_STORES 5
 
@@ -24,5 +25,7 @@ int main(void) {
 
     // load discounts
 */
+    free(store);
+    printf("store´> %d", store[2].distance);
     return 0;
 }
