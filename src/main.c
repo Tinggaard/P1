@@ -7,8 +7,10 @@
 int main(void) {
     store_s*  store= load_distances();
 
-    printf("%s", store[0].name);
-    printf("%d", store[0].distance);
+    for (int i = 0; i < 5; ++i) {
+        printf("%s  ", store[i].name);
+        printf("%d\n", store[i].distance);
+    }
 
 /*
     store_s stores[N_STORES];

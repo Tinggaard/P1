@@ -8,7 +8,7 @@ store_s* load_distances(void) { // read from file
     if (NULL == distances){
         printf("error");
     }
-    store_s store[5] ;
+    store_s static store[5] ;
     for (int i = 0; i < 5 ; ++i) {
         fscanf(distances, "%[^,], %d\n", store[i].name, &store[i].distance);
     }
