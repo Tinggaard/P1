@@ -5,7 +5,7 @@
 
 //ved ikke om den behøves at komme med ind i lib.h? det kan være at den kan være nyttig i fremtiden
 //men den her kan finde antal new lines i et dokument, ved igen ikke om det er relevent men nu er det her.
-int get_file_size(char* filename){
+int get_new_lines(char* filename){
     //tæller antal linjer i filen
     int count = 0;
     char c;
@@ -24,7 +24,7 @@ int get_file_size(char* filename){
 
 store_s* load_distances(void) { // read from file
     char* filename = "src/files/distances.txt";
-    int numstores =get_file_size(filename);
+    int numstores =get_new_lines(filename);
 
     FILE* distances;
     distances = fopen(filename, "r");
