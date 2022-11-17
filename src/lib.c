@@ -23,7 +23,7 @@ int get_file_size(char* filename){
 }
 
 store_s* load_distances(void) { // read from file
-    char* filename = "C:\\Users\\Maxnm\\CLionProjects\\P1\\src\\files\\distances.txt";
+    char* filename = "src/files/distances.txt";
     int numstores =get_file_size(filename);
 
     FILE* distances;
