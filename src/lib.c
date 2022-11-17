@@ -38,7 +38,7 @@ store_s* load_distances(void) { // read from file
     }
     store_s* store;
     store = malloc(numstores * sizeof(store_s));
-    for (int i = 0; i <= numstores ; i++) {
+    for (int i = 0; i <= numstores; i++) {
         fscanf(distances, "%[^,], %d\n", store[i].name, &store[i].distance);
         store[i].first_item = NULL;
     }
@@ -52,10 +52,11 @@ store_s* load_distances(void) { // read from file
  * @param store_count amount of stores
  */
 void load_normal_prices(store_s stores[], int store_count) { // read from file
-    FILE* f = fopen("src/files/normal_prices.txt", "r");
+    char filename[] = "src/files/normal_prices.txt";
+    FILE* f = fopen(filename, "r");
 
     if (f == NULL){
-        printf("Could not open file '%s'", "src/files/normal_prices.txt");
+        printf("Could not open file '%s'", filename);
         exit(EXIT_FAILURE);
     }
 
@@ -72,9 +73,38 @@ void load_normal_prices(store_s stores[], int store_count) { // read from file
     fclose(f);
 }
 
-void load_discounts(void) { // read from file
+void load_discounts(store_s stores[]) { // read from file
+    char filename[] = "src/files/discounts.txt";
+    FILE* f = fopen(filename, "r");
+
+    if (f == NULL){
+        printf("Could not open file '%s'", filename);
+        exit(EXIT_FAILURE);
+    }
+
+    char current_store[MAX_NAME_SIZE];
+    char current_item[MAX_NAME_SIZE];
+    double current_price;
+    int i;
+
+    while (!feof(f)) {
+        i = 0;
+        fscanf(f, "%[^,], %[^,], %lf\n", current_store, current_item, &current_price);
+
+        // get index of store
+        while (strcmp(stores[i].name, current_store)) {
+            i++;
+        }
+        // get item in list
+        node_t *item = stores[i].first_item;
+        while (strcmp(item->item.name, current_item)) {
+            item = item->next;
+        }
+        item->item.price = current_price;
+    }
 
 }
+
 void load_shopping_list(void) { // read from file
 
 }
@@ -94,8 +124,4 @@ void add_item(store_s* store, char* name, double price) {
     strcpy(new_node->item.name, name);
     // fix the list.
     store->first_item = new_node;
-}
-
-void update_item(void) { // discounts
-
 }

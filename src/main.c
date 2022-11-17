@@ -15,6 +15,9 @@ int main(void) {
 
     load_normal_prices(stores, N_STORES);
 
+    // load discounts
+    load_discounts(stores);
+
 //    // debug
 //    for (int i = 0; i < 5; i++) {
 //        node_t* current_item = stores[i].first_item;
@@ -23,11 +26,6 @@ int main(void) {
 //            current_item = current_item->next;
 //        }
 //    }
-
-    // load normal_prices
-    // for item in normal_prices: add_item(item)
-
-    // load discounts
 
     free(stores);
 
