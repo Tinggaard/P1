@@ -5,14 +5,15 @@
 #define N_STORES 5
 
 int main(void) {
+    char* filename = "src/files/distances.txt";
     store_s* stores = load_distances();
-
+    int n_stores = get_new_lines(filename);
 //    // debug
-//    for (int i = 0; i < N_STORES; ++i) {
+//    for (int i = 0; i < n_stores; ++i) {
 //        printf("%s %d\n", stores[i].name, stores[i].distance);
 //    }
 
-    load_normal_prices(stores, N_STORES);
+    load_normal_prices(stores, n_stores);
 
     // load discounts
     load_discounts(stores);
