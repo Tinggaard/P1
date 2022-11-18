@@ -30,5 +30,8 @@ store_s* load_distances(void); // read from file
 void load_discounts(store_s stores[]); // read from file
 shoppinglist* load_shopping_list(void); // read from file
 void add_item(store_s* store, char* name, double price); // load normal prices
-void deallocate_list(store_s* store);
-int get_new_lines(char* filename);
+void deallocate_list(store_s* store); //frees the memory used in malloc
+int get_new_lines(char* filename); //gets number of new lines
+void billigste_overall_cart(void);
+void billigste_one_cart(void);
+void billigste_closest_cart(void);

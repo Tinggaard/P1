@@ -9,19 +9,19 @@
  * @return number of lines is given file
  */
 int get_new_lines(char* filename){
-    int count = 0;
+    int count = 1; //initializes 1 because if there's no new line, there is still one line
     char c;
     FILE *f;
     f = fopen(filename, "r");
-    if (f == NULL){
+    if (f == NULL){ //if file cant be opened
         printf("Could not open file '%s'", filename);
         exit(EXIT_FAILURE);
     }
     for (c = getc(f); c != EOF; c = getc(f))
-        if (c == '\n') // counts new lines
+        if (c == '\n') //Everytime the char c is \n count is increased
             count++;
     fclose(f);
-    return count+1;
+    return count;
 }
 
 /**
@@ -163,4 +163,21 @@ void deallocate_list(store_s* store) {
     }
     // remember to reset the list pointer
     store->first_item = NULL;
+}
+
+void billigste_overall_cart(void){
+    for (int i = 0; i < ; ++i) {
+        for (int j = 0; j < ; ++j) {
+
+        }
+    }
+
+}
+
+void billigste_one_cart(void){
+
+}
+
+void billigste_closest_cart(void){
+
 }
