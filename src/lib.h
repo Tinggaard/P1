@@ -1,4 +1,4 @@
-#define MAX_NAME_SIZE 30
+#define MAX_NAME_SIZE 15
 
 typedef struct {
     char name[MAX_NAME_SIZE];

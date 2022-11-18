@@ -40,7 +40,7 @@ store_s* load_distances(void) { // read from file
     }
     store_s* store;
     store = malloc(store_count * sizeof(store_s));
-    for (int i = 0; i <= store_count; i++) {
+    for (int i = 0; i < store_count; i++) {
         fscanf(distances, "%[^,], %d\n", store[i].name, &store[i].distance);
         store[i].first_item = NULL;
     }
