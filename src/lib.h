@@ -1,4 +1,4 @@
-#define MAX_NAME_SIZE 50
+#define MAX_NAME_SIZE 30
 
 typedef struct {
     char name[MAX_NAME_SIZE];
@@ -30,4 +30,5 @@ store_s* load_distances(void); // read from file
 void load_discounts(store_s stores[]); // read from file
 shoppinglist* load_shopping_list(void); // read from file
 void add_item(store_s* store, char* name, double price); // load normal prices
+void deallocate_list(store_s* store);
 int get_new_lines(char* filename);

@@ -1,4 +1,3 @@
-#include <string.h>
 #include "lib.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -17,7 +16,7 @@ int main(void) {
     //}
 
 //    // debug
-//    for (int i = 0; i < N_STORES; ++i) {
+//    for (int i = 0; i < n_stores; ++i) {
 //        printf("%s %d\n", stores[i].name, stores[i].distance);
 //    }
 
@@ -43,6 +42,12 @@ int main(void) {
     //    }
    // }
 
+
+    // free up all items in each store
+    for (int i = 0; i < 5; i++) {
+        deallocate_list(&stores[i]);
+    }
+    // free up the store array
     free(stores);
     free(list);
     return 0;
