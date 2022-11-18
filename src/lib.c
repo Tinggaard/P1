@@ -38,7 +38,7 @@ store_s* load_distances(void) { // read from file
         printf("Could not open file '%s'", filename);
         exit(EXIT_FAILURE);
     }
-    store_s* store = (store*) malloc(store_count * sizeof(store_s));
+    store_s* store = malloc(store_count * sizeof(store_s));
     for (int i = 0; i < store_count; i++) {
         fscanf(distances, "%[^,], %d\n", store[i].name, &store[i].distance);
         store[i].first_item = NULL;
@@ -53,7 +53,7 @@ store_s* load_distances(void) { // read from file
  * @param store_count amount of stores
  */
 
-void load_normal_prices(store_s stores[], int store_count) { // read from file
+void load_normal_prices(store_s *stores, int store_count) { // read from file
     char filename[] = "src/files/normal_prices.txt";
     FILE* f = fopen(filename, "r");
 
@@ -78,7 +78,7 @@ void load_normal_prices(store_s stores[], int store_count) { // read from file
  * load_discounts() overrides the discounts to their respective stores
  * @param stores array of store_s
  */
-void load_discounts(store_s stores[]) { // read from file
+void load_discounts(store_s *stores) { // read from file
     char filename[] = "src/files/discounts.txt";
     FILE* f = fopen(filename, "r");
 
@@ -164,27 +164,32 @@ void deallocate_list(store_s* store) {
     store->first_item = NULL;
 }
 
-void billigste_overall_cart(store_s stores[], shoppinglist_s shoppinglist[]){
 
-}
+void sum_shoppinglist(store_s *stores, shoppinglist_s *shoppinglist, int n_stores, int n_shoppinglist){
+    double sum[n_shoppinglist];
 
-void billigste_one_cart(store_s stores[], shoppinglist_s shoppinglist[]){
-    double sum[5];
-
-    for (int i = 0; i < 5; ++i) {
-        sum[i] = 0;
-        node_t* current_item = stores[i].first_item;
-        while(current_item != NULL){
-            for (int j = 0; j < 5; ++j) { //shoppinglist
-                if (strcmp(current_item->item.name, shoppinglist[j].name)){
-
+    for (int i = 0; i < n_stores; ++i) {
+        double temp_sum = 0;
+        node_t *current_item = stores[i].first_item;
+        while (current_item != NULL) {
+            for (int j = 0; j < n_shoppinglist; j++) { //shoppinglist
+                if (strcmp(current_item->item.name, shoppinglist[j].name) == 0) {
+                    //printf("%s %f\n", shoppinglist[j].name, current_item->item.price);
+                    //printf("%.3f\n", current_item->item.price);
+                    temp_sum = temp_sum + current_item->item.price;
                 }
             }
+            sum[i] = temp_sum;
             current_item = current_item->next;
         }
     }
+    //for (int i = 0; i < 5; ++i) {
+    //    printf("%s %f\n",stores[i].name, sum[i]);
+    //}
 }
 
-void billigste_closest_cart(void){
+void cheapest_overall_cart(void){}
 
-}
+void cheapest_closest_cart(void){}
+
+void cheapest_onestore(void){}

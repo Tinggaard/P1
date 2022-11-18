@@ -5,11 +5,15 @@
 #define N_STORES 5
 
 int main(void) {
-    char* filename = "src/files/distances.txt";
-    int n_stores = get_new_lines(filename);
-    //printf("%d", n_stores);
+
+    char* shoppinglist_f = "src/files/shopping_list.txt";
+    char* stores_f = "src/files/distances.txt";
+
+    int n_stores = get_new_lines(stores_f);
+    int n_items_shoppinglist = get_new_lines(shoppinglist_f);
+
     store_s* stores = load_distances();
-    shoppinglist* list = load_shopping_list();
+    shoppinglist_s* shoppinglist = load_shopping_list();
     //debug shoppinglist
     //for (int i = 0; i < N_STORES; ++i) {
     //    printf("%s\n", list[i].item);
@@ -42,6 +46,7 @@ int main(void) {
     //    }
    // }
 
+    sum_shoppinglist(stores, shoppinglist, n_stores, n_items_shoppinglist);
 
     // free up all items in each store
     for (int i = 0; i < 5; i++) {
@@ -49,6 +54,6 @@ int main(void) {
     }
     // free up the store array
     free(stores);
-    free(list);
+    free(shoppinglist);
     return 0;
 }
