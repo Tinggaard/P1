@@ -6,5 +6,5 @@ carrots, 7
 banana, 2.5
 salami, 25
 chips, 15
-chocolate milk, 20
+toilet paper, 20
 chicken breast, 45

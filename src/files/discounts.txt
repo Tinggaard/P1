@@ -1,6 +1,6 @@
 Netto, cheese, 30
 Netto, salami, 15
-Netto, chocolate milk, 10
+Netto, toilet paper, 10
 Rema, peanuts, 7
 Rema, banana, 1
 Rema, ryebread, 10
@@ -11,5 +11,5 @@ Spar, salami, 24
 Spar, chips, 14
 Spar, cheese, 20
 Coop 365, chips, 10
-Coop 365, chocolate milk, 12
+Coop 365, toilet paper, 12
 Coop 365, carrots, 5
