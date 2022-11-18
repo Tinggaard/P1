@@ -38,8 +38,7 @@ store_s* load_distances(void) { // read from file
         printf("Could not open file '%s'", filename);
         exit(EXIT_FAILURE);
     }
-    store_s* store;
-    store = malloc(store_count * sizeof(store_s));
+    store_s* store = (store*) malloc(store_count * sizeof(store_s));
     for (int i = 0; i < store_count; i++) {
         fscanf(distances, "%[^,], %d\n", store[i].name, &store[i].distance);
         store[i].first_item = NULL;
@@ -112,7 +111,7 @@ void load_discounts(store_s stores[]) { // read from file
 
 }
 
-shoppinglist* load_shopping_list(void) { // read from file
+shoppinglist_s* load_shopping_list(void) { // read from file
     char* filename = "src/files/shopping_list.txt";
     int numberofitems = get_new_lines(filename);
 
@@ -122,11 +121,11 @@ shoppinglist* load_shopping_list(void) { // read from file
         exit(EXIT_FAILURE);
     }
 
-     shoppinglist * s_list;
-     s_list = malloc(numberofitems * sizeof(shoppinglist));
+     shoppinglist_s * s_list;
+     s_list = malloc(numberofitems * sizeof(shoppinglist_s));
 
      for (int i = 0; i <= numberofitems; i++) {
-         fscanf(f, "%s\n",s_list[i].item);
+         fscanf(f, "%s\n",s_list[i].name);
      }
      fclose(f);
      return s_list;
@@ -165,17 +164,25 @@ void deallocate_list(store_s* store) {
     store->first_item = NULL;
 }
 
-void billigste_overall_cart(void){
-    //for (int i = 0; i < ; ++i) {
-    //    for (int j = 0; j < ; ++j) {
-    //
-    //    }
-    //}
+void billigste_overall_cart(store_s stores[], shoppinglist_s shoppinglist[]){
 
 }
 
-void billigste_one_cart(void){
+void billigste_one_cart(store_s stores[], shoppinglist_s shoppinglist[]){
+    double sum[5];
 
+    for (int i = 0; i < 5; ++i) {
+        sum[i] = 0;
+        node_t* current_item = stores[i].first_item;
+        while(current_item != NULL){
+            for (int j = 0; j < 5; ++j) { //shoppinglist
+                if (strcmp(current_item->item.name, shoppinglist[j].name)){
+
+                }
+            }
+            current_item = current_item->next;
+        }
+    }
 }
 
 void billigste_closest_cart(void){
