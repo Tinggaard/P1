@@ -3,6 +3,11 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+int compare_price(const void * a, const void * b) {
+    const cheapest_store * c = a;
+    const cheapest_store * d = b;
+    return (c->total_price- d->total_price);
+}
 /**
  * get_new_lines() counts number of lines in a given file
  * @param filename file to parse
@@ -165,7 +170,7 @@ void deallocate_list(store_s* store) {
 }
 
 
-void sum_shoppinglist(store_s *stores, shoppinglist_s *shoppinglist, int n_stores, int n_shoppinglist){
+cheapest_store* cheapest_onestore(store_s *stores, shoppinglist_s *shoppinglist, int n_stores, int n_shoppinglist){
     double sum[n_shoppinglist];
 
     for (int i = 0; i < n_stores; ++i) {
@@ -174,8 +179,7 @@ void sum_shoppinglist(store_s *stores, shoppinglist_s *shoppinglist, int n_store
         while (current_item != NULL) {
             for (int j = 0; j < n_shoppinglist; j++) { //shoppinglist
                 if (strcmp(current_item->item.name, shoppinglist[j].name) == 0) {
-                    //printf("%s %f\n", shoppinglist[j].name, current_item->item.price);
-                    //printf("%.3f\n", current_item->item.price);
+
                     temp_sum = temp_sum + current_item->item.price;
                 }
             }
@@ -183,13 +187,19 @@ void sum_shoppinglist(store_s *stores, shoppinglist_s *shoppinglist, int n_store
             current_item = current_item->next;
         }
     }
-    //for (int i = 0; i < 5; ++i) {
-    //    printf("%s %f\n",stores[i].name, sum[i]);
-    //}
+    cheapest_store *store_c; //skal laves til et array på et tidspunkt
+    store_c = malloc(n_stores * sizeof(cheapest_store));
+
+    for (int i = 0; i < n_stores; i++) {
+        store_c[i].total_price = sum[i];
+        strcpy(store_c[i].store_name, stores[i].name);
+    }
+    qsort(store_c, n_shoppinglist, sizeof(cheapest_store), compare_price);
+
+    return store_c;
 }
 
 void cheapest_overall_cart(void){}
 
 void cheapest_closest_cart(void){}
 
-void cheapest_onestore(void){}

@@ -46,14 +46,21 @@ int main(void) {
     //    }
    // }
 
-    sum_shoppinglist(stores, shoppinglist, n_stores, n_items_shoppinglist);
+    cheapest_store* store_c =cheapest_onestore(stores, shoppinglist, n_stores, n_items_shoppinglist);
+    for (int i = 0; i < 5; ++i) {
+        printf("The cheapest store is: %f %s\n", store_c[i].total_price, store_c[i].store_name);
+    }
+
+
 
     // free up all items in each store
     for (int i = 0; i < 5; i++) {
         deallocate_list(&stores[i]);
     }
     // free up the store array
+
     free(stores);
     free(shoppinglist);
+    //free(store_c);
     return 0;
 }
