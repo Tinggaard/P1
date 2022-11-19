@@ -4,9 +4,9 @@
 #include <stdio.h>
 
 int compare_price(const void * a, const void * b) {
-    const cheapest_store * c = a;
-    const cheapest_store * d = b;
-    return (c->total_price- d->total_price);
+    const item_s * c = a;
+    const item_s * d = b;
+    return (c->price- d->price);
 }
 /**
  * get_new_lines() counts number of lines in a given file
@@ -170,7 +170,7 @@ void deallocate_list(store_s* store) {
 }
 
 
-cheapest_store* cheapest_onestore(store_s *stores, shoppinglist_s *shoppinglist, int n_stores, int n_shoppinglist){
+item_s * cheapest_onestore(store_s *stores, shoppinglist_s *shoppinglist, int n_stores, int n_shoppinglist){
     double sum[n_shoppinglist];
 
     for (int i = 0; i < n_stores; ++i) {
@@ -187,14 +187,14 @@ cheapest_store* cheapest_onestore(store_s *stores, shoppinglist_s *shoppinglist,
             current_item = current_item->next;
         }
     }
-    cheapest_store *store_c; //skal laves til et array på et tidspunkt
-    store_c = malloc(n_stores * sizeof(cheapest_store));
+    item_s *store_c; //skal laves til et array på et tidspunkt
+    store_c = malloc(n_stores * sizeof(item_s ));
 
     for (int i = 0; i < n_stores; i++) {
-        store_c[i].total_price = sum[i];
-        strcpy(store_c[i].store_name, stores[i].name);
+        store_c[i].price = sum[i];
+        strcpy(store_c[i].name, stores[i].name);
     }
-    qsort(store_c, n_shoppinglist, sizeof(cheapest_store), compare_price);
+    qsort(store_c, n_shoppinglist, sizeof(item_s ), compare_price);
 
     return store_c;
 }

@@ -46,10 +46,12 @@ int main(void) {
     //    }
    // }
 
-    cheapest_store* store_c =cheapest_onestore(stores, shoppinglist, n_stores, n_items_shoppinglist);
-    for (int i = 0; i < 5; ++i) {
-        printf("The cheapest store is: %f %s\n", store_c[i].total_price, store_c[i].store_name);
-    }
+   //cheapest option
+    item_s * store_c =cheapest_onestore(stores, shoppinglist, n_stores, n_items_shoppinglist);
+    //debug
+    //for (int i = 0; i < 5; ++i) {
+    //    printf("The cheapest store is: %f %s\n", store_c[i].price, store_c[i].name);
+    //}
 
 
 
@@ -61,6 +63,6 @@ int main(void) {
 
     free(stores);
     free(shoppinglist);
-    //free(store_c);
+    free(store_c);
     return 0;
 }
