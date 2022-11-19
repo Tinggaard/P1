@@ -9,19 +9,19 @@
  * @return number of lines is given file
  */
 int get_new_lines(char* filename){
-    int count = 0;
+    int count = 1; //initializes 1 because if there's no new line, there is still one line
     char c;
     FILE *f;
     f = fopen(filename, "r");
-    if (f == NULL){
+    if (f == NULL){ //if file cant be opened
         printf("Could not open file '%s'", filename);
         exit(EXIT_FAILURE);
     }
     for (c = getc(f); c != EOF; c = getc(f))
-        if (c == '\n') // counts new lines
+        if (c == '\n') //Everytime the char c is \n count is increased
             count++;
     fclose(f);
-    return count+1;
+    return count;
 }
 
 /**
@@ -38,8 +38,7 @@ store_s* load_distances(void) { // read from file
         printf("Could not open file '%s'", filename);
         exit(EXIT_FAILURE);
     }
-    store_s* store;
-    store = malloc(store_count * sizeof(store_s));
+    store_s* store = malloc(store_count * sizeof(store_s));
     for (int i = 0; i < store_count; i++) {
         fscanf(distances, "%[^,], %d\n", store[i].name, &store[i].distance);
         store[i].first_item = NULL;
@@ -54,7 +53,7 @@ store_s* load_distances(void) { // read from file
  * @param store_count amount of stores
  */
 
-void load_normal_prices(store_s stores[], int store_count) { // read from file
+void load_normal_prices(store_s *stores, int store_count) { // read from file
     char filename[] = "src/files/normal_prices.txt";
     FILE* f = fopen(filename, "r");
 
@@ -79,7 +78,7 @@ void load_normal_prices(store_s stores[], int store_count) { // read from file
  * load_discounts() overrides the discounts to their respective stores
  * @param stores array of store_s
  */
-void load_discounts(store_s stores[]) { // read from file
+void load_discounts(store_s *stores) { // read from file
     char filename[] = "src/files/discounts.txt";
     FILE* f = fopen(filename, "r");
 
@@ -112,7 +111,7 @@ void load_discounts(store_s stores[]) { // read from file
 
 }
 
-shoppinglist* load_shopping_list(void) { // read from file
+shoppinglist_s* load_shopping_list(void) { // read from file
     char* filename = "src/files/shopping_list.txt";
     int numberofitems = get_new_lines(filename);
 
@@ -122,11 +121,11 @@ shoppinglist* load_shopping_list(void) { // read from file
         exit(EXIT_FAILURE);
     }
 
-     shoppinglist * s_list;
-     s_list = malloc(numberofitems * sizeof(shoppinglist));
+     shoppinglist_s * s_list;
+     s_list = malloc(numberofitems * sizeof(shoppinglist_s));
 
      for (int i = 0; i <= numberofitems; i++) {
-         fscanf(f, "%s\n",s_list[i].item);
+         fscanf(f, "%s\n",s_list[i].name);
      }
      fclose(f);
      return s_list;
@@ -164,3 +163,33 @@ void deallocate_list(store_s* store) {
     // remember to reset the list pointer
     store->first_item = NULL;
 }
+
+
+void sum_shoppinglist(store_s *stores, shoppinglist_s *shoppinglist, int n_stores, int n_shoppinglist){
+    double sum[n_shoppinglist];
+
+    for (int i = 0; i < n_stores; ++i) {
+        double temp_sum = 0;
+        node_t *current_item = stores[i].first_item;
+        while (current_item != NULL) {
+            for (int j = 0; j < n_shoppinglist; j++) { //shoppinglist
+                if (strcmp(current_item->item.name, shoppinglist[j].name) == 0) {
+                    //printf("%s %f\n", shoppinglist[j].name, current_item->item.price);
+                    //printf("%.3f\n", current_item->item.price);
+                    temp_sum = temp_sum + current_item->item.price;
+                }
+            }
+            sum[i] = temp_sum;
+            current_item = current_item->next;
+        }
+    }
+    //for (int i = 0; i < 5; ++i) {
+    //    printf("%s %f\n",stores[i].name, sum[i]);
+    //}
+}
+
+void cheapest_overall_cart(void){}
+
+void cheapest_closest_cart(void){}
+
+void cheapest_onestore(void){}

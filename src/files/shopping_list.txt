@@ -1,5 +1,5 @@
 eggs
+cheese
 ryebread
-banana
-peanut
-chips
+peanuts
+carrots
