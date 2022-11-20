@@ -53,7 +53,7 @@ int main(void) {
     //for (int i = 0; i < 5; ++i) {
     //    printf("The cheapest store is: %f %s, %d distance\n", store_c[i].item.price, store_c[i].item.name, store_c[i].store.distance);
     //}
-
+    cheapest_closest_cart(store_c, n_stores);
 
 
     // free up all items in each store

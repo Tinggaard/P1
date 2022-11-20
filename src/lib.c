@@ -3,11 +3,12 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-int compare_price(const void * a, const void * b) {
+int compare_prices(const void * a, const void * b) {
     const item_s * c = a;
     const item_s * d = b;
     return (c->price- d->price);
 }
+
 /**
  * get_new_lines() counts number of lines in a given file
  * @param filename file to parse
@@ -195,12 +196,12 @@ cart_item * cheapest_onestore(store_s *stores, shoppinglist_s *shoppinglist, int
         store_c[i].store.distance = stores[i].distance; //copies the distances int othe new struct
     }
 
-    qsort(store_c, n_shoppinglist, sizeof(cart_item ), compare_price);
+    qsort(store_c, n_shoppinglist, sizeof(cart_item ), compare_prices);
 
     return store_c;
 }
 
 void cheapest_overall_cart(void){}
 
-void cheapest_closest_cart(void){}
+void cheapest_closest_cart(cart_item* cartitems, int n_stores){}
 
