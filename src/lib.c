@@ -186,13 +186,13 @@ cart_item * cheapest_onestore(store_s *stores, shoppinglist_s *shoppinglist, int
             current_item = current_item->next;
         }
     }
-    cart_item *store_c; //skal laves til et array på et tidspunkt
+    cart_item *store_c;
     store_c = malloc(n_stores * sizeof(cart_item));
 
     for (int i = 0; i < n_stores; i++) {
-        store_c[i].item.price = sum[i];
-        strcpy(store_c[i].item.name, stores[i].name);
-        store_c[i].store.distance = stores[i].distance;
+        store_c[i].item.price = sum[i]; //copies the item price from the array
+        strcpy(store_c[i].item.name, stores[i].name); //copies the name of the stores into the new struct
+        store_c[i].store.distance = stores[i].distance; //copies the distances int othe new struct
     }
 
     qsort(store_c, n_shoppinglist, sizeof(cart_item ), compare_price);
