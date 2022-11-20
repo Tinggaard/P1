@@ -170,7 +170,7 @@ void deallocate_list(store_s* store) {
 }
 
 
-item_s * cheapest_onestore(store_s *stores, shoppinglist_s *shoppinglist, int n_stores, int n_shoppinglist){
+cart_item * cheapest_onestore(store_s *stores, shoppinglist_s *shoppinglist, int n_stores, int n_shoppinglist){
     double sum[n_shoppinglist];
 
     for (int i = 0; i < n_stores; ++i) {
@@ -179,7 +179,6 @@ item_s * cheapest_onestore(store_s *stores, shoppinglist_s *shoppinglist, int n_
         while (current_item != NULL) {
             for (int j = 0; j < n_shoppinglist; j++) { //shoppinglist
                 if (strcmp(current_item->item.name, shoppinglist[j].name) == 0) {
-
                     temp_sum = temp_sum + current_item->item.price;
                 }
             }
@@ -187,14 +186,16 @@ item_s * cheapest_onestore(store_s *stores, shoppinglist_s *shoppinglist, int n_
             current_item = current_item->next;
         }
     }
-    item_s *store_c; //skal laves til et array på et tidspunkt
-    store_c = malloc(n_stores * sizeof(item_s ));
+    cart_item *store_c; //skal laves til et array på et tidspunkt
+    store_c = malloc(n_stores * sizeof(cart_item));
 
     for (int i = 0; i < n_stores; i++) {
-        store_c[i].price = sum[i];
-        strcpy(store_c[i].name, stores[i].name);
+        store_c[i].item.price = sum[i];
+        strcpy(store_c[i].item.name, stores[i].name);
+        store_c[i].store.distance = stores[i].distance;
     }
-    qsort(store_c, n_shoppinglist, sizeof(item_s ), compare_price);
+
+    qsort(store_c, n_shoppinglist, sizeof(cart_item ), compare_price);
 
     return store_c;
 }

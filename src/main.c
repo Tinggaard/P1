@@ -46,12 +46,13 @@ int main(void) {
     //    }
    // }
 
+
    //cheapest option
-    item_s * store_c =cheapest_onestore(stores, shoppinglist, n_stores, n_items_shoppinglist);
+    cart_item * store_c =cheapest_onestore(stores, shoppinglist, n_stores, n_items_shoppinglist);
     //debug
-    //for (int i = 0; i < 5; ++i) {
-    //    printf("The cheapest store is: %f %s\n", store_c[i].price, store_c[i].name);
-    //}
+    for (int i = 0; i < 5; ++i) {
+        printf("The cheapest store is: %f %s, %d distance\n", store_c[i].item.price, store_c[i].item.name, store_c[i].store.distance);
+    }
 
 
 
