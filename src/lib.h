@@ -36,4 +36,4 @@ void deallocate_list(store_s* store); //frees the memory used in malloc
 int get_new_lines(char* filename); //gets number of new lines
 cart_item * cheapest_onestore(store_s* stores, shoppinglist_s* shoppinglist, int n_stores, int n_shoppinglist);
 void cheapest_overall_cart(void);
-void cheapest_closest_cart(cart_item* cartitems, int n_stores);
+void cheapest_closest_cart(cart_item* cartitems, int n_stores, int max_distance);

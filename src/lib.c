@@ -4,9 +4,9 @@
 #include <stdio.h>
 
 int compare_prices(const void * a, const void * b) {
-    const item_s * c = a;
-    const item_s * d = b;
-    return (c->price- d->price);
+    const cart_item * c = a;
+    const cart_item * d = b;
+    return (c->item.price- d->item.price);
 }
 
 /**
@@ -203,5 +203,15 @@ cart_item * cheapest_onestore(store_s *stores, shoppinglist_s *shoppinglist, int
 
 void cheapest_overall_cart(void){}
 
-void cheapest_closest_cart(cart_item* cartitems, int n_stores){}
+void cheapest_closest_cart(cart_item* cartitems, int n_stores, int max_distance){
+    //get cartiems from cheapest_onestore, sort after distance, make ranking
+    for (int i = 0; i < n_stores; ++i) {
+        if(cartitems[i].store.distance > max_distance){
+
+        }
+    }
+
+
+
+}
 

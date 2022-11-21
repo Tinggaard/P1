@@ -50,10 +50,12 @@ int main(void) {
    //cheapest option
     cart_item * store_c =cheapest_onestore(stores, shoppinglist, n_stores, n_items_shoppinglist);
     //debug
-    //for (int i = 0; i < 5; ++i) {
-    //    printf("The cheapest store is: %f %s, %d distance\n", store_c[i].item.price, store_c[i].item.name, store_c[i].store.distance);
-    //}
-    cheapest_closest_cart(store_c, n_stores);
+    for (int i = 0; i < 5; ++i) {
+        printf("The cheapest store is: %f %s, %d distance\n", store_c[i].item.price, store_c[i].item.name, store_c[i].store.distance);
+    }
+    int temp_max_distance = 1000;
+    cheapest_closest_cart(store_c, n_stores, temp_max_distance);
+
 
 
     // free up all items in each store
