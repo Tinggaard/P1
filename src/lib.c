@@ -9,6 +9,11 @@ int compare_prices(const void * a, const void * b) {
     return (c->item.price- d->item.price);
 }
 
+int compare_distances(const void * a, const void * b) {
+    const cart_item * c = a;
+    const cart_item * d = b;
+    return (c->store.distance- d->store.distance);
+}
 /**
  * get_new_lines() counts number of lines in a given file
  * @param filename file to parse
@@ -205,11 +210,18 @@ void cheapest_overall_cart(void){}
 
 void cheapest_closest_cart(cart_item* cartitems, int n_stores, int max_distance){
     //get cartiems from cheapest_onestore, sort after distance, make ranking
+    qsort(cartitems, n_stores, sizeof(cart_item ), compare_prices);
+    qsort(cartitems, n_stores, sizeof(cart_item), compare_distances);
+    for (int i = 0; i < 5; ++i) {
+        printf("The cheapest store is: %f %s, %d distance\n", cartitems[i].item.price, cartitems[i].item.name, cartitems[i].store.distance);
+    }
+    /*
     for (int i = 0; i < n_stores; ++i) {
         if(cartitems[i].store.distance > max_distance){
 
         }
     }
+     */
 
 
 
