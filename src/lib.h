@@ -25,13 +25,13 @@ typedef struct{
     char name[MAX_NAME_SIZE];
 }shoppinglist_s;
 
-void load_normal_prices(store_s stores[], int store_count); // read from file
-store_s* load_distances(void); // read from file
-void load_discounts(store_s stores[]); // read from file
-shoppinglist_s* load_shopping_list(void); // read from file
-void add_item(store_s* store, char* name, double price); // load normal prices
+void load_normal_prices(store_s stores[], int store_count, char filename[]);
+store_s* load_distances(char filename[]);
+void load_discounts(store_s stores[], char filename[]);
+shoppinglist_s* load_shopping_list(char filename[]);
+void add_item(store_s* store, char* name, double price);
 void deallocate_list(store_s* store); //frees the memory used in malloc
-int get_new_lines(char* filename); //gets number of new lines
+int get_new_lines(char filename[]); //gets number of new lines
 void sum_shoppinglist(store_s* stores, shoppinglist_s* shoppinglist, int n_stores, int n_shoppinglist);
 void cheapest_overall_cart(void);
 void cheapest_onestore_cart(void);

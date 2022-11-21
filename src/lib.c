@@ -28,8 +28,7 @@ int get_new_lines(char* filename){
  * load_distances() loads the distances to the stores
  * @return returns stores in an array, as structs (store_s)
  */
-store_s* load_distances(void) { // read from file
-    char* filename = "src/files/distances.txt";
+store_s* load_distances(char filename[]) {
     int store_count = get_new_lines(filename);
 
     FILE* distances;
@@ -53,8 +52,7 @@ store_s* load_distances(void) { // read from file
  * @param store_count amount of stores
  */
 
-void load_normal_prices(store_s *stores, int store_count) { // read from file
-    char filename[] = "src/files/normal_prices.txt";
+void load_normal_prices(store_s *stores, int store_count, char filename[]) {
     FILE* f = fopen(filename, "r");
 
     if (f == NULL){
@@ -78,8 +76,7 @@ void load_normal_prices(store_s *stores, int store_count) { // read from file
  * load_discounts() overrides the discounts to their respective stores
  * @param stores array of store_s
  */
-void load_discounts(store_s *stores) { // read from file
-    char filename[] = "src/files/discounts.txt";
+void load_discounts(store_s *stores, char filename[]) {
     FILE* f = fopen(filename, "r");
 
     if (f == NULL){
@@ -111,8 +108,7 @@ void load_discounts(store_s *stores) { // read from file
 
 }
 
-shoppinglist_s* load_shopping_list(void) { // read from file
-    char* filename = "src/files/shopping_list.txt";
+shoppinglist_s* load_shopping_list(char filename[]) {
     int numberofitems = get_new_lines(filename);
 
     FILE* f;
