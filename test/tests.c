@@ -13,6 +13,11 @@ void sum_shoppinglist_test(void);
 
 int main (int argc, char* argv[]) {
 
+    if (argc == 1){
+        printf("No arguments called\n");
+        return 0;
+    }
+
     if (strcmp(argv[1], "shoppinglist") == 0) {
         printf("Testing shoppinglist\n");
         shoppinglist_test();
@@ -28,16 +33,19 @@ int main (int argc, char* argv[]) {
     if (strcmp(argv[1], "normal_prices") == 0) {
         printf("Testing normal prices\n");
         normal_prices_test();
+        return 0;
     }
 
     if (strcmp(argv[1], "discounts") == 0) {
         printf("Testing discounts\n");
         discounts_test();
+        return 0;
     }
 
     if (strcmp(argv[1], "sum_shoppinglist") == 0) {
         printf("Testing sum shoppinglist\n");
         sum_shoppinglist_test();
+        return 0;
     }
 
     return 0;
