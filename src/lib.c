@@ -45,14 +45,18 @@ int get_new_lines(char* filename){
  */
 store_s* load_distances(char filename[]) {
     int store_count = get_new_lines(filename);
+    FILE* distances = fopen(filename, "r");
 
-    FILE* distances;
-    distances = fopen(filename, "r");
+    // Checks to see if the file was found or not
     if (NULL == distances) {
         printf("Could not open file '%s'", filename);
         exit(EXIT_FAILURE);
     }
+
+    // Allocates space in the heap for all the stores that are now being collected in a dynamic store_s struct array
     store_s* store = malloc(store_count * sizeof(store_s));
+
+    // Scans all stores and parses their values to an index in the struct array
     for (int i = 0; i < store_count; i++) {
         fscanf(distances, "%[^,], %d\n", store[i].name, &store[i].distance);
         store[i].first_item = NULL;
@@ -70,6 +74,7 @@ store_s* load_distances(char filename[]) {
 void load_normal_prices(store_s *stores, int store_count, char filename[]) {
     FILE* f = fopen(filename, "r");
 
+    // Checks to see if the file was found or not
     if (f == NULL){
         printf("Could not open file '%s'", filename);
         exit(EXIT_FAILURE);
@@ -77,9 +82,11 @@ void load_normal_prices(store_s *stores, int store_count, char filename[]) {
 
     double price;
     char item_name[MAX_NAME_SIZE];
+    // Runs over all rows in the file until it reaches the end of the file
     while (!feof(f)) {
+        // Scans for the name and price of an item in given row, including spaces in the name.
         fscanf(f, "%[A-Za-z ], %lf\n", item_name, &price);
-        // add it to all stores
+        // Adds it to all stores
         for (int i = 0; i < store_count; i++){
             add_item(&stores[i], item_name, price);
         }
@@ -94,6 +101,7 @@ void load_normal_prices(store_s *stores, int store_count, char filename[]) {
 void load_discounts(store_s* stores, char filename[]) {
     FILE* f = fopen(filename, "r");
 
+    // Checks to see if the file was found or not
     if (f == NULL){
         printf("Could not open file '%s'", filename);
         exit(EXIT_FAILURE);
@@ -103,43 +111,48 @@ void load_discounts(store_s* stores, char filename[]) {
     char current_item[MAX_NAME_SIZE];
     double current_price;
     int i;
-
+    // Runs over all rows in the file until it reaches the end of the file
     while (!feof(f)) {
         i = 0;
+        // Scans for store name, item name and the price of an item. Excludes commas.
         fscanf(f, "%[^,], %[^,], %lf\n", current_store, current_item, &current_price);
 
-        // get index of store
+        // Gets the index of the store that matches the currently scanned one
         while (strcmp(stores[i].name, current_store)) {
             i++;
         }
-        // get item in list
-        node_t* item = stores[i].first_item;
+
+        node_t* item = stores[i].first_item; // Gets the first item in the store
+        // Searches through all the store's items until it reaches the current item we want to add a discount on
         while (strcmp(item->item.name, current_item)) {
             item = item->next;
         }
-        item->item.price = current_price;
+        item->item.price = current_price; // Replaces the normal price with the discount
     }
     fclose(f);
-
 }
+/**
+ * load_shopping_list() loads all shopping list items into a struct array
+ * @param filename file to parse
+ * @return returns a shopping_list_s array of all items from the users shopping list
+ */
+shopping_list_s* load_shopping_list(char filename[]) {
+    int number_of_items = get_new_lines(filename);
+    FILE* f = fopen(filename, "r");
 
-shoppinglist_s* load_shopping_list(char filename[]) {
-    int numberofitems = get_new_lines(filename);
-
-    FILE* f;
-    f = fopen(filename, "r");
+    // Checks to see if the file was found or not
     if(f == NULL){
         exit(EXIT_FAILURE);
     }
+    // Allocates space in the heap for all the shopping list items
+    shopping_list_s* s_list = malloc(number_of_items * sizeof(shopping_list_s));
 
-     shoppinglist_s* s_list;
-     s_list = malloc(numberofitems * sizeof(shoppinglist_s));
-
-     for (int i = 0; i <= numberofitems; i++) {
-         fscanf(f, "%[^\n]\n",s_list[i].name);
-     }
-     fclose(f);
-     return s_list;
+    // Scans all item names into a shopping_list_s array
+    for (int i = 0; i <= number_of_items; i++) {
+        fscanf(f, "%[^\n]\n",s_list[i].name);
+    }
+    fclose(f);
+    return s_list; // Returns the array of all the items on the shopping list
 }
 
 /**
@@ -175,8 +188,15 @@ void deallocate_list(store_s* store) {
     store->first_item = NULL;
 }
 
-
-cart_item* cheapest_onestore(store_s* stores, shoppinglist_s* shoppinglist, int n_stores, int n_shoppinglist){
+/**
+ * cheapest_onestore() finds the sum of all the shopping list items in each store
+ * @param stores
+ * @param shopping_list
+ * @param n_stores
+ * @param n_shopping_list
+ * @return
+ */
+cart_item* cheapest_onestore(store_s* stores, shopping_list_s* shopping_list, int n_stores, int n_shopping_list){
     double sum[n_stores];
 
     // iterate the stores
@@ -185,10 +205,10 @@ cart_item* cheapest_onestore(store_s* stores, shoppinglist_s* shoppinglist, int 
         node_t* current_item = stores[i].first_item; // initialize item
 
         while (current_item != NULL) { // iterate every item in the store
-            for (int j = 0; j < n_shoppinglist; j++) { // iterate items in shoppinglist
+            for (int j = 0; j < n_shopping_list; j++) { // iterate items in shopping_list
 
-                // if the item is in the shoppinglist
-                if (strcmp(current_item->item.name, shoppinglist[j].name) == 0) {
+                // if the item is in the shopping_list
+                if (strcmp(current_item->item.name, shopping_list[j].name) == 0) {
                     sum[i] += current_item->item.price; // add price of the item
                 }
             }
