@@ -4,5 +4,4 @@ set(CMAKE_C_STANDARD 11)
 add_subdirectory(src)
 
 enable_testing()
-include(CTest)
 add_subdirectory(test)
