@@ -121,7 +121,7 @@ shoppinglist_s* load_shopping_list(char filename[]) {
      s_list = malloc(numberofitems * sizeof(shoppinglist_s));
 
      for (int i = 0; i <= numberofitems; i++) {
-         fscanf(f, "%s\n",s_list[i].name);
+         fscanf(f, "%[^\n]\n",s_list[i].name);
      }
      fclose(f);
      return s_list;
