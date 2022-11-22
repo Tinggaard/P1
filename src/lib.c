@@ -3,15 +3,15 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-int compare_prices(const void * a, const void * b) {
-    const cart_item * c = a;
-    const cart_item * d = b;
+int compare_prices(const void* a, const void* b) {
+    const cart_item* c = a;
+    const cart_item* d = b;
     return (c->item.price- d->item.price);
 }
 
-int compare_distances(const void * a, const void * b) {
-    const cart_item * c = a;
-    const cart_item * d = b;
+int compare_distances(const void* a, const void* b) {
+    const cart_item* c = a;
+    const cart_item* d = b;
     return (c->store.distance- d->store.distance);
 }
 /**
@@ -39,8 +39,7 @@ int get_new_lines(char* filename){
  * load_distances() loads the distances to the stores
  * @return returns stores in an array, as structs (store_s)
  */
-store_s* load_distances(void) { // read from file
-    char* filename = "src/files/distances.txt";
+store_s* load_distances(char filename[]) {
     int store_count = get_new_lines(filename);
 
     FILE* distances;
@@ -64,8 +63,7 @@ store_s* load_distances(void) { // read from file
  * @param store_count amount of stores
  */
 
-void load_normal_prices(store_s *stores, int store_count) { // read from file
-    char filename[] = "src/files/normal_prices.txt";
+void load_normal_prices(store_s *stores, int store_count, char filename[]) {
     FILE* f = fopen(filename, "r");
 
     if (f == NULL){
@@ -89,8 +87,7 @@ void load_normal_prices(store_s *stores, int store_count) { // read from file
  * load_discounts() overrides the discounts to their respective stores
  * @param stores array of store_s
  */
-void load_discounts(store_s *stores) { // read from file
-    char filename[] = "src/files/discounts.txt";
+void load_discounts(store_s* stores, char filename[]) {
     FILE* f = fopen(filename, "r");
 
     if (f == NULL){
@@ -112,7 +109,7 @@ void load_discounts(store_s *stores) { // read from file
             i++;
         }
         // get item in list
-        node_t *item = stores[i].first_item;
+        node_t* item = stores[i].first_item;
         while (strcmp(item->item.name, current_item)) {
             item = item->next;
         }
@@ -122,8 +119,7 @@ void load_discounts(store_s *stores) { // read from file
 
 }
 
-shoppinglist_s* load_shopping_list(void) { // read from file
-    char* filename = "src/files/shopping_list.txt";
+shoppinglist_s* load_shopping_list(char filename[]) {
     int numberofitems = get_new_lines(filename);
 
     FILE* f;
@@ -132,11 +128,11 @@ shoppinglist_s* load_shopping_list(void) { // read from file
         exit(EXIT_FAILURE);
     }
 
-     shoppinglist_s * s_list;
+     shoppinglist_s* s_list;
      s_list = malloc(numberofitems * sizeof(shoppinglist_s));
 
      for (int i = 0; i <= numberofitems; i++) {
-         fscanf(f, "%s\n",s_list[i].name);
+         fscanf(f, "%[^\n]\n",s_list[i].name);
      }
      fclose(f);
      return s_list;
@@ -176,32 +172,35 @@ void deallocate_list(store_s* store) {
 }
 
 
-cart_item * cheapest_onestore(store_s *stores, shoppinglist_s *shoppinglist, int n_stores, int n_shoppinglist){
-    double sum[n_shoppinglist];
+cart_item* cheapest_onestore(store_s* stores, shoppinglist_s* shoppinglist, int n_stores, int n_shoppinglist){
+    double sum[n_stores];
 
+    // iterate the stores
     for (int i = 0; i < n_stores; ++i) {
-        double temp_sum = 0;
-        node_t *current_item = stores[i].first_item;
-        while (current_item != NULL) {
-            for (int j = 0; j < n_shoppinglist; j++) { //shoppinglist
+        sum[i] = 0;
+        node_t* current_item = stores[i].first_item; // initialize item
+
+        while (current_item != NULL) { // iterate every item in the store
+            for (int j = 0; j < n_shoppinglist; j++) { // iterate items in shoppinglist
+
+                // if the item is in the shoppinglist
                 if (strcmp(current_item->item.name, shoppinglist[j].name) == 0) {
-                    temp_sum = temp_sum + current_item->item.price;
+                    sum[i] += current_item->item.price; // add price of the item
                 }
             }
-            sum[i] = temp_sum;
             current_item = current_item->next;
         }
     }
-    cart_item *store_c;
-    store_c = malloc(n_stores * sizeof(cart_item));
+
+    cart_item* store_c = malloc(n_stores * sizeof(cart_item));
 
     for (int i = 0; i < n_stores; i++) {
         store_c[i].item.price = sum[i]; //copies the item price from the array
-        strcpy(store_c[i].item.name, stores[i].name); //copies the name of the stores into the new struct
-        store_c[i].store.distance = stores[i].distance; //copies the distances int othe new struct
+        strcpy(store_c[i].store.name, stores[i].name); //copies the name of the stores into the new struct
+        store_c[i].store.distance = stores[i].distance; //copies the distances int of the new struct
     }
 
-    qsort(store_c, n_shoppinglist, sizeof(cart_item ), compare_prices);
+    qsort(store_c, n_shoppinglist, sizeof(cart_item), compare_prices);
 
     return store_c;
 }
@@ -210,20 +209,11 @@ void cheapest_overall_cart(void){}
 
 void cheapest_closest_cart(cart_item* cartitems, int n_stores, int max_distance){
     //get cartiems from cheapest_onestore, sort after distance, make ranking
-    qsort(cartitems, n_stores, sizeof(cart_item ), compare_prices);
+    qsort(cartitems, n_stores, sizeof(cart_item), compare_prices);
     qsort(cartitems, n_stores, sizeof(cart_item), compare_distances);
-    for (int i = 0; i < 5; ++i) {
-        printf("The cheapest store is: %f %s, %d distance\n", cartitems[i].item.price, cartitems[i].item.name, cartitems[i].store.distance);
-    }
-    /*
-    for (int i = 0; i < n_stores; ++i) {
-        if(cartitems[i].store.distance > max_distance){
-
-        }
-    }
-     */
-
-
+//    for (int i = 0; i < 5; ++i) {
+//        printf("The cheapest store is: %f %s, %d distance\n", cartitems[i].item.price, cartitems[i].item.name, cartitems[i].store.distance);
+//    }
 
 }
 
