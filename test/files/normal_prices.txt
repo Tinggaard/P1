@@ -1,0 +1,4 @@
+potatoes, 10
+porsche, 99999999
+vegetables, 1
+skimmed milk, 25
