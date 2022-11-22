@@ -9,5 +9,3 @@ add_test(NAME normal_prices
         COMMAND tests normal_prices)
 add_test(NAME discounts
         COMMAND tests discounts)
-add_test(NAME sum_shoppinglist
-        COMMAND tests sum_shoppinglist)
