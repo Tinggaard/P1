@@ -3,17 +3,21 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-int compare_prices(const void* a, const void* b) {
-    const cart_item* c = a;
-    const cart_item* d = b;
-    return (c->item.price- d->item.price);
+/**
+ * compare function for qsort
+ * @param ptr1 item 1
+ * @param ptr2 item 2
+ * @return returns negative if item 2 is greater, positive if item 1 is greater and 0 if they are equal
+ */
+int compare_cart(const void* ptr1, const void* ptr2) {
+    const cart_item* item_1 = ptr1;
+    const cart_item* item_2 = ptr2;
+    if (item_1->item.price - item_2->item.price == 0) {
+        return item_1->store.distance - item_2->store.distance;
+    }
+    return (int)(item_1->item.price - item_2->item.price);
 }
 
-int compare_distances(const void* a, const void* b) {
-    const cart_item* c = a;
-    const cart_item* d = b;
-    return (c->store.distance- d->store.distance);
-}
 /**
  * get_new_lines() counts number of lines in a given file
  * @param filename file to parse
@@ -200,20 +204,9 @@ cart_item* cheapest_onestore(store_s* stores, shoppinglist_s* shoppinglist, int 
         store_c[i].store.distance = stores[i].distance; //copies the distances int of the new struct
     }
 
-    qsort(store_c, n_shoppinglist, sizeof(cart_item), compare_prices);
+    qsort(store_c, n_stores, sizeof(cart_item), compare_cart);
 
     return store_c;
 }
 
 void cheapest_overall_cart(void){}
-
-void cheapest_closest_cart(cart_item* cartitems, int n_stores, int max_distance){
-    //get cartiems from cheapest_onestore, sort after distance, make ranking
-    qsort(cartitems, n_stores, sizeof(cart_item), compare_prices);
-    qsort(cartitems, n_stores, sizeof(cart_item), compare_distances);
-//    for (int i = 0; i < 5; ++i) {
-//        printf("The cheapest store is: %f %s, %d distance\n", cartitems[i].item.price, cartitems[i].item.name, cartitems[i].store.distance);
-//    }
-
-}
-
