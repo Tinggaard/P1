@@ -10,8 +10,8 @@
  * @return returns negative if item 2 is greater, positive if item 1 is greater and 0 if they are equal
  */
 int compare_cart(const void* ptr1, const void* ptr2) {
-    const cart_item* item_1 = ptr1;
-    const cart_item* item_2 = ptr2;
+    const cart_item_s* item_1 = ptr1;
+    const cart_item_s* item_2 = ptr2;
     if (item_1->item.price - item_2->item.price == 0) {
         return item_1->store.distance - item_2->store.distance;
     }
@@ -122,7 +122,7 @@ void load_discounts(store_s* stores, char filename[]) {
             i++;
         }
 
-        node_t* item = stores[i].first_item; // Gets the first item in the store
+        node_s* item = stores[i].first_item; // Gets the first item in the store
         // Searches through all the store's items until it reaches the current item we want to add a discount on
         while (strcmp(item->item.name, current_item)) {
             item = item->next;
@@ -163,7 +163,7 @@ shopping_list_s* load_shopping_list(char filename[]) {
  */
 void add_item(store_s* store, char* name, double price) {
     // we start by allocating space for a new node. The node already contains enough space for the item.
-    node_t* new_node = (node_t*) malloc(sizeof(node_t));
+    node_s* new_node = (node_s*) malloc(sizeof(node_s));
     new_node->next = store->first_item; // we push the next element down
     new_node->item.price = price;
     // we use strcpy here because C does not support direct assignment.
@@ -177,10 +177,10 @@ void add_item(store_s* store, char* name, double price) {
  * @param store store_s to deallocate
  */
 void deallocate_list(store_s* store) {
-    node_t* current = store->first_item;
+    node_s* current = store->first_item;
     while(current != NULL) // we know that the NULL pointer signals the end of the list
     {
-        node_t* next = current->next; // we need to copy out the value "next" before we deallocate!
+        node_s* next = current->next; // we need to copy out the value "next" before we deallocate!
         free(current);
         current = next; // move to the next
     }
@@ -196,15 +196,15 @@ void deallocate_list(store_s* store) {
  * @param n_shopping_list Amount of items on the shopping list
  * @return Returns the final cart including all shopping list items in each store.
  */
-cart_item* create_shopping_cart(store_s* stores, shopping_list_s* shopping_list, int n_stores, int n_shopping_list){
+cart_item_s* create_shopping_cart(store_s* stores, shopping_list_s* shopping_list, int n_stores, int n_shopping_list){
 
     // We start by allocating space for the carts.
-    cart_item* cart = malloc(n_shopping_list * n_stores * sizeof(cart_item));
+    cart_item_s* cart = malloc(n_shopping_list * n_stores * sizeof(cart_item_s));
     int cart_index = 0; // Index to identify where in the cart we are adding an item
 
     // Iterates over all stores
     for (int i = 0; i < n_stores; i++) {
-        node_t* current_item = stores[i].first_item; // Initializes a current item in the store
+        node_s* current_item = stores[i].first_item; // Initializes a current item in the store
         // Iterate every item in the store
         while (current_item != NULL) {
             // Iterate every item in the shopping list to see if it matches the current item in the store
@@ -216,6 +216,7 @@ cart_item* create_shopping_cart(store_s* stores, shopping_list_s* shopping_list,
                     strcpy(cart[cart_index].item.name,current_item->item.name);
                     cart[cart_index].item.price = current_item->item.price;
                     cart_index++; // Updates the cart index to avoid overwriting already added items
+                    break; // Breaks out of the for loop when the item has been found, so we don't iterate over unnecessary items
                 }
             }
             current_item = current_item->next; // Updates the current item to the next item in the store
@@ -223,5 +224,44 @@ cart_item* create_shopping_cart(store_s* stores, shopping_list_s* shopping_list,
     }
     return cart;
 }
+
+void sorting(double store_sum[], store_s* stores,int n_stores){
+    double temp_value;
+    char temp_name[MAX_NAME_SIZE];
+    for (int i = 0; i < n_stores; ++i) {
+        if (store_sum[i]>store_sum[i+1]){
+//            strcpy(temp_name,stores[i].name);
+//            strcpy(stores[i].name, stores[i+1].name);
+//            strcpy(stores[i+1].name, temp_name);
+            temp_value = store_sum[i];
+            store_sum[i] = store_sum[i+1];
+            store_sum[i+1] = temp_value;
+            i = 0;
+        }
+        printf("1\n");
+
+    }
+}
+
+void print_sum_cart_per_store(cart_item_s* cart, int n_shopping_list, int n_stores, store_s* stores){
+    double temp_sum = 0;
+    int cart_index = 0;
+    int j = 0;
+    double store_sum[n_stores];
+
+    for (int i = 0; i < n_stores; ++i) {
+        for (; cart_index < j + n_shopping_list; ++cart_index) {
+            temp_sum += cart[cart_index].item.price;
+        }
+        //        printf("%s, %d, %lf\n",cart[cart_index - n_shopping_list].store.name,cart[cart_index - n_shopping_list].store.distance,temp_sum);
+        j += n_shopping_list;
+        temp_sum = 0;
+    }
+    sorting(store_sum,stores,n_stores);
+    for (int i = 0; i < n_stores; ++i) {
+        printf("%s, %d, %lf\n", stores[i].name,stores[i].distance,store_sum[i]);
+    }
+}
+
 
 void cheapest_overall_cart(void){}
