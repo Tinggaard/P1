@@ -4,12 +4,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-
 void shoppinglist_test(void);
 void distances_test(void);
 void normal_prices_test(void);
 void discounts_test(void);
-void sum_shoppinglist_test(void);
 
 int main (int argc, char* argv[]) {
 
@@ -39,12 +37,6 @@ int main (int argc, char* argv[]) {
     if (strcmp(argv[1], "discounts") == 0) {
         printf("Testing discounts\n");
         discounts_test();
-        return 0;
-    }
-
-    if (strcmp(argv[1], "sum_shoppinglist") == 0) {
-        printf("Testing sum shoppinglist\n");
-        sum_shoppinglist_test();
         return 0;
     }
 
@@ -82,18 +74,6 @@ void discounts_test(void) {
     load_normal_prices(stores, 2, "../../test/files/normal_prices.txt");
     load_discounts(stores, "../../test/files/discounts.txt");
     assert(stores[1].first_item -> next -> item.price == 0.1); // Foetex, skimmed milk
-    for (int i = 0; i < 2; i++) {
-        deallocate_list(&stores[i]);
-    }
-    free(stores);
-}
-
-// TODO: implement test
-void sum_shoppinglist_test(void) {
-    store_s* stores = load_distances("../../test/files/distances.txt");
-    shoppinglist_s* shoppinglist = load_shopping_list("../../test/files/shopping_list.txt");
-    sum_shoppinglist(stores, shoppinglist, 2, 3);
-    // free up all items in each store
     for (int i = 0; i < 2; i++) {
         deallocate_list(&stores[i]);
     }

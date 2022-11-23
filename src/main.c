@@ -3,57 +3,37 @@
 #include <stdlib.h>
 
 int main(void) {
-
-    char shoppinglist_f[] = "src/files/shopping_list.txt";
+    // Initializing and declaring strings with our txt file paths
+    char shopping_list_f[] = "src/files/shopping_list.txt";
     char stores_f[] = "src/files/distances.txt";
     char normal_prices_f[] = "src/files/normal_prices.txt";
     char discounts_f[] = "src/files/discounts.txt";
 
-    int n_stores = get_new_lines(stores_f);
-    int n_items_shoppinglist = get_new_lines(shoppinglist_f);
+    // Counting amount of rows from distances.txt and shopping_list.txt, then stores it in two variables
+    int n_stores = get_new_lines(stores_f); // Amount of rows = amount of stores
+    int n_items_shopping_list = get_new_lines(shopping_list_f); // Amount of rows = amount of items
 
+    // Loading stores and shopping list items from txt files into struct arrays.
     store_s* stores = load_distances(stores_f);
-    shoppinglist_s* shoppinglist = load_shopping_list(shoppinglist_f);
-    //debug shoppinglist
-    //for (int i = 0; i < N_STORES; ++i) {
-    //    printf("%s\n", list[i].item);
-    //}
+    shopping_list_s* shopping_list = load_shopping_list(shopping_list_f);
 
-//    // debug
-//    for (int i = 0; i < n_stores; ++i) {
-//        printf("%s %d\n", stores[i].name, stores[i].distance);
-//    }
-
+    // Connecting all items available to the different stores using associative arrays. (Normal prices are used here)
     load_normal_prices(stores, n_stores, normal_prices_f);
-    //debug normal prices
-    //for (int i = 0; i < 5; i++) {
-    //    node_t* current_item = stores[i].first_item;
-    //    while (current_item != NULL){
-    //        printf("%s: %s %lf\n", stores[i].name, current_item->item.name, current_item->item.price);
-    //        current_item = current_item->next;
-    //    }
-    //}
 
-    // load discounts
+    // Overwrites the normal prices of items with a discount to their respective store
     load_discounts(stores, discounts_f);
 
-    // debug
-    //for (int i = 0; i < 5; i++) {
-    //    node_t* current_item = stores[i].first_item;
-    //    while (current_item != NULL){
-    //        printf("%s: %s %lf\n", stores[i].name, current_item->item.name, current_item->item.price);
-    //        current_item = current_item->next;
-    //    }
-   // }
+    // Finds the sum of the shopping list in each store and returns it in a price sorted array of cart_item structs
+    cart_item* store_c = cheapest_onestore(stores, shopping_list, n_stores, n_items_shopping_list);
 
-    sum_shoppinglist(stores, shoppinglist, n_stores, n_items_shoppinglist);
 
-    // free up all items in each store
+    // Free up the memory of all items in each store
     for (int i = 0; i < 5; i++) {
         deallocate_list(&stores[i]);
     }
-    // free up the store array
+    // Free up the memory of each array
     free(stores);
-    free(shoppinglist);
+    free(shopping_list);
+    free(store_c);
     return 0;
 }
