@@ -42,6 +42,7 @@ void load_normal_prices(store_s stores[], int store_count, char filename[]);
 store_s* load_distances(char filename[]);
 void load_discounts(store_s stores[], char filename[]);
 shopping_list_s* load_shopping_list(char filename[]);
+cart_item* create_shopping_cart(store_s* stores, shopping_list_s* shopping_list, int n_stores, int n_shopping_list);
 
 // Calculate cheapest options
 cart_item* cheapest_onestore(store_s* stores, shopping_list_s* shopping_list, int n_stores, int n_shopping_list);

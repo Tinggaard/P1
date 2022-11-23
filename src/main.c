@@ -24,16 +24,18 @@ int main(void) {
     load_discounts(stores, discounts_f);
 
     // Finds the sum of the shopping list in each store and returns it in a price sorted array of cart_item structs
-    cart_item* store_c = cheapest_onestore(stores, shopping_list, n_stores, n_items_shopping_list);
+    cart_item* cart = create_shopping_cart(stores, shopping_list, n_stores, n_items_shopping_list);
 
 
     // Free up the memory of all items in each store
     for (int i = 0; i < 5; i++) {
         deallocate_list(&stores[i]);
     }
+
     // Free up the memory of each array
     free(stores);
     free(shopping_list);
-    free(store_c);
+    free(cart);
+    //free(store_c);
     return 0;
 }
