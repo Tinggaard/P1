@@ -190,19 +190,19 @@ void deallocate_list(store_s* store) {
 
 /**
  * cheapest_onestore() finds the sum of all the shopping list items in each store
- * @param stores
- * @param shopping_list
- * @param n_stores
- * @param n_shopping_list
- * @return
+ * @param stores Struct array of all stores
+ * @param shopping_list Struct array of the users shopping list
+ * @param n_stores Amount of stores
+ * @param n_shopping_list Amount of items on the shopping list
+ * @return store_c which is a cart_item struct array holding all stores and their summarized sum for all items in the shopping list
  */
 cart_item* cheapest_onestore(store_s* stores, shopping_list_s* shopping_list, int n_stores, int n_shopping_list){
     double sum[n_stores];
 
-    // iterate the stores
+    // Iterate the stores
     for (int i = 0; i < n_stores; ++i) {
         sum[i] = 0;
-        node_t* current_item = stores[i].first_item; // initialize item
+        node_t* current_item = stores[i].first_item; // initializes a current item
 
         while (current_item != NULL) { // iterate every item in the store
             for (int j = 0; j < n_shopping_list; j++) { // iterate items in shopping_list
@@ -216,6 +216,7 @@ cart_item* cheapest_onestore(store_s* stores, shopping_list_s* shopping_list, in
         }
     }
 
+    // we start by allocating space for a new node. The node already contains enough space for the item.
     cart_item* store_c = malloc(n_stores * sizeof(cart_item));
 
     for (int i = 0; i < n_stores; i++) {
@@ -223,7 +224,7 @@ cart_item* cheapest_onestore(store_s* stores, shopping_list_s* shopping_list, in
         strcpy(store_c[i].store.name, stores[i].name); //copies the name of the stores into the new struct
         store_c[i].store.distance = stores[i].distance; //copies the distances int of the new struct
     }
-
+    // Sorts the result first by price then by distance
     qsort(store_c, n_stores, sizeof(cart_item), compare_cart);
 
     return store_c;
