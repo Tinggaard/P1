@@ -44,7 +44,7 @@ int main (int argc, char* argv[]) {
 }
 
 void shoppinglist_test(void) {
-    shoppinglist_s* shoppinglist = load_shopping_list("../../test/files/shopping_list.txt");
+    shopping_list_s* shoppinglist = load_shopping_list("../../test/files/shopping_list.txt");
     assert(strcmp("potatoes", shoppinglist[0].name) == 0);
     assert(strcmp("skimmed milk", shoppinglist[1].name) == 0);
     free(shoppinglist);

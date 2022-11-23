@@ -189,45 +189,39 @@ void deallocate_list(store_s* store) {
 }
 
 /**
- * cheapest_onestore() finds the sum of all the shopping list items in each store
- * @param stores Struct array of all stores
- * @param shopping_list Struct array of the users shopping list
- * @param n_stores Amount of stores
+ * create_shopping_cart() generates a shopping cart for all stores with all the items from the users shopping list.
+ * @param stores Struct array of all stores.
+ * @param shopping_list Struct array of the users shopping list.
+ * @param n_stores Amount of stores.
  * @param n_shopping_list Amount of items on the shopping list
- * @return store_c which is a cart_item struct array holding all stores and their summarized sum for all items in the shopping list
+ * @return Returns the final cart including all shopping list items in each store.
  */
-cart_item* cheapest_onestore(store_s* stores, shopping_list_s* shopping_list, int n_stores, int n_shopping_list){
-    double sum[n_stores];
+cart_item* create_shopping_cart(store_s* stores, shopping_list_s* shopping_list, int n_stores, int n_shopping_list){
 
-    // Iterate the stores
-    for (int i = 0; i < n_stores; ++i) {
-        sum[i] = 0;
-        node_t* current_item = stores[i].first_item; // initializes a current item
+    // We start by allocating space for the carts.
+    cart_item* cart = malloc(n_shopping_list * n_stores * sizeof(cart_item));
+    int cart_index = 0; // Index to identify where in the cart we are adding an item
 
-        while (current_item != NULL) { // iterate every item in the store
-            for (int j = 0; j < n_shopping_list; j++) { // iterate items in shopping_list
-
-                // if the item is in the shopping_list
+    // Iterates over all stores
+    for (int i = 0; i < n_stores; i++) {
+        node_t* current_item = stores[i].first_item; // Initializes a current item in the store
+        // Iterate every item in the store
+        while (current_item != NULL) {
+            // Iterate every item in the shopping list to see if it matches the current item in the store
+            for (int j = 0; j < n_shopping_list; ++j) {
+                // If the current item match the item from the shopping list we add it to the cart
                 if (strcmp(current_item->item.name, shopping_list[j].name) == 0) {
-                    sum[i] += current_item->item.price; // add price of the item
+                    strcpy(cart[cart_index].store.name, stores[i].name);
+                    cart[cart_index].store.distance = stores[i].distance;
+                    strcpy(cart[cart_index].item.name,current_item->item.name);
+                    cart[cart_index].item.price = current_item->item.price;
+                    cart_index++; // Updates the cart index to avoid overwriting already added items
                 }
             }
-            current_item = current_item->next;
+            current_item = current_item->next; // Updates the current item to the next item in the store
         }
     }
-
-    // we start by allocating space for a new node. The node already contains enough space for the item.
-    cart_item* store_c = malloc(n_stores * sizeof(cart_item));
-
-    for (int i = 0; i < n_stores; i++) {
-        store_c[i].item.price = sum[i]; //copies the item price from the array
-        strcpy(store_c[i].store.name, stores[i].name); //copies the name of the stores into the new struct
-        store_c[i].store.distance = stores[i].distance; //copies the distances int of the new struct
-    }
-    // Sorts the result first by price then by distance
-    qsort(store_c, n_stores, sizeof(cart_item), compare_cart);
-
-    return store_c;
+    return cart;
 }
 
 void cheapest_overall_cart(void){}
