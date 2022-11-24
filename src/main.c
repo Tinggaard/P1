@@ -24,8 +24,12 @@ int main(void) {
     load_discounts(stores, discounts_f);
 
     // Finds the sum of the shopping list in each store and returns it in a price sorted array of cart_item_s structs
-    cart_item_s* cart = create_shopping_cart(stores, shopping_list, n_stores, n_items_shopping_list);
-    print_sum_cart_per_store(cart,n_items_shopping_list, n_stores, stores);
+    cart_item_s* cart_item = create_shopping_cart(stores, shopping_list, n_stores, n_items_shopping_list);
+
+    cart_sum* cart= print_cart_sum_per_store(cart_item,n_items_shopping_list, n_stores, stores);
+    for (int i = 0; i < n_stores; ++i) {
+        printf("|Name > %8s : Distance > %4d : Total sum > %4.2lf|\n", cart[i].store.name, cart[i].store.distance, cart[i].sum);
+    }
 
     // Free up the memory of all items in each store
     for (int i = 0; i < 5; i++) {

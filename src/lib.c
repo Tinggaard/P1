@@ -10,12 +10,12 @@
  * @return returns negative if item 2 is greater, positive if item 1 is greater and 0 if they are equal
  */
 int compare_cart(const void* ptr1, const void* ptr2) {
-    const cart_item_s* item_1 = ptr1;
-    const cart_item_s* item_2 = ptr2;
-    if (item_1->item.price - item_2->item.price == 0) {
+    const cart_sum* item_1 = ptr1;
+    const cart_sum* item_2 = ptr2;
+    if (item_1->sum - item_2->sum == 0) {
         return item_1->store.distance - item_2->store.distance;
     }
-    return (int)(item_1->item.price - item_2->item.price);
+    return (int)(item_1->sum - item_2->sum);
 }
 
 /**
@@ -225,42 +225,40 @@ cart_item_s* create_shopping_cart(store_s* stores, shopping_list_s* shopping_lis
     return cart;
 }
 
-void sorting(double store_sum[], store_s* stores,int n_stores){
-    double temp_value;
-    char temp_name[MAX_NAME_SIZE];
+
+
+
+cart_sum* print_cart_sum_per_store(cart_item_s* cart_item, int n_shopping_list, int n_stores, store_s* stores){
+    double sum[n_stores];
+
+    // iterate the stores
     for (int i = 0; i < n_stores; ++i) {
-        if (store_sum[i]>store_sum[i+1]){
-//            strcpy(temp_name,stores[i].name);
-//            strcpy(stores[i].name, stores[i+1].name);
-//            strcpy(stores[i+1].name, temp_name);
-            temp_value = store_sum[i];
-            store_sum[i] = store_sum[i+1];
-            store_sum[i+1] = temp_value;
-            i = 0;
+        sum[i] = 0;
+        node_s* current_item = stores[i].first_item; // initialize item
+
+        while (current_item != NULL) { // iterate every item in the store
+            for (int j = 0; j < n_shopping_list; j++) { // iterate items in shopping_list
+
+                // if the item is in the shopping_list
+                if (strcmp(current_item->item.name, cart_item[j].item.name) == 0) {
+                    sum[i] += current_item->item.price; // add price of the item
+                }
+            }
+            current_item = current_item->next;
         }
-        printf("1\n");
-
     }
-}
 
-void print_sum_cart_per_store(cart_item_s* cart, int n_shopping_list, int n_stores, store_s* stores){
-    double temp_sum = 0;
-    int cart_index = 0;
-    int j = 0;
-    double store_sum[n_stores];
+    cart_sum* cart = malloc(n_stores * sizeof(cart_sum));
 
-    for (int i = 0; i < n_stores; ++i) {
-        for (; cart_index < j + n_shopping_list; ++cart_index) {
-            temp_sum += cart[cart_index].item.price;
-        }
-        //        printf("%s, %d, %lf\n",cart[cart_index - n_shopping_list].store.name,cart[cart_index - n_shopping_list].store.distance,temp_sum);
-        j += n_shopping_list;
-        temp_sum = 0;
+    for (int i = 0; i < n_stores; i++) {
+        cart[i].sum = sum[i]; //copies the item price from the array
+        strcpy(cart[i].store.name, stores[i].name); //copies the name of the stores into the new struct
+        cart[i].store.distance = stores[i].distance; //copies the distances int of the new struct
     }
-    sorting(store_sum,stores,n_stores);
-    for (int i = 0; i < n_stores; ++i) {
-        printf("%s, %d, %lf\n", stores[i].name,stores[i].distance,store_sum[i]);
-    }
+
+    qsort(cart, n_stores, sizeof(cart_sum), compare_cart);
+
+    return cart;
 }
 
 

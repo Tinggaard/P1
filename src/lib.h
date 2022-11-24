@@ -26,6 +26,11 @@ typedef struct {
     item_s item;
 } cart_item_s;
 
+typedef struct {
+    store_s store;
+    double sum;
+} cart_sum;
+
 // shopping_list_s is a struct used to hold the users shopping list items
 typedef struct {
     char name[MAX_NAME_SIZE];
@@ -44,5 +49,5 @@ void load_discounts(store_s stores[], char filename[]);
 shopping_list_s* load_shopping_list(char filename[]);
 cart_item_s* create_shopping_cart(store_s* stores, shopping_list_s* shopping_list, int n_stores, int n_shopping_list);
 
-void print_sum_cart_per_store(cart_item_s* cart, int n_shopping_list, int n_stores, store_s* stores);
+cart_sum* print_cart_sum_per_store(cart_item_s* cart_item, int n_shopping_list, int n_stores, store_s* stores);
 void cheapest_overall_cart(void);
