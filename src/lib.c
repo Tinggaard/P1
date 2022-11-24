@@ -19,6 +19,21 @@ int compare_cart(const void* ptr1, const void* ptr2) {
 }
 
 /**
+ * open_file() returns a pointer to a filestream
+ * @param filename file to open
+ * @return pointer to FILE
+ */
+FILE* open_file(char filename[]) {
+    FILE *f = fopen(filename, "r");
+    // Checks to see if the file was found or not
+    if (f == NULL){ // if file cant be opened
+        printf("Could not open file '%s'", filename);
+        exit(EXIT_FAILURE);
+    }
+    return f;
+}
+
+/**
  * get_new_lines() counts number of lines in a given file
  * @param filename file to parse
  * @return number of lines is given file
@@ -26,12 +41,7 @@ int compare_cart(const void* ptr1, const void* ptr2) {
 int get_new_lines(char* filename){
     int count = 1; //initializes 1 because if there's no new line, there is still one line
     char c;
-    FILE *f;
-    f = fopen(filename, "r");
-    if (f == NULL){ //if file cant be opened
-        printf("Could not open file '%s'", filename);
-        exit(EXIT_FAILURE);
-    }
+    FILE *f = open_file(filename);
     for (c = getc(f); c != EOF; c = getc(f))
         if (c == '\n') //Everytime the char c is \n count is increased
             count++;
@@ -45,23 +55,18 @@ int get_new_lines(char* filename){
  */
 store_s* load_distances(char filename[]) {
     int store_count = get_new_lines(filename);
-    FILE* distances = fopen(filename, "r");
 
-    // Checks to see if the file was found or not
-    if (NULL == distances) {
-        printf("Could not open file '%s'", filename);
-        exit(EXIT_FAILURE);
-    }
+    FILE *f = open_file(filename);
 
     // Allocates space in the heap for all the stores that are now being collected in a dynamic store_s struct array
     store_s* store = malloc(store_count * sizeof(store_s));
 
     // Scans all stores and parses their values to an index in the struct array
     for (int i = 0; i < store_count; i++) {
-        fscanf(distances, "%[^,], %d\n", store[i].name, &store[i].distance);
+        fscanf(f, "%[^,], %d\n", store[i].name, &store[i].distance);
         store[i].first_item = NULL;
     }
-    fclose(distances);
+    fclose(f);
     return store;
 }
 
@@ -70,15 +75,8 @@ store_s* load_distances(char filename[]) {
  * @param stores array of store_s
  * @param store_count amount of stores
  */
-
 void load_normal_prices(store_s *stores, int store_count, char filename[]) {
-    FILE* f = fopen(filename, "r");
-
-    // Checks to see if the file was found or not
-    if (f == NULL){
-        printf("Could not open file '%s'", filename);
-        exit(EXIT_FAILURE);
-    }
+    FILE *f = open_file(filename);
 
     double price;
     char item_name[MAX_NAME_SIZE];
@@ -99,13 +97,7 @@ void load_normal_prices(store_s *stores, int store_count, char filename[]) {
  * @param stores array of store_s
  */
 void load_discounts(store_s* stores, char filename[]) {
-    FILE* f = fopen(filename, "r");
-
-    // Checks to see if the file was found or not
-    if (f == NULL){
-        printf("Could not open file '%s'", filename);
-        exit(EXIT_FAILURE);
-    }
+    FILE *f = open_file(filename);
 
     char current_store[MAX_NAME_SIZE];
     char current_item[MAX_NAME_SIZE];
@@ -138,12 +130,9 @@ void load_discounts(store_s* stores, char filename[]) {
  */
 shopping_list_s* load_shopping_list(char filename[]) {
     int number_of_items = get_new_lines(filename);
-    FILE* f = fopen(filename, "r");
 
-    // Checks to see if the file was found or not
-    if(f == NULL){
-        exit(EXIT_FAILURE);
-    }
+    FILE *f = open_file(filename);
+
     // Allocates space in the heap for all the shopping list items
     shopping_list_s* s_list = malloc(number_of_items * sizeof(shopping_list_s));
 
