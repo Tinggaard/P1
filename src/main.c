@@ -26,8 +26,10 @@ int main(void) {
     // Finds the sum of the shopping list in each store and returns it in a price sorted array of cart_item structs
     cart_item* cart = create_shopping_cart(stores, shopping_list, n_stores, n_items_shopping_list);
 
+    cart_item* cart_across = sum_across_stores(cart,shopping_list, n_stores, n_items_shopping_list);
 
-    // Free up the memory of all items in each store
+
+        // Free up the memory of all items in each store
     for (int i = 0; i < 5; i++) {
         deallocate_list(&stores[i]);
     }
@@ -36,6 +38,6 @@ int main(void) {
     free(stores);
     free(shopping_list);
     free(cart);
-    //free(store_c);
+    free(cart_across);
     return 0;
 }
