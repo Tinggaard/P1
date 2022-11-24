@@ -136,6 +136,7 @@ void load_discounts(store_s* stores, char filename[]) {
  * @param filename file to parse
  * @return returns a shopping_list_s array of all items from the users shopping list
  */
+
 shopping_list_s* load_shopping_list(char filename[]) {
     int number_of_items = get_new_lines(filename);
     FILE* f = fopen(filename, "r");
@@ -197,11 +198,9 @@ void deallocate_list(store_s* store) {
  * @return Returns the final cart including all shopping list items in each store.
  */
 cart_item_s* create_shopping_cart(store_s* stores, shopping_list_s* shopping_list, int n_stores, int n_shopping_list){
-
     // We start by allocating space for the carts.
     cart_item_s* cart = malloc(n_shopping_list * n_stores * sizeof(cart_item_s));
     int cart_index = 0; // Index to identify where in the cart we are adding an item
-
     // Iterates over all stores
     for (int i = 0; i < n_stores; i++) {
         node_s* current_item = stores[i].first_item; // Initializes a current item in the store
@@ -258,6 +257,10 @@ cart_sum* print_cart_sum_per_store(cart_item_s* cart_item, int n_shopping_list, 
 
     qsort(cart, n_stores, sizeof(cart_sum), compare_cart);
 
+    //print function
+    for (int i = 0; i < n_stores; ++i) {
+        printf("|Name > %8s : Distance > %4d : Total sum > %4.2lf|\n", cart[i].store.name, cart[i].store.distance, cart[i].sum);
+    }
     return cart;
 }
 

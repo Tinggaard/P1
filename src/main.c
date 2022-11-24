@@ -27,9 +27,6 @@ int main(void) {
     cart_item_s* cart_item = create_shopping_cart(stores, shopping_list, n_stores, n_items_shopping_list);
 
     cart_sum* cart= print_cart_sum_per_store(cart_item,n_items_shopping_list, n_stores, stores);
-    for (int i = 0; i < n_stores; ++i) {
-        printf("|Name > %8s : Distance > %4d : Total sum > %4.2lf|\n", cart[i].store.name, cart[i].store.distance, cart[i].sum);
-    }
 
     // Free up the memory of all items in each store
     for (int i = 0; i < 5; i++) {
@@ -37,6 +34,7 @@ int main(void) {
     }
 
     // Free up the memory of each array
+    free(cart_item);
     free(stores);
     free(shopping_list);
     free(cart);

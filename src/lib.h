@@ -26,6 +26,7 @@ typedef struct {
     item_s item;
 } cart_item_s;
 
+//cart is ued to combine all the items of a store and have a total sum of the store
 typedef struct {
     store_s store;
     double sum;
