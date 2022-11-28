@@ -1,4 +1,4 @@
-Netto, cheese, 30
+Netto, cheese, 20
 Netto, salami, 15
 Netto, toilet paper, 10
 Rema, peanuts, 7

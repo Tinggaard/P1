@@ -34,6 +34,21 @@ FILE* open_file(char filename[]) {
 }
 
 /**
+ * compares distance and name, so items from the same store are grouped
+ * @param ptr1 pointer to first item
+ * @param ptr2 pointer to second item
+ * @return returns negative if item 2 is greater, positive if item 1 is greater and 0 if they are equal
+ */
+int compare_name_distance(const void* ptr1, const void* ptr2) {
+    const cart_item_s* item_1 = ptr1;
+    const cart_item_s* item_2 = ptr2;
+    if (item_1->store.distance - item_2->store.distance == 0) { // if the distances are the same, we check the name
+        return (int)(item_1->store.name - item_2->store.name);
+    }
+    return (int)(item_1->store.distance - item_2->store.distance); // return closest store.
+}
+
+/**
  * get_new_lines() counts number of lines in a given file
  * @param filename file to parse
  * @return number of lines is given file
@@ -123,6 +138,7 @@ void load_discounts(store_s* stores, char filename[]) {
     }
     fclose(f);
 }
+
 /**
  * load_shopping_list() loads all shopping list items into a struct array
  * @param filename file to parse
@@ -154,10 +170,10 @@ shopping_list_s* load_shopping_list(char filename[]) {
 void add_item(store_s* store, char* name, double price) {
     // we start by allocating space for a new node. The node already contains enough space for the item.
     node_s* new_node = (node_s*) malloc(sizeof(node_s));
-    new_node->next = store->first_item; // we push the next element down
     new_node->item.price = price;
     // we use strcpy here because C does not support direct assignment.
     strcpy(new_node->item.name, name);
+    new_node->next = store->first_item; // we push, the next element down
     // fix the list.
     store->first_item = new_node;
 }
@@ -213,6 +229,91 @@ cart_item_s* create_shopping_cart(store_s* stores, shopping_list_s* shopping_lis
     return cart;
 }
 
+/**
+ * a function that finds the cheapest possible combination of a cart across all stores.
+ * @param cart contain all shopping list items in every store
+ * @param shopping_list array of item names
+ * @param n_stores amount of stores
+ * @param n_shopping_list amount of items in our list
+ * @return returns the final cart for which items are cheapest in which stores
+ */
+cart_item_s* sum_across_stores(cart_item_s* cart,shopping_list_s* shopping_list, int n_stores, int n_shopping_list){
+    // Allocates space in the heap for each cart per item in the shopping list
+    cart_item_s* cart_across = malloc(n_shopping_list * sizeof(cart_item_s));
+    cart_item_s current_item;
+    // iterate all the items in the shopping list
+    for (int shopping_list_index = 0; shopping_list_index < n_shopping_list; ++shopping_list_index) {
+        // initialize the name of our current item to the indexed item in our shopping list
+        strcpy(current_item.item.name, shopping_list[shopping_list_index].name);
+        current_item.item.price = 0;
+        // iterates over all cart items
+        for (int cart_index = 0; cart_index < n_shopping_list * n_stores; ++cart_index) {
+            current_item = find_cheapest_cart_item(cart, current_item, cart_index);
+        }
+        // makes a copy of current_item in cart_across.
+        strcpy(cart_across[shopping_list_index].item.name, current_item.item.name);
+        cart_across[shopping_list_index].item.price = current_item.item.price;
+        strcpy(cart_across[shopping_list_index].store.name, current_item.store.name);
+        cart_across[shopping_list_index].store.distance = current_item.store.distance;
+    }
+    // we sort the list, so items from same shop are printed together
+    qsort(cart_across,n_shopping_list, sizeof(cart_item_s),compare_name_distance);
+    print_sum_across_stores(n_shopping_list, cart_across);
+    return cart_across;
+}
+
+/**
+* find_cheapest_cart_item() compares a shopping list item with a cart item and swaps them, if they match and the cart item is cheaper.
+* @param cart cart to evaluate items from
+* @param current_item the item to compare with the the item in the cart
+* @param cart_index index for where we are in the cart
+* @return returns the cheapest item of the two compared, if the parsed cart item had the same name as the parsed current_item
+*/
+cart_item_s find_cheapest_cart_item(cart_item_s* cart, cart_item_s current_item, int cart_index) {
+    // First it check if the two parsed items have the same name, if not, it just returns the current_item that was parsed
+    if (strcmp(current_item.item.name, cart[cart_index].item.name) == 0) {
+
+        // Checks to see if the price is 0
+        if (current_item.item.price == 0) {
+            // if it is 0, it knows that this current_item has not yet been initialized with any values but a name and therefore transfers the first match's values
+            current_item.item.price = cart[cart_index].item.price;
+            strcpy(current_item.store.name, cart[cart_index].store.name);
+            current_item.store.distance = cart[cart_index].store.distance;
+        }
+
+        // Checks to see if the two items have the same price. if they have the same price, it takes the closest store
+        if (current_item.item.price == cart[cart_index].item.price && current_item.store.distance > cart[cart_index].store.distance) {
+            current_item.item.price = cart[cart_index].item.price;
+            strcpy(current_item.store.name, cart[cart_index].store.name);
+            current_item.store.distance = cart[cart_index].store.distance;
+        }
+
+        //  Compare prices and transfers the cheapest option to the current item
+        if (current_item.item.price > cart[cart_index].item.price) {
+            current_item.item.price = cart[cart_index].item.price;
+            strcpy(current_item.store.name, cart[cart_index].store.name);
+            current_item.store.distance = cart[cart_index].store.distance;
+        }
+    }
+    return current_item; // Returns the cheapest option
+}
+
+/**
+ * printfunction for the solution across storese
+ * @param n_shopping_list amount of items in our shopping list
+ * @param cart_across our cart across stores
+ */
+void print_sum_across_stores(int n_shopping_list, cart_item_s* cart_across){
+    double total_sum = 0;
+    printf("Your absolute cheapest customized shopping list\n");
+    printf("| Store    | Distance | Item |           Price    |\n");
+    for (int i = 0; i < n_shopping_list; ++i) { // calculates the sum of item prices
+        printf("%-15s %*dm %-15s %7.2lf DKK \n",cart_across[i].store.name,
+               5,cart_across[i].store.distance,cart_across[i].item.name, cart_across[i].item.price);
+        total_sum += cart_across[i].item.price;
+    }
+    printf("\nTotal %40.2lf DKK\n",total_sum);
+}
 
 
 
