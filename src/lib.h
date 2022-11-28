@@ -17,7 +17,7 @@ typedef struct node_s {
 typedef struct {
     char name[MAX_NAME_SIZE];
     int distance;
-    node_s* first_item;
+    item_s* item;
 } store_s;
 
 // cart_item_s is used to combine a store with a specific item from the users shopping list
