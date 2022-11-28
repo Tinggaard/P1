@@ -6,11 +6,6 @@ typedef struct {
     double price;
 } item_s;
 
-// node_s struct is used to create an associative array of items in a store.
-typedef struct node_s {
-    item_s item;
-    struct node_s* next;
-} node_s;
 
 // store_s has a name of the store, a distance from the user to the store,
 // and a pointer to the first item in the store (using the associative array of items to include all items)
@@ -45,11 +40,11 @@ int compare_cart(const void* ptr1, const void* ptr2); // Compares items by price
 int compare_name_distance(const void* ptr1, const void* ptr2);
 cart_item_s find_cheapest_cart_item(cart_item_s* cart, cart_item_s current_item, int cart_index);
 // Load functions
-void load_normal_prices(store_s stores[], int store_count, char filename[]);
-store_s* load_distances(char filename[]);
+void load_normal_prices(store_s stores[], int store_count, char filename[], int item_count);
+store_s* load_distances(char filename[], int store_count);
 void load_discounts(store_s stores[], char filename[]);
 shopping_list_s* load_shopping_list(char filename[]);
-cart_item_s* create_shopping_cart(store_s* stores, shopping_list_s* shopping_list, int n_stores, int n_shopping_list);
+cart_item_s* create_shopping_cart(store_s* stores, shopping_list_s* shopping_list, int n_stores, int n_shopping_list, int n_items);
 
 // Calculate cheapest options
 cart_item_s* sum_across_stores(cart_item_s* cart, shopping_list_s* shopping_list, int n_stores, int n_shopping_list);
