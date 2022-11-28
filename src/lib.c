@@ -87,8 +87,6 @@ store_s* load_distances(char filename[], int store_count) {
  * @param stores array of store_s
  * @param store_count amount of stores
  */
-
-
 void load_normal_prices(store_s *stores, int store_count, char filename[], int item_count) {
     FILE *f = open_file(filename);
 
@@ -109,13 +107,6 @@ void load_normal_prices(store_s *stores, int store_count, char filename[], int i
     }
 
     free(normal_prices);
-
-
-//    int **arena = malloc(sizeof(*arena) * size_y);
-//    for (int i = 0; i < size_y; i++) {
-//        arena[i] = malloc(sizeof(*arena[i]) * size_x); //Allocate space for arena
-//    }
-    // Runs over all rows in the file until it reaches the end of the file
 
     fclose(f);
 }
@@ -177,41 +168,8 @@ shopping_list_s* load_shopping_list(char filename[]) {
     return s_list; // Returns the array of all the items on the shopping list
 }
 
-/**
- * add_item is used for declaring which items exist in the store
- * @param store the store_s to add
- * @param name name of the item
- * @param price price of said item
- */
- /*
-void add_item(store_s* store, char* name, double price) {
-    // we start by allocating space for a new node. The node already contains enough space for the item.
-    node_s* new_node = (node_s*) malloc(sizeof(node_s));
-    new_node->item.price = price;
-    // we use strcpy here because C does not support direct assignment.
-    strcpy(new_node->item.name, name);
-    new_node->next = store->first_item; // we push, the next element down
-    // fix the list.
-    store->first_item = new_node;
-}
-*/
-/**
- * deallocate_list() deallocates the memory used by items
- * @param store store_s to deallocate
- */
- /*
-void deallocate_list(store_s* store) {
-    node_s* current = store->first_item;
-    while(current != NULL) // we know that the NULL pointer signals the end of the list
-    {
-        node_s* next = current->next; // we need to copy out the value "next" before we deallocate!
-        free(current);
-        current = next; // move to the next
-    }
-    // remember to reset the list pointer
-    store->first_item = NULL;
-}
-*/
+
+
 /**
  * create_shopping_cart() generates a shopping cart for all stores with all the items from the users shopping list.
  * @param stores Struct array of all stores.
@@ -362,7 +320,3 @@ cart_sum* print_cart_sum_per_store(cart_item_s* cart_item, int n_shopping_list, 
     }
     return cart;
 }
-
-
-
-//void cheapest_overall_cart(void){}

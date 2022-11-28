@@ -24,13 +24,6 @@ int main(void) {
 
     // Overwrites the normal prices of items with a discount to their respective store
     load_discounts(stores, discounts_f);
-//    for (int j = 0; j < n_stores; ++j) {
-//        for (int i = 0; i < 10; ++i) {
-//            printf("%lf %s %s\n", stores[j].item[i].price, stores[j].item[i].name, stores[j].name);
-//
-//        }
-//
-//    }
 
     // Finds the sum of the shopping list in each store and returns it in a price sorted array of cart_item_s structs
     cart_item_s* cart_item = create_shopping_cart(stores, shopping_list, n_stores, n_items_shopping_list, n_items);
@@ -44,18 +37,11 @@ int main(void) {
     cart_sum* cart= print_cart_sum_per_store(cart_item,n_items_shopping_list, n_stores, stores);
 
 
-        // Free up the memory of all items in each store
-        /*
-    for (int i = 0; i < 5; i++) {
-        deallocate_list(&stores[i]);
-    }
-         */
-
     // Free up the memory of each array
-    //free(cart_item);
+    free(cart_item);
     free(stores);
-    //free(shopping_list);
-    //free(cart);
+    free(shopping_list);
+    free(cart);
     //free(cart_across);
     return 0;
 }

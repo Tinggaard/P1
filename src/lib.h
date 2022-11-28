@@ -34,8 +34,6 @@ typedef struct {
 
 // Helper functions
 int get_new_lines(char filename[]); // Gets number of new lines
-void add_item(store_s* store, char* name, double price); // Adds an item to the associative array of store items
-void deallocate_list(store_s* store); // Frees the memory used in malloc
 int compare_cart(const void* ptr1, const void* ptr2); // Compares items by price and then distance to the user
 int compare_name_distance(const void* ptr1, const void* ptr2);
 cart_item_s find_cheapest_cart_item(cart_item_s* cart, cart_item_s current_item, int cart_index);
@@ -53,4 +51,3 @@ cart_item_s* sum_across_stores(cart_item_s* cart, shopping_list_s* shopping_list
 void print_sum_across_stores(int n_shopping_list, cart_item_s* cart_across);
 
 cart_sum* print_cart_sum_per_store(cart_item_s* cart_item, int n_shopping_list, int n_stores, store_s* stores);
-void cheapest_overall_cart(void);
