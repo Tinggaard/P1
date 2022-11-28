@@ -322,38 +322,27 @@ cart_item_s find_cheapest_cart_item(cart_item_s* cart, cart_item_s current_item,
  * @param n_shopping_list amount of items in our shopping list
  * @param cart_across our cart across stores
  */
- /*
-void print_sum_across_stores(int n_shopping_list, cart_item_s* cart_across){
-    double total_sum = 0;
-    printf("Your absolute cheapest customized shopping list\n");
-    printf("| Store    | Distance | Item |           Price    |\n");
-    for (int i = 0; i < n_shopping_list; ++i) { // calculates the sum of item prices
-        printf("%-15s %*dm %-15s %7.2lf DKK \n",cart_across[i].store.name,
-               5,cart_across[i].store.distance,cart_across[i].item.name, cart_across[i].item.price);
-        total_sum += cart_across[i].item.price;
-    }
-    printf("\nTotal %40.2lf DKK\n",total_sum);
-}
+
+//void print_sum_across_stores(int n_shopping_list, cart_item_s* cart_across){
+//    double total_sum = 0;
+//    printf("Your absolute cheapest customized shopping list\n");
+//    printf("| Store    | Distance | Item |           Price    |\n");
+//    for (int i = 0; i < n_shopping_list; ++i) { // calculates the sum of item prices
+//        printf("%-15s %*dm %-15s %7.2lf DKK \n",cart_across[i].store.name,
+//               5,cart_across[i].store.distance,cart_across[i].item.name, cart_across[i].item.price);
+//        total_sum += cart_across[i].item.price;
+//    }
+//    printf("\nTotal %40.2lf DKK\n",total_sum);
+//}
 
 
 
 cart_sum* print_cart_sum_per_store(cart_item_s* cart_item, int n_shopping_list, int n_stores, store_s* stores){
     double sum[n_stores];
 
-    // iterate the stores
-    for (int i = 0; i < n_stores; ++i) {
-        sum[i] = 0;
-        node_s* current_item = stores[i].first_item; // initialize item
-
-        while (current_item != NULL) { // iterate every item in the store
-            for (int j = 0; j < n_shopping_list; j++) { // iterate items in shopping_list
-
-                // if the item is in the shopping_list
-                if (strcmp(current_item->item.name, cart_item[j].item.name) == 0) {
-                    sum[i] += current_item->item.price; // add price of the item
-                }
-            }
-            current_item = current_item->next;
+    for (int i = 0; i < n_stores; i++){
+        for (int j = 0; j < n_shopping_list; j++){
+            sum[i] += cart_item[i*n_shopping_list+j].item.price;
         }
     }
 
@@ -374,6 +363,6 @@ cart_sum* print_cart_sum_per_store(cart_item_s* cart_item, int n_shopping_list, 
     return cart;
 }
 
-*/
 
-void cheapest_overall_cart(void){}
+
+//void cheapest_overall_cart(void){}
