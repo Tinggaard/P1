@@ -39,6 +39,9 @@ int main(void) {
 
     // Free up the memory of each array
     free(cart_item);
+    for (int i = 0; i < n_stores; i++) {
+        free(stores[i].item);
+    }
     free(stores);
     free(shopping_list);
     free(cart);
