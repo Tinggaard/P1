@@ -37,23 +37,22 @@ typedef struct {
     char name[MAX_NAME_SIZE];
 } shopping_list_s;
 
-// Helper functions
-int get_new_lines(char filename[]); // Gets number of new lines
-int compare_cart(const void* ptr1, const void* ptr2); // Compares items by price and then distance to the user
-int compare_name_distance(const void* ptr1, const void* ptr2);
-cart_item_s find_cheapest_cart_item(cart_item_s cart[], cart_item_s current_item, int cart_index);
-// Load functions
-void load_normal_prices(store_s stores[], int n_stores, char filename[], int n_items);
+
+// helper functions
+int compare_cart(const void* ptr1, const void* ptr2);
+void copy_coord(store_s* target, store_s* base);
+double calc_base_to_store(store_s store);
+cart_item_s calc_cheapest_cart_item(cart_item_s cart[], cart_item_s current_item, int cart_index);
+// open_file function not in header as it returns FILE ptr, which is not defined here.
+int get_new_lines(char filename[]);
+
+// load and init
 store_s* load_distances(char filename[], int n_stores);
+void load_normal_prices(store_s stores[], int n_stores, char filename[], int n_items);
 void load_discounts(store_s stores[], char filename[]);
 shopping_list_s* load_shopping_list(char filename[], int n_shopping_list);
 cart_item_s* create_shopping_cart(store_s stores[], shopping_list_s shopping_list[], int n_stores, int n_shopping_list, int n_items);
 
-// Calculate cheapest options
-cart_item_s* sum_across_stores(cart_item_s cart[], shopping_list_s shopping_list[], int n_stores, int n_shopping_list);
-
-// Calculate printfunctions
-void print_sum_across_stores(int n_shopping_list, cart_item_s cart_across[]);
-
-cart_sum_s* print_cart_sum_per_store(cart_item_s cart_item[], int n_shopping_list, int n_stores, store_s stores[]);
-double distance_user_to_stores(store_s store);
+// calculate functions
+void calc_across_stores(cart_item_s cart[], shopping_list_s shopping_list[], int n_stores, int n_shopping_list);
+void calc_per_store(cart_item_s cart_item[], int n_shopping_list, int n_stores, store_s* stores);
