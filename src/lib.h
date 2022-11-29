@@ -30,7 +30,7 @@ typedef struct {
 typedef struct {
     store_s store;
     double sum;
-} cart_sum;
+} cart_sum_s;
 
 // shopping_list_s is a struct used to hold the users shopping list items
 typedef struct {
@@ -41,19 +41,19 @@ typedef struct {
 int get_new_lines(char filename[]); // Gets number of new lines
 int compare_cart(const void* ptr1, const void* ptr2); // Compares items by price and then distance to the user
 int compare_name_distance(const void* ptr1, const void* ptr2);
-cart_item_s find_cheapest_cart_item(cart_item_s* cart, cart_item_s current_item, int cart_index);
+cart_item_s find_cheapest_cart_item(cart_item_s cart[], cart_item_s current_item, int cart_index);
 // Load functions
-void load_normal_prices(store_s stores[], int store_count, char filename[], int item_count);
-store_s* load_distances(char filename[], int store_count);
+void load_normal_prices(store_s stores[], int n_stores, char filename[], int n_items);
+store_s* load_distances(char filename[], int n_stores);
 void load_discounts(store_s stores[], char filename[]);
 shopping_list_s* load_shopping_list(char filename[], int n_shopping_list);
-cart_item_s* create_shopping_cart(store_s* stores, shopping_list_s* shopping_list, int n_stores, int n_shopping_list, int n_items);
+cart_item_s* create_shopping_cart(store_s stores[], shopping_list_s shopping_list[], int n_stores, int n_shopping_list, int n_items);
 
 // Calculate cheapest options
-cart_item_s* sum_across_stores(cart_item_s* cart, shopping_list_s* shopping_list, int n_stores, int n_shopping_list);
+cart_item_s* sum_across_stores(cart_item_s cart[], shopping_list_s shopping_list[], int n_stores, int n_shopping_list);
 
 // Calculate printfunctions
-void print_sum_across_stores(int n_shopping_list, cart_item_s* cart_across);
+void print_sum_across_stores(int n_shopping_list, cart_item_s cart_across[]);
 
-cart_sum* print_cart_sum_per_store(cart_item_s* cart_item, int n_shopping_list, int n_stores, store_s* stores);
+cart_sum_s* print_cart_sum_per_store(cart_item_s cart_item[], int n_shopping_list, int n_stores, store_s stores[]);
 double distance_user_to_stores(store_s store);
