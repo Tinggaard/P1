@@ -28,10 +28,10 @@ int main(void) {
     // Finds the sum of the shopping list in each store and returns it in a price sorted array of cart_item_s structs
     cart_item_s* cart_item = create_shopping_cart(stores, shopping_list, n_stores, n_items_shopping_list, n_items);
 
-    for (int i = 0; i < n_stores*n_items_shopping_list; ++i) {
-        printf("%lf %s %s\n", cart_item[i].item.price, cart_item[i].item.name, cart_item[i].store.name);
-    }
-    printf("%lf %s %s\n", cart_item[8].item.price, cart_item[8].item.name, cart_item[8].store.name);
+//    for (int i = 0; i < n_stores*n_items_shopping_list; ++i) {
+//        printf("%lf %s %s\n", cart_item[i].item.price, cart_item[i].item.name, cart_item[i].store.name);
+//    }
+//    printf("%lf %s %s\n", cart_item[8].item.price, cart_item[8].item.name, cart_item[8].store.name);
 
 //    cart_item_s* cart_across = sum_across_stores(cart_item, shopping_list, n_stores, n_items_shopping_list);
     cart_sum* cart= print_cart_sum_per_store(cart_item,n_items_shopping_list, n_stores, stores);

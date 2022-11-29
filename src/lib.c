@@ -2,6 +2,8 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <math.h>
+#include <minmax.h>
 
 /**
  * compare function for qsort
@@ -9,13 +11,22 @@
  * @param ptr2 item 2
  * @return returns negative if item 2 is greater, positive if item 1 is greater and 0 if they are equal
  */
+
 int compare_cart(const void* ptr1, const void* ptr2) {
     const cart_sum* item_1 = ptr1;
     const cart_sum* item_2 = ptr2;
     if (item_1->sum - item_2->sum == 0) {
-        return item_1->store.distance - item_2->store.distance;
+        return distance_user_to_stores(item_1->store) - distance_user_to_stores(item_2->store);
     }
     return (int)(item_1->sum - item_2->sum);
+}
+
+void copy_coord(store_s* target, store_s* base){
+    // Copy coordinates into cart_item_s
+    target->store_coord.lat = base->store_coord.lat;
+    target->store_coord.lon = base->store_coord.lon;
+    target->base_coord.lat = base->base_coord.lat;
+    target->base_coord.lon = base->base_coord.lon;
 }
 
 /**
@@ -39,6 +50,7 @@ FILE* open_file(char filename[]) {
  * @param ptr2 pointer to second item
  * @return returns negative if item 2 is greater, positive if item 1 is greater and 0 if they are equal
  */
+ /*
 int compare_name_distance(const void* ptr1, const void* ptr2) {
     const cart_item_s* item_1 = ptr1;
     const cart_item_s* item_2 = ptr2;
@@ -47,7 +59,7 @@ int compare_name_distance(const void* ptr1, const void* ptr2) {
     }
     return (int)(item_1->store.distance - item_2->store.distance); // return closest store.
 }
-
+*/
 /**
  * get_new_lines() counts number of lines in a given file
  * @param filename file to parse
@@ -76,10 +88,37 @@ store_s* load_distances(char filename[], int store_count) {
 
     // Scans all stores and parses their values to an index in the struct array
     for (int i = 0; i < store_count; i++) {
-        fscanf(f, "%[^,], %d\n", store[i].name, &store[i].distance);
+        fscanf(f, "%[^,], %lf, %lf\n", store[i].name, &store[i].store_coord.lat, &store[i].store_coord.lon);
+        store[i].item = NULL;
+        store[i].base_coord.lat = 57.0139045715332;
+        store[i].base_coord.lon = 9.986823081970215;
     }
     fclose(f);
     return store;
+}
+
+double distance_user_to_stores(store_s store){
+    double PI = 3.14159265358979323846;
+    double EARTH_RADIUS = 6372797.56085;
+    double DEGREES_RADIANS = PI / 180;
+    double haversine;
+    double arcsin;
+    double distance;
+
+    // we convert degrees to radians
+    double latitud1  = store.store_coord.lat * DEGREES_RADIANS;
+    double longitud1 = store.store_coord.lon * DEGREES_RADIANS;
+    double latitud2  = store.base_coord.lat * DEGREES_RADIANS;
+    double longitud2 = store.base_coord.lon * DEGREES_RADIANS;
+
+    double sin_latitude = (pow(sin(0.5 * (latitud2 - latitud1)), 2));
+    double cos_latitude = ((cos(latitud1)) * (cos(latitud2)));
+    double longitude = (pow(sin(0.5 * (longitud2 - longitud1)), 2));
+    haversine = sin_latitude + (cos_latitude * longitude);
+    arcsin = 2 * asin(min(1.0, sqrt(haversine)));
+    distance = EARTH_RADIUS * arcsin;
+
+    return distance;
 }
 
 /**
@@ -190,7 +229,14 @@ cart_item_s* create_shopping_cart(store_s* stores, shopping_list_s* shopping_lis
                 // If the current item match the item from the shopping list we add it to the cart
                 if (strcmp(stores[i].item[j].name, shopping_list[k].name) == 0) {
                     strcpy(cart[cart_index].store.name, stores[i].name);
-                    cart[cart_index].store.distance = stores[i].distance;
+
+                    // Copy coordinates into cart_item_s
+                    copy_coord(&cart[cart_index].store, &stores[i]);
+//                    cart[cart_index].store.store_coord.lat = stores[i].store_coord.lat;
+//                    cart[cart_index].store.store_coord.lon = stores[i].store_coord.lon;
+//                    cart[cart_index].store.base_coord.lat = stores[i].base_coord.lat;
+//                    cart[cart_index].store.base_coord.lon = stores[i].base_coord.lon;
+
                     strcpy(cart[cart_index].item.name, stores[i].item[j].name);
                     cart[cart_index].item.price = stores[i].item[j].price;
                     cart_index++; // Updates the cart index to avoid overwriting already added items
@@ -210,7 +256,7 @@ cart_item_s* create_shopping_cart(store_s* stores, shopping_list_s* shopping_lis
  * @param n_shopping_list amount of items in our list
  * @return returns the final cart for which items are cheapest in which stores
  */
- /*
+/*
 cart_item_s* sum_across_stores(cart_item_s* cart,shopping_list_s* shopping_list, int n_stores, int n_shopping_list){
     // Allocates space in the heap for each cart per item in the shopping list
     cart_item_s* cart_across = malloc(n_shopping_list * sizeof(cart_item_s));
@@ -243,7 +289,7 @@ cart_item_s* sum_across_stores(cart_item_s* cart,shopping_list_s* shopping_list,
 * @param cart_index index for where we are in the cart
 * @return returns the cheapest item of the two compared, if the parsed cart item had the same name as the parsed current_item
 */
-/*
+
 cart_item_s find_cheapest_cart_item(cart_item_s* cart, cart_item_s current_item, int cart_index) {
     // First it check if the two parsed items have the same name, if not, it just returns the current_item that was parsed
     if (strcmp(current_item.item.name, cart[cart_index].item.name) == 0) {
@@ -253,26 +299,30 @@ cart_item_s find_cheapest_cart_item(cart_item_s* cart, cart_item_s current_item,
             // if it is 0, it knows that this current_item has not yet been initialized with any values but a name and therefore transfers the first match's values
             current_item.item.price = cart[cart_index].item.price;
             strcpy(current_item.store.name, cart[cart_index].store.name);
-            current_item.store.distance = cart[cart_index].store.distance;
+            copy_coord(&current_item.store, &cart[cart_index].store);
+//            current_item.store.distance = cart[cart_index].store.distance;
         }
 
         // Checks to see if the two items have the same price. if they have the same price, it takes the closest store
-        if (current_item.item.price == cart[cart_index].item.price && current_item.store.distance > cart[cart_index].store.distance) {
+        if (current_item.item.price == cart[cart_index].item.price &&
+                distance_user_to_stores(current_item.store) > distance_user_to_stores(cart[cart_index].store)) {
             current_item.item.price = cart[cart_index].item.price;
             strcpy(current_item.store.name, cart[cart_index].store.name);
-            current_item.store.distance = cart[cart_index].store.distance;
+            copy_coord(&current_item.store, &cart[cart_index].store);
+//            current_item.store.distance = cart[cart_index].store.distance;
         }
 
         //  Compare prices and transfers the cheapest option to the current item
         if (current_item.item.price > cart[cart_index].item.price) {
             current_item.item.price = cart[cart_index].item.price;
             strcpy(current_item.store.name, cart[cart_index].store.name);
-            current_item.store.distance = cart[cart_index].store.distance;
+            copy_coord(&current_item.store, &cart[cart_index].store);
+//            current_item.store.distance = cart[cart_index].store.distance;
         }
     }
     return current_item; // Returns the cheapest option
 }
-*/
+
 /**
  * printfunction for the solution across storese
  * @param n_shopping_list amount of items in our shopping list
@@ -307,14 +357,15 @@ cart_sum* print_cart_sum_per_store(cart_item_s* cart_item, int n_shopping_list, 
     for (int i = 0; i < n_stores; i++) {
         cart[i].sum = sum[i]; //copies the item price from the array
         strcpy(cart[i].store.name, stores[i].name); //copies the name of the stores into the new struct
-        cart[i].store.distance = stores[i].distance; //copies the distances int of the new struct
+        // cart[i].store.distance = stores[i].distance; //copies the distances int of the new struct
+        copy_coord(&cart[i].store, &stores[i]);
     }
 
     qsort(cart, n_stores, sizeof(cart_sum), compare_cart);
 
     //print function
     for (int i = 0; i < n_stores; ++i) {
-        printf("|Name > %8s : Distance > %4d : Total sum > %4.2lf|\n", cart[i].store.name, cart[i].store.distance, cart[i].sum);
+        printf("|Name > %8s : Distance > %4lf : Total sum > %4.2lf|\n", cart[i].store.name, distance_user_to_stores(cart[i].store), cart[i].sum);
     }
     return cart;
 }
