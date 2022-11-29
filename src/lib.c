@@ -93,12 +93,12 @@ void load_normal_prices(store_s *stores, int store_count, char filename[], int i
     item_s* normal_prices = malloc(sizeof(item_s) * item_count);
 
     for (int i = 0; i < item_count; i++) {
-        fscanf(f, "%[A-Za-z ], %lf\n", normal_prices[i].name, &normal_prices[i].price);
+        fscanf(f, "%[^,], %lf\n", normal_prices[i].name, &normal_prices[i].price);
     }
 
     item_s** items = malloc(sizeof(item_s) * store_count);
     for (int i = 0; i < store_count; i++) {
-        items[i] = malloc(sizeof(*items[i]) * item_count); //Allocate space for arena
+        items[i] = malloc(sizeof(*items[i]) * item_count);
         stores[i].item = items[i];
         for (int j = 0; j < item_count; j++){
             strcpy(stores[i].item[j].name, normal_prices[j].name);
@@ -152,16 +152,14 @@ void load_discounts(store_s* stores, char filename[]) {
  * @return returns a shopping_list_s array of all items from the users shopping list
  */
 
-shopping_list_s* load_shopping_list(char filename[]) {
-    int number_of_items = get_new_lines(filename);
-
+shopping_list_s* load_shopping_list(char filename[], int n_shopping_list) {
     FILE *f = open_file(filename);
 
     // Allocates space in the heap for all the shopping list items
-    shopping_list_s* s_list = malloc(number_of_items * sizeof(shopping_list_s));
+    shopping_list_s* s_list = malloc(n_shopping_list * sizeof(shopping_list_s));
 
     // Scans all item names into a shopping_list_s array
-    for (int i = 0; i <= number_of_items; i++) {
+    for (int i = 0; i <= n_shopping_list; i++) {
         fscanf(f, "%[^\n]\n",s_list[i].name);
     }
     fclose(f);

@@ -41,7 +41,7 @@ cart_item_s find_cheapest_cart_item(cart_item_s* cart, cart_item_s current_item,
 void load_normal_prices(store_s stores[], int store_count, char filename[], int item_count);
 store_s* load_distances(char filename[], int store_count);
 void load_discounts(store_s stores[], char filename[]);
-shopping_list_s* load_shopping_list(char filename[]);
+shopping_list_s* load_shopping_list(char filename[], int n_shopping_list);
 cart_item_s* create_shopping_cart(store_s* stores, shopping_list_s* shopping_list, int n_stores, int n_shopping_list, int n_items);
 
 // Calculate cheapest options
