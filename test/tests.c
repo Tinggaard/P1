@@ -44,14 +44,14 @@ int main (int argc, char* argv[]) {
 }
 
 void shoppinglist_test(void) {
-    shopping_list_s* shoppinglist = load_shopping_list("../../test/files/shopping_list.txt");
+    shopping_list_s* shoppinglist = load_shopping_list("../../test/files/shopping_list.csv");
     assert(strcmp("potatoes", shoppinglist[0].name) == 0);
     assert(strcmp("skimmed milk", shoppinglist[1].name) == 0);
     free(shoppinglist);
 }
 
 void distances_test(void) {
-    store_s* stores = load_distances("../../test/files/distances.txt");
+    store_s* stores = load_distances("../../test/files/distances.csv");
     assert(strcmp("Foetex", stores[1].name) == 0); // Foetex
     assert(stores[0].distance == 1); // Rema
     assert(stores[0].first_item == NULL); // Rema
@@ -59,8 +59,8 @@ void distances_test(void) {
 }
 
 void normal_prices_test(void) {
-    store_s* stores = load_distances("../../test/files/distances.txt");
-    load_normal_prices(stores, 2, "../../test/files/normal_prices.txt");
+    store_s* stores = load_distances("../../test/files/distances.csv");
+    load_normal_prices(stores, 2, "../../test/files/normal_prices.csv");
     assert(strcmp(stores[1].first_item -> item.name, "skimmed milk") == 0); // Foetex, skimmed milk
     assert(stores[0].first_item -> next -> item.price == 1); // Rema, vegetables
     for (int i = 0; i < 2; i++) {
@@ -70,9 +70,9 @@ void normal_prices_test(void) {
 }
 
 void discounts_test(void) {
-    store_s* stores = load_distances("../../test/files/distances.txt");
-    load_normal_prices(stores, 2, "../../test/files/normal_prices.txt");
-    load_discounts(stores, "../../test/files/discounts.txt");
+    store_s* stores = load_distances("../../test/files/distances.csv");
+    load_normal_prices(stores, 2, "../../test/files/normal_prices.csv");
+    load_discounts(stores, "../../test/files/discounts.csv");
     assert(stores[1].first_item -> next -> item.price == 0.1); // Foetex, skimmed milk
     for (int i = 0; i < 2; i++) {
         deallocate_list(&stores[i]);
