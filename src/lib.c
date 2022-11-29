@@ -68,9 +68,7 @@ int get_new_lines(char* filename){
  * load_distances() loads the distances to the stores
  * @return returns stores in an array, as structs (store_s)
  */
-store_s* load_distances(char filename[]) {
-    int store_count = get_new_lines(filename);
-
+store_s* load_distances(char filename[], int store_count) {
     FILE *f = open_file(filename);
 
     // Allocates space in the heap for all the stores that are now being collected in a dynamic store_s struct array
@@ -79,7 +77,6 @@ store_s* load_distances(char filename[]) {
     // Scans all stores and parses their values to an index in the struct array
     for (int i = 0; i < store_count; i++) {
         fscanf(f, "%[^,], %d\n", store[i].name, &store[i].distance);
-        store[i].first_item = NULL;
     }
     fclose(f);
     return store;
@@ -90,20 +87,27 @@ store_s* load_distances(char filename[]) {
  * @param stores array of store_s
  * @param store_count amount of stores
  */
-void load_normal_prices(store_s *stores, int store_count, char filename[]) {
+void load_normal_prices(store_s *stores, int store_count, char filename[], int item_count) {
     FILE *f = open_file(filename);
 
-    double price;
-    char item_name[MAX_NAME_SIZE];
-    // Runs over all rows in the file until it reaches the end of the file
-    while (!feof(f)) {
-        // Scans for the name and price of an item in given row, including spaces in the name.
-        fscanf(f, "%[A-Za-z ], %lf\n", item_name, &price);
-        // Adds it to all stores
-        for (int i = 0; i < store_count; i++){
-            add_item(&stores[i], item_name, price);
+    item_s* normal_prices = malloc(sizeof(item_s) * item_count);
+
+    for (int i = 0; i < item_count; i++) {
+        fscanf(f, "%[^,], %lf\n", normal_prices[i].name, &normal_prices[i].price);
+    }
+
+    item_s** items = malloc(sizeof(item_s) * store_count);
+    for (int i = 0; i < store_count; i++) {
+        items[i] = malloc(sizeof(*items[i]) * item_count);
+        stores[i].item = items[i];
+        for (int j = 0; j < item_count; j++){
+            strcpy(stores[i].item[j].name, normal_prices[j].name);
+            stores[i].item[j].price = normal_prices[j].price;
         }
     }
+
+    free(normal_prices);
+
     fclose(f);
 }
 
@@ -111,6 +115,7 @@ void load_normal_prices(store_s *stores, int store_count, char filename[]) {
  * load_discounts() overrides the discounts to their respective stores
  * @param stores array of store_s
  */
+
 void load_discounts(store_s* stores, char filename[]) {
     FILE *f = open_file(filename);
 
@@ -118,9 +123,11 @@ void load_discounts(store_s* stores, char filename[]) {
     char current_item[MAX_NAME_SIZE];
     double current_price;
     int i;
+    int j;
     // Runs over all rows in the file until it reaches the end of the file
     while (!feof(f)) {
         i = 0;
+        j = 0;
         // Scans for store name, item name and the price of an item. Excludes commas.
         fscanf(f, "%[^,], %[^,], %lf\n", current_store, current_item, &current_price);
 
@@ -129,15 +136,15 @@ void load_discounts(store_s* stores, char filename[]) {
             i++;
         }
 
-        node_s* item = stores[i].first_item; // Gets the first item in the store
         // Searches through all the store's items until it reaches the current item we want to add a discount on
-        while (strcmp(item->item.name, current_item)) {
-            item = item->next;
+        while (strcmp(stores[i].item[j].name, current_item)) {
+            j++;
         }
-        item->item.price = current_price; // Replaces the normal price with the discount
+        stores[i].item[j].price = current_price; // Replaces the normal price with the discount
     }
     fclose(f);
 }
+
 
 /**
  * load_shopping_list() loads all shopping list items into a struct array
@@ -145,54 +152,21 @@ void load_discounts(store_s* stores, char filename[]) {
  * @return returns a shopping_list_s array of all items from the users shopping list
  */
 
-shopping_list_s* load_shopping_list(char filename[]) {
-    int number_of_items = get_new_lines(filename);
-
+shopping_list_s* load_shopping_list(char filename[], int n_shopping_list) {
     FILE *f = open_file(filename);
 
     // Allocates space in the heap for all the shopping list items
-    shopping_list_s* s_list = malloc(number_of_items * sizeof(shopping_list_s));
+    shopping_list_s* s_list = malloc(n_shopping_list * sizeof(shopping_list_s));
 
     // Scans all item names into a shopping_list_s array
-    for (int i = 0; i <= number_of_items; i++) {
+    for (int i = 0; i <= n_shopping_list; i++) {
         fscanf(f, "%[^\n]\n",s_list[i].name);
     }
     fclose(f);
     return s_list; // Returns the array of all the items on the shopping list
 }
 
-/**
- * add_item is used for declaring which items exist in the store
- * @param store the store_s to add
- * @param name name of the item
- * @param price price of said item
- */
-void add_item(store_s* store, char* name, double price) {
-    // we start by allocating space for a new node. The node already contains enough space for the item.
-    node_s* new_node = (node_s*) malloc(sizeof(node_s));
-    new_node->item.price = price;
-    // we use strcpy here because C does not support direct assignment.
-    strcpy(new_node->item.name, name);
-    new_node->next = store->first_item; // we push, the next element down
-    // fix the list.
-    store->first_item = new_node;
-}
 
-/**
- * deallocate_list() deallocates the memory used by items
- * @param store store_s to deallocate
- */
-void deallocate_list(store_s* store) {
-    node_s* current = store->first_item;
-    while(current != NULL) // we know that the NULL pointer signals the end of the list
-    {
-        node_s* next = current->next; // we need to copy out the value "next" before we deallocate!
-        free(current);
-        current = next; // move to the next
-    }
-    // remember to reset the list pointer
-    store->first_item = NULL;
-}
 
 /**
  * create_shopping_cart() generates a shopping cart for all stores with all the items from the users shopping list.
@@ -202,28 +176,27 @@ void deallocate_list(store_s* store) {
  * @param n_shopping_list Amount of items on the shopping list
  * @return Returns the final cart including all shopping list items in each store.
  */
-cart_item_s* create_shopping_cart(store_s* stores, shopping_list_s* shopping_list, int n_stores, int n_shopping_list){
+
+cart_item_s* create_shopping_cart(store_s* stores, shopping_list_s* shopping_list, int n_stores, int n_shopping_list, int n_items){
     // We start by allocating space for the carts.
     cart_item_s* cart = malloc(n_shopping_list * n_stores * sizeof(cart_item_s));
     int cart_index = 0; // Index to identify where in the cart we are adding an item
     // Iterates over all stores
+    item_s* current_item; // Initializes a current item in the store
     for (int i = 0; i < n_stores; i++) {
-        node_s* current_item = stores[i].first_item; // Initializes a current item in the store
-        // Iterate every item in the store
-        while (current_item != NULL) {
+        for (int j = 0; j < n_items; j++) {
             // Iterate every item in the shopping list to see if it matches the current item in the store
-            for (int j = 0; j < n_shopping_list; ++j) {
+            for (int k = 0; k < n_shopping_list; k++) {
                 // If the current item match the item from the shopping list we add it to the cart
-                if (strcmp(current_item->item.name, shopping_list[j].name) == 0) {
+                if (strcmp(stores[i].item[j].name, shopping_list[k].name) == 0) {
                     strcpy(cart[cart_index].store.name, stores[i].name);
                     cart[cart_index].store.distance = stores[i].distance;
-                    strcpy(cart[cart_index].item.name,current_item->item.name);
-                    cart[cart_index].item.price = current_item->item.price;
+                    strcpy(cart[cart_index].item.name, stores[i].item[j].name);
+                    cart[cart_index].item.price = stores[i].item[j].price;
                     cart_index++; // Updates the cart index to avoid overwriting already added items
                     break; // Breaks out of the for loop when the item has been found, so we don't iterate over unnecessary items
                 }
             }
-            current_item = current_item->next; // Updates the current item to the next item in the store
         }
     }
     return cart;
@@ -237,6 +210,7 @@ cart_item_s* create_shopping_cart(store_s* stores, shopping_list_s* shopping_lis
  * @param n_shopping_list amount of items in our list
  * @return returns the final cart for which items are cheapest in which stores
  */
+ /*
 cart_item_s* sum_across_stores(cart_item_s* cart,shopping_list_s* shopping_list, int n_stores, int n_shopping_list){
     // Allocates space in the heap for each cart per item in the shopping list
     cart_item_s* cart_across = malloc(n_shopping_list * sizeof(cart_item_s));
@@ -261,7 +235,7 @@ cart_item_s* sum_across_stores(cart_item_s* cart,shopping_list_s* shopping_list,
     print_sum_across_stores(n_shopping_list, cart_across);
     return cart_across;
 }
-
+*/
 /**
 * find_cheapest_cart_item() compares a shopping list item with a cart item and swaps them, if they match and the cart item is cheaper.
 * @param cart cart to evaluate items from
@@ -269,6 +243,7 @@ cart_item_s* sum_across_stores(cart_item_s* cart,shopping_list_s* shopping_list,
 * @param cart_index index for where we are in the cart
 * @return returns the cheapest item of the two compared, if the parsed cart item had the same name as the parsed current_item
 */
+/*
 cart_item_s find_cheapest_cart_item(cart_item_s* cart, cart_item_s current_item, int cart_index) {
     // First it check if the two parsed items have the same name, if not, it just returns the current_item that was parsed
     if (strcmp(current_item.item.name, cart[cart_index].item.name) == 0) {
@@ -297,43 +272,33 @@ cart_item_s find_cheapest_cart_item(cart_item_s* cart, cart_item_s current_item,
     }
     return current_item; // Returns the cheapest option
 }
-
+*/
 /**
  * printfunction for the solution across storese
  * @param n_shopping_list amount of items in our shopping list
  * @param cart_across our cart across stores
  */
-void print_sum_across_stores(int n_shopping_list, cart_item_s* cart_across){
-    double total_sum = 0;
-    printf("Your absolute cheapest customized shopping list\n");
-    printf("| Store    | Distance | Item |           Price    |\n");
-    for (int i = 0; i < n_shopping_list; ++i) { // calculates the sum of item prices
-        printf("%-15s %*dm %-15s %7.2lf DKK \n",cart_across[i].store.name,
-               5,cart_across[i].store.distance,cart_across[i].item.name, cart_across[i].item.price);
-        total_sum += cart_across[i].item.price;
-    }
-    printf("\nTotal %40.2lf DKK\n",total_sum);
-}
+
+//void print_sum_across_stores(int n_shopping_list, cart_item_s* cart_across){
+//    double total_sum = 0;
+//    printf("Your absolute cheapest customized shopping list\n");
+//    printf("| Store    | Distance | Item |           Price    |\n");
+//    for (int i = 0; i < n_shopping_list; ++i) { // calculates the sum of item prices
+//        printf("%-15s %*dm %-15s %7.2lf DKK \n",cart_across[i].store.name,
+//               5,cart_across[i].store.distance,cart_across[i].item.name, cart_across[i].item.price);
+//        total_sum += cart_across[i].item.price;
+//    }
+//    printf("\nTotal %40.2lf DKK\n",total_sum);
+//}
 
 
 
 cart_sum* print_cart_sum_per_store(cart_item_s* cart_item, int n_shopping_list, int n_stores, store_s* stores){
     double sum[n_stores];
 
-    // iterate the stores
-    for (int i = 0; i < n_stores; ++i) {
-        sum[i] = 0;
-        node_s* current_item = stores[i].first_item; // initialize item
-
-        while (current_item != NULL) { // iterate every item in the store
-            for (int j = 0; j < n_shopping_list; j++) { // iterate items in shopping_list
-
-                // if the item is in the shopping_list
-                if (strcmp(current_item->item.name, cart_item[j].item.name) == 0) {
-                    sum[i] += current_item->item.price; // add price of the item
-                }
-            }
-            current_item = current_item->next;
+    for (int i = 0; i < n_stores; i++){
+        for (int j = 0; j < n_shopping_list; j++){
+            sum[i] += cart_item[i*n_shopping_list+j].item.price;
         }
     }
 
@@ -353,6 +318,3 @@ cart_sum* print_cart_sum_per_store(cart_item_s* cart_item, int n_shopping_list, 
     }
     return cart;
 }
-
-
-void cheapest_overall_cart(void){}
