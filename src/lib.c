@@ -3,7 +3,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
-#include <minmax.h>
 
 /**
  * compare function for qsort
@@ -50,14 +49,14 @@ FILE* open_file(char filename[]) {
  * @param ptr2 pointer to second item
  * @return returns negative if item 2 is greater, positive if item 1 is greater and 0 if they are equal
  */
- /*
+/*
 int compare_name_distance(const void* ptr1, const void* ptr2) {
-    const cart_item_s* item_1 = ptr1;
-    const cart_item_s* item_2 = ptr2;
-    if (item_1->store.distance - item_2->store.distance == 0) { // if the distances are the same, we check the name
-        return (int)(item_1->store.name - item_2->store.name);
-    }
-    return (int)(item_1->store.distance - item_2->store.distance); // return closest store.
+   const cart_item_s* item_1 = ptr1;
+   const cart_item_s* item_2 = ptr2;
+   if (item_1->store.distance - item_2->store.distance == 0) { // if the distances are the same, we check the name
+       return (int)(item_1->store.name - item_2->store.name);
+   }
+   return (int)(item_1->store.distance - item_2->store.distance); // return closest store.
 }
 */
 /**
@@ -115,7 +114,8 @@ double distance_user_to_stores(store_s store){
     double cos_latitude = ((cos(latitud1)) * (cos(latitud2)));
     double longitude = (pow(sin(0.5 * (longitud2 - longitud1)), 2));
     haversine = sin_latitude + (cos_latitude * longitude);
-    arcsin = 2 * asin(min(1.0, sqrt(haversine)));
+    double minimum = sqrt(haversine) < 1.0 ? sqrt(haversine) : 1.0;
+    arcsin = 2 * asin(minimum);
     distance = EARTH_RADIUS * arcsin;
 
     return distance;
