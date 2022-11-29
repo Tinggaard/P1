@@ -97,24 +97,23 @@ store_s* load_distances(char filename[], int store_count) {
 }
 
 double distance_user_to_stores(store_s store){
-    double PI = 3.14159265358979323846;
-    double EARTH_RADIUS = 6372797.56085;
-    double DEGREES_RADIANS = PI / 180;
-    double haversine;
-    double arcsin;
-    double distance;
+    double EARTH_RADIUS = 6372797.56085; // in meters
+    double DEGREES_RADIANS = M_PI / 180; // from degrees to radians
+
+    double haversine, arcsin, distance, sin_lat, cos_lat, lon, minimum;
 
     // we convert degrees to radians
-    double latitud1  = store.store_coord.lat * DEGREES_RADIANS;
-    double longitud1 = store.store_coord.lon * DEGREES_RADIANS;
-    double latitud2  = store.base_coord.lat * DEGREES_RADIANS;
-    double longitud2 = store.base_coord.lon * DEGREES_RADIANS;
+    double lat1 = store.store_coord.lat * DEGREES_RADIANS;
+    double lon1 = store.store_coord.lon * DEGREES_RADIANS;
+    double lat2 = store.base_coord.lat * DEGREES_RADIANS;
+    double lon2 = store.base_coord.lon * DEGREES_RADIANS;
 
-    double sin_latitude = (pow(sin(0.5 * (latitud2 - latitud1)), 2));
-    double cos_latitude = ((cos(latitud1)) * (cos(latitud2)));
-    double longitude = (pow(sin(0.5 * (longitud2 - longitud1)), 2));
-    haversine = sin_latitude + (cos_latitude * longitude);
-    double minimum = sqrt(haversine) < 1.0 ? sqrt(haversine) : 1.0;
+    sin_lat = pow(sin(0.5 * (lat2 - lat1)), 2);
+    cos_lat = cos(lat1) * cos(lat2);
+    lon = pow(sin(0.5 * (lon2 - lon1)), 2);
+    haversine = sin_lat+ (cos_lat* lon);
+
+    minimum = sqrt(haversine) < 1.0 ? sqrt(haversine) : 1.0;
     arcsin = 2 * asin(minimum);
     distance = EARTH_RADIUS * arcsin;
 
