@@ -41,7 +41,7 @@ typedef struct {
 // helper functions
 int compare_cart(const void* ptr1, const void* ptr2);
 void copy_coord(store_s* target, store_s* base);
-double calc_base_to_store(store_s store);
+int calc_base_to_store(store_s store);
 cart_item_s calc_cheapest_cart_item(cart_item_s cart[], cart_item_s current_item, int cart_index);
 // open_file function not in header as it returns FILE ptr, which is not defined here.
 int get_new_lines(char filename[]);

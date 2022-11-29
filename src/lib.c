@@ -41,7 +41,7 @@ void copy_coord(store_s* target, store_s* base){
  * @return the distance in meters (double)
  */
 // courtesy of https://stackoverflow.com/questions/27126714/c-latitude-and-longitude-distance-calculator
-double calc_base_to_store(store_s store){
+int calc_base_to_store(store_s store){
     double EARTH_RADIUS = 6372797.56085; // in meters
     double DEGREES_RADIANS = M_PI / 180; // from degrees to radians
 
@@ -63,7 +63,7 @@ double calc_base_to_store(store_s store){
     arcsin = 2 * asin(minimum);
     distance = EARTH_RADIUS * arcsin;
 
-    return distance;
+    return (int) distance;
 }
 
 
@@ -346,7 +346,7 @@ void calc_across_stores(cart_item_s cart[], shopping_list_s shopping_list[], int
     printf("Your absolute cheapest customized shopping list\n");
     printf("| Store    | Distance | Item |           Price    |\n");
     for (int i = 0; i < n_shopping_list; ++i) { // calculates the sum of item prices
-        printf("%-15s %*.lfm %-15s %7.2lf DKK \n",cart_across[i].store.name,
+        printf("%-15s %*dm %-15s %7.2lf DKK \n",cart_across[i].store.name,
                5, calc_base_to_store(cart_across[i].store), cart_across[i].item.name, cart_across[i].item.price);
         total_sum += cart_across[i].item.price;
     }
@@ -383,7 +383,7 @@ void calc_per_store(cart_item_s cart_item[], int n_shopping_list, int n_stores, 
 
     //print function
     for (int i = 0; i < n_stores; ++i) {
-        printf("|Name > %8s : Distance > %4lf : Total sum > %4.2lf|\n", cart[i].store.name,
+        printf("|Name > %8s : Distance > %4d : Total sum > %4.2lf|\n", cart[i].store.name,
                calc_base_to_store(cart[i].store), cart[i].sum);
     }
 }
