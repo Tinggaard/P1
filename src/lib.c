@@ -19,6 +19,13 @@ int compare_cart(const void* ptr1, const void* ptr2) {
     }
     return (int)(item_1->sum - item_2->sum);
 }
+
+/**
+ * compare function for qsort, to sort in alphabetical order
+ * @param ptr1 item 1
+ * @param ptr2 item 2
+ * @return 0 if they are equal, >0 if item1 appears before item2 in lexicographical order and opposite for <0.
+ */
 int compare_item_names(const void* ptr1, const void* ptr2){
     const item_s* item_1 = ptr1;
     const item_s* item_2 = ptr2;
@@ -221,8 +228,8 @@ void load_normal_prices(store_s stores[], int n_stores, char filename[], int n_i
     }
     fclose(f); // remember to close the file
 
+    // We use qsort to sort the items in alphabetical order
     qsort(normal_prices, n_items, sizeof(item_s), compare_item_names);
-    binary_search(normal_prices, "cheese", n_items);
 
     // allocate out layer of 2d array, the size of n_stores
     item_s** items = malloc(sizeof(item_s) * n_stores);
@@ -268,7 +275,7 @@ void load_discounts(store_s stores[], char filename[], int n_items) {
             i++;
         }
 
-        // Searches through all the store's items until it reaches the current item we want to add a discount on
+        // Binary_search finds the index of the item in the item array
         item_index = binary_search(stores[i].item, current_item, n_items);
         stores[i].item[item_index].price = current_price; // Replaces the normal price with the discount
 
@@ -313,13 +320,14 @@ cart_item_s* create_shopping_cart(store_s stores[], shopping_list_s shopping_lis
     // Iterates over all stores
 
     for (int i = 0; i < n_stores; i++) {
-        // Iterate every item in the shopping list to see if it matches the current item in the store
+        // Iterate every item in the shopping list
         for (int j = 0; j < n_shopping_list; j++) {
-            // If the current item match the item from the shopping list we add it to the cart
+            // Binary search finds the index the item in the item array
             item_index = binary_search(stores[i].item, shopping_list[j].name, n_items);
+
+            // All the necessary information is copied from store and item into cart.
             strcpy(cart[cart_index].store.name, stores[i].name);
-            // Copy coordinates into cart_item_s
-            copy_coord(&cart[cart_index].store, &stores[i]);
+            copy_coord(&cart[cart_index].store, &stores[i]); // Copy coordinates into cart_item_s
             strcpy(cart[cart_index].item.name, stores[i].item[item_index].name);
             cart[cart_index].item.price = stores[i].item[item_index].price;
             cart_index++; // Updates the cart index to avoid overwriting already added items
