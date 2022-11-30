@@ -309,25 +309,20 @@ cart_item_s* create_shopping_cart(store_s stores[], shopping_list_s shopping_lis
     // We start by allocating space for the carts.
     cart_item_s* cart = malloc(n_shopping_list * n_stores * sizeof(cart_item_s));
     int cart_index = 0; // Index to identify where in the cart we are adding an item
+    int item_index = 0;
     // Iterates over all stores
-    item_s* current_item; // Initializes a current item in the store
+
     for (int i = 0; i < n_stores; i++) {
-        for (int j = 0; j < n_items; j++) {
-            // Iterate every item in the shopping list to see if it matches the current item in the store
-            for (int k = 0; k < n_shopping_list; k++) {
-                // If the current item match the item from the shopping list we add it to the cart
-                if (strcmp(stores[i].item[j].name, shopping_list[k].name) == 0) {
-                    strcpy(cart[cart_index].store.name, stores[i].name);
-
-                    // Copy coordinates into cart_item_s
-                    copy_coord(&cart[cart_index].store, &stores[i]);
-
-                    strcpy(cart[cart_index].item.name, stores[i].item[j].name);
-                    cart[cart_index].item.price = stores[i].item[j].price;
-                    cart_index++; // Updates the cart index to avoid overwriting already added items
-                    break; // Breaks out of the for loop when the item has been found, so we don't iterate over unnecessary items
-                }
-            }
+        // Iterate every item in the shopping list to see if it matches the current item in the store
+        for (int j = 0; j < n_shopping_list; j++) {
+            // If the current item match the item from the shopping list we add it to the cart
+            item_index = binary_search(stores[i].item, shopping_list[j].name, n_items);
+            strcpy(cart[cart_index].store.name, stores[i].name);
+            // Copy coordinates into cart_item_s
+            copy_coord(&cart[cart_index].store, &stores[i]);
+            strcpy(cart[cart_index].item.name, stores[i].item[item_index].name);
+            cart[cart_index].item.price = stores[i].item[item_index].price;
+            cart_index++; // Updates the cart index to avoid overwriting already added items
         }
     }
     return cart;
