@@ -248,18 +248,18 @@ void load_normal_prices(store_s stores[], int n_stores, char filename[], int n_i
  * @param stores array of store_s
  * @param filename path to discounts.txt file
  */
-void load_discounts(store_s stores[], char filename[]) {
+void load_discounts(store_s stores[], char filename[], int n_items) {
     FILE* f = open_file(filename);
 
     char current_store[MAX_NAME_SIZE];
     char current_item[MAX_NAME_SIZE];
     double current_price;
     int i;
-    int j;
+    int item_index;
     // Runs over all rows in the file until it reaches the end of the file
     while (!feof(f)) {
         i = 0;
-        j = 0;
+
         // Scans for store name, item name and the price of an item. Excludes commas.
         fscanf(f, "%[^,], %[^,], %lf\n", current_store, current_item, &current_price);
 
@@ -269,10 +269,9 @@ void load_discounts(store_s stores[], char filename[]) {
         }
 
         // Searches through all the store's items until it reaches the current item we want to add a discount on
-        while (strcmp(stores[i].item[j].name, current_item)) {
-            j++;
-        }
-        stores[i].item[j].price = current_price; // Replaces the normal price with the discount
+        item_index = binary_search(stores[i].item, current_item, n_items);
+        stores[i].item[item_index].price = current_price; // Replaces the normal price with the discount
+
     }
     fclose(f);
 }
