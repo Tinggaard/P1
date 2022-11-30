@@ -19,6 +19,28 @@ int compare_cart(const void* ptr1, const void* ptr2) {
     }
     return (int)(item_1->sum - item_2->sum);
 }
+int compare_item_names(const void* ptr1, const void* ptr2){
+    const item_s* item_1 = ptr1;
+    const item_s* item_2 = ptr2;
+    return strcmp(item_1->name, item_2->name);
+}
+
+int binary_search(item_s itemlist[], const char x[], int n_items){
+    int l, r, m;
+    l=0;
+    r=n_items-1;
+    while (l<r){
+        m = (r+l)/2;
+
+        if (0>strcmp(itemlist[m].name, x)){
+            l=m+1;
+        } else r=m;
+    }
+    if (strcmp(x, itemlist[l].name) == 0){
+        return l;
+    } else
+        return -1;
+}
 
 
 /**
@@ -198,6 +220,9 @@ void load_normal_prices(store_s stores[], int n_stores, char filename[], int n_i
         fscanf(f, "%[^,], %lf\n", normal_prices[i].name, &normal_prices[i].price);
     }
     fclose(f); // remember to close the file
+
+    qsort(normal_prices, n_items, sizeof(item_s), compare_item_names);
+    binary_search(normal_prices, "cheese", n_items);
 
     // allocate out layer of 2d array, the size of n_stores
     item_s** items = malloc(sizeof(item_s) * n_stores);
