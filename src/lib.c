@@ -46,7 +46,8 @@ int binary_search(item_s itemlist[], const char x[], int n_items){
     if (strcmp(x, itemlist[l].name) == 0){
         return l;
     } else
-        return -1;
+        printf("Item \"%s\" not found", x);
+        exit(EXIT_FAILURE);
 }
 
 
