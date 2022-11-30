@@ -370,7 +370,7 @@ void calc_across_stores(cart_item_s cart[], shopping_list_s shopping_list[], int
     printf("Your absolute cheapest customized shopping list\n");
     printf("| Store    | Distance | Item |           Price    |\n");
     for (int i = 0; i < n_shopping_list; ++i) { // calculates the sum of item prices
-        printf("%-15s %*dm %-15s %7.2lf DKK \n",cart_across[i].store.name,
+        printf("%-15s %*dm %-15s %7.2lf DKK\n",cart_across[i].store.name,
                5, calc_base_to_store(cart_across[i].store), cart_across[i].item.name, cart_across[i].item.price);
         total_sum += cart_across[i].item.price;
     }
@@ -387,7 +387,10 @@ void calc_across_stores(cart_item_s cart[], shopping_list_s shopping_list[], int
  * @return returns an array of cart_sum, one for each store
  */
 void calc_per_store(cart_item_s cart_item[], int n_shopping_list, int n_stores, store_s* stores) {
-    double sum[n_stores];
+    double sum [n_stores];
+    for (int i = 0; i < n_stores ; ++i) { //initializere til 0
+        sum[i] = 0;
+    }
 
     for (int i = 0; i < n_stores; i++) {
         for (int j = 0; j < n_shopping_list; j++) {
@@ -406,7 +409,7 @@ void calc_per_store(cart_item_s cart_item[], int n_shopping_list, int n_stores, 
     qsort(cart, n_stores, sizeof(cart_sum_s), compare_cart);
 
     //print function
-    for (int i = 0; i < n_stores; ++i) {
+    for (int i = 0; i < n_stores; i++) {
         printf("|Name > %8s : Distance > %4d : Total sum > %4.2lf|\n", cart[i].store.name,
                calc_base_to_store(cart[i].store), cart[i].sum);
     }
