@@ -66,6 +66,30 @@ int calc_base_to_store(store_s store){
     return (int) distance;
 }
 
+int calc_distance(coordinates_s cord_base, coordinates_s cord_dest){
+    double EARTH_RADIUS = 6372797.56085; // in meters
+    double DEGREES_RADIANS = M_PI / 180; // from degrees to radians
+
+    double haversine, arcsin, distance, sin_lat, cos_lat, lon, minimum;
+
+    // we convert degrees to radians
+    double lat1 = cord_dest.lat * DEGREES_RADIANS;
+    double lon1 = cord_dest.lon * DEGREES_RADIANS;
+    double lat2 = cord_base.lat * DEGREES_RADIANS;
+    double lon2 = cord_base.lon * DEGREES_RADIANS;
+
+    // haversine formula
+    sin_lat = pow(sin(0.5 * (lat2 - lat1)), 2);
+    cos_lat = cos(lat1) * cos(lat2);
+    lon = pow(sin(0.5 * (lon2 - lon1)), 2);
+    haversine = sin_lat+ (cos_lat* lon);
+
+    minimum = sqrt(haversine) < 1.0 ? sqrt(haversine) : 1.0;
+    arcsin = 2 * asin(minimum);
+    distance = EARTH_RADIUS * arcsin;
+
+    return (int) distance;
+}
 
 /**
 * calc_cheapest_cart_item() compares a shopping list item with a cart item and swaps them, if they match and the cart item is cheaper.
@@ -140,9 +164,9 @@ int compare_name_distance(const void* ptr1, const void* ptr2) {
 
 
 /**
- * get_new_lines() counts number of lines in a given file
+ * get_new_lines() counts combber of lines in a given file
  * @param filename file to parse
- * @return number of lines is given file
+ * @return combber of lines is given file
  */
 int get_new_lines(char filename[]){
     int count = 1; // initializes 1 because if there's no new line, there is still one line
@@ -159,7 +183,7 @@ int get_new_lines(char filename[]){
 /**
  * load_distances() loads the distances to the stores
  * @param filename path to distances.txt file
- * @param n_stores number of stores
+ * @param n_stores combber of stores
  * @return returns stores in an array, as structs (store_s)
  */
 store_s* load_distances(char filename[], int n_stores) {
@@ -185,7 +209,7 @@ store_s* load_distances(char filename[], int n_stores) {
  * @param stores array of store_s
  * @param n_stores amount of stores
  * @param filename path to normal_prices.txt
- * @param n_items number of items
+ * @param n_items combber of items
  */
 void load_normal_prices(store_s stores[], int n_stores, char filename[], int n_items) {
     FILE* f = open_file(filename);
@@ -310,15 +334,17 @@ cart_item_s* create_shopping_cart(store_s stores[], shopping_list_s shopping_lis
 }
 
 
+
+
 /**
- * a function that finds the cheapest possible combination of a cart across all stores.
+ * a function that finds the cheapest possible comb of a cart across all stores.
  * @param cart contain all shopping list items in every store
  * @param shopping_list array of item names
  * @param n_stores amount of stores
  * @param n_shopping_list amount of items in our list
  * @return returns the final cart for which items are cheapest in which stores
  */
-void calc_across_stores(cart_item_s cart[], shopping_list_s shopping_list[], int n_stores, int n_shopping_list){
+void calc_across_stores(cart_item_s cart[], shopping_list_s shopping_list[], store_s store[], int n_stores, int n_shopping_list){
     // Allocates space in the heap for each cart per item in the shopping list
     cart_item_s* cart_across = malloc(n_shopping_list * sizeof(cart_item_s));
     cart_item_s current_item;
@@ -338,27 +364,16 @@ void calc_across_stores(cart_item_s cart[], shopping_list_s shopping_list[], int
         copy_coord(&cart_across[shopping_list_index].store, &current_item.store);
 
     }
-    // we sort the list, so items from same shop are printed together
-    // TODO: IMPLEMENT THIS
-//    qsort(cart_across,n_shopping_list, sizeof(cart_item_s),compare_name_distance);
-
-    double total_sum = 0;
-    printf("Your absolute cheapest customized shopping list\n");
-    printf("| Store    | Distance | Item |           Price    |\n");
-    for (int i = 0; i < n_shopping_list; ++i) { // calculates the sum of item prices
-        printf("%-15s %*dm %-15s %7.2lf DKK \n",cart_across[i].store.name,
-               5, calc_base_to_store(cart_across[i].store), cart_across[i].item.name, cart_across[i].item.price);
-        total_sum += cart_across[i].item.price;
-    }
-    printf("\nTotal %40.2lf DKK\n",total_sum);
+    // Calculates the shortest path and prints the new shopping list
+    shortest_path (cart_across,store, n_shopping_list, n_stores);
 }
 
 
 /**
  * print_cart_sum_per_store() prints a sorted list for the cheapest option to shop in
  * @param cart_item an array of cart_item
- * @param n_shopping_list number of items in shopping list
- * @param n_stores number of stores
+ * @param n_shopping_list combber of items in shopping list
+ * @param n_stores combber of stores
  * @param stores array of stores
  * @return returns an array of cart_sum, one for each store
  */
@@ -386,4 +401,106 @@ void calc_per_store(cart_item_s cart_item[], int n_shopping_list, int n_stores, 
         printf("|Name > %8s : Distance > %4d : Total sum > %4.2lf|\n", cart[i].store.name,
                calc_base_to_store(cart[i].store), cart[i].sum);
     }
+}
+
+
+/**
+ * shortest_path calculates the shortest path and outputs the new shopping list
+ * @param cart_across The cart with the cheapest option across stores
+ * @param store Array of stores
+ * @param n_shopping_list amount of items in shopping list
+ * @param n_stores amount of stores
+ */
+void shortest_path(cart_item_s cart_across[],store_s store[],int n_shopping_list, int n_stores) {
+
+
+
+    int n_locations = 0;
+    cart_item_s stores_to_visit[n_stores];
+    // Creates the chars in the array with only of the stores you have to visit
+    for (int i = 0; i < n_stores; ++i) {
+        for (int j = 0; j < n_shopping_list; ++j) {
+            if (strcmp(cart_across[j].store.name, store[i].name) == 0){
+                strcpy(stores_to_visit[n_locations].store.name, store[i].name);
+                copy_coord(&stores_to_visit[n_locations].store, &store[i]);
+                n_locations++;
+                break;
+            }
+
+        }
+    }
+
+
+    // Values for finding all possible combinations
+    int comb[n_locations];
+    int temp;
+    coordinates_s current_dest;
+    coordinates_s current_base;
+    // Creates numbers for combinations starting from 0 to number of locations
+    for (int i = 0; i < n_locations; ++i) {
+        comb[i] = i;
+    }
+    int fastest_comb[n_locations];
+    int temp_dist;
+    int total_dist = 0;
+    for (int j = 1; j <= n_locations; j++) {
+        for (int i = 0; i < n_locations-1; i++) {
+            // Permutates the list of combination numbers
+            temp_dist = 0;
+            temp = comb[i];
+            comb[i] = comb[i + 1];
+            comb[i + 1] = temp;
+
+            // Calculates the distance between every store
+            for (int h = 0 ; h < n_locations-1 ; h++) {
+                current_dest = stores_to_visit[comb[h+1]].store.store_coord;
+                current_base = stores_to_visit[comb[h]].store.store_coord;
+                temp_dist += calc_distance(current_dest, current_base);
+//                printf("%d ", calc_distance(stores_to_visit[comb[h]].store.store_coord, stores_to_visit[comb[h+1]].store.store_coord));
+            }
+            // Adds the distance to and from home
+            temp_dist += calc_distance(stores_to_visit[comb[0]].store.base_coord,
+                                       stores_to_visit[comb[0]].store.store_coord);
+            temp_dist += calc_distance(stores_to_visit[comb[n_locations-1]].store.base_coord,
+                                       stores_to_visit[comb[n_locations-1]].store.store_coord);
+            // If the calculated distance is less than the current minimum, we save it.
+            if (total_dist > temp_dist || total_dist == 0){
+                total_dist = temp_dist;
+                for (int k = 0; k < n_locations; ++k) {
+                    fastest_comb[k] = comb[k];
+                }
+            }
+        }
+    }
+
+    double total_sum = 0;
+    int index;
+    coordinates_s base = cart_across[0].store.base_coord;
+    // Distance to first store
+    int distance = calc_distance(stores_to_visit[fastest_comb[0]].store.store_coord, base);
+
+    printf("Your absolute cheapest customized shopping list\n");
+    printf("| Store    | Distance | Item |           Price    |\n");
+
+    // Calculates and prints the sum of prices and the distances between store a to store b.
+    for (int i = 0; i < n_shopping_list; ++i) {
+        index = fastest_comb[i];
+        printf("%-15s %.4dm %-15s %7.2lf DKK \n", stores_to_visit[index].store.name,
+               distance, cart_across[index].item.name, cart_across[index].item.price);
+        // Prevent indexing error
+        if (i < n_shopping_list-1) {
+            current_dest = stores_to_visit[fastest_comb[i+1]].store.store_coord;
+            current_base = stores_to_visit[index].store.store_coord;
+            distance = calc_distance(current_dest, current_base);
+        } else {
+            distance = calc_distance(stores_to_visit[index].store.store_coord, base);
+        }
+        total_sum += cart_across[i].item.price;
+    }
+    //Prints the final distance between the last store and home
+    printf("Home %15dm \n",distance);
+
+    printf("\nTotal %14.4dm %23.2lf DKK\n",total_dist,total_sum);
+
+
 }
