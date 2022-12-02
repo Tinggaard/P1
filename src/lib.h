@@ -45,14 +45,15 @@ int calc_base_to_store(store_s store);
 int calc_distance(coordinates_s cord_base, coordinates_s cord_dest);
 
 cart_item_s calc_cheapest_cart_item(cart_item_s cart[], cart_item_s current_item, int cart_index);
-void shortest_path (cart_item_s cart_across[], int n_shopping_list, int n_stores);
+void shortest_path(cart_item_s cart_across[], int n_shopping_list, int n_stores);
+int binary_search(item_s itemlist[], const char x[], int n_items);
 // open_file function not in header as it returns FILE ptr, which is not defined here.
 int get_new_lines(char filename[]);
 
 // load and init
 store_s* load_distances(char filename[], int n_stores);
 void load_normal_prices(store_s stores[], int n_stores, char filename[], int n_items);
-void load_discounts(store_s stores[], char filename[]);
+void load_discounts(store_s stores[], char filename[], int n_items);
 shopping_list_s* load_shopping_list(char filename[], int n_shopping_list);
 cart_item_s* create_shopping_cart(store_s stores[], shopping_list_s shopping_list[], int n_stores, int n_shopping_list, int n_items);
 

@@ -20,6 +20,52 @@ int compare_cart(const void* ptr1, const void* ptr2) {
     return (int)(item_1->sum - item_2->sum);
 }
 
+/**
+ * compare function for qsort, to sort in alphabetical order
+ * @param ptr1 item 1
+ * @param ptr2 item 2
+ * @return 0 if they are equal, >0 if item1 appears before item2 in lexicographical order and opposite for <0.
+ */
+int compare_item_names(const void* ptr1, const void* ptr2){
+    const item_s* item_1 = ptr1;
+    const item_s* item_2 = ptr2;
+    return strcmp(item_1->name, item_2->name);
+}
+
+
+/**
+ * binary_search() is used to search the item array, for a specific item
+ * @param itemlist list of item_s
+ * @param x name of item to look for
+ * @param n_items number of items in total
+ * @return index of item name in itemlist
+ */
+int binary_search(item_s itemlist[], const char x[], int n_items) {
+    int l, r, m; // left, right, middle
+    l = 0;
+    r = n_items - 1;
+    while (l < r){
+        // set middle correctly
+        m = (r + l) / 2;
+
+        // if we are sill not there
+        if (0 > strcmp(itemlist[m].name, x)) {
+            l = m + 1;
+        } else {
+            // if we have gone too far
+            r = m;
+        }
+    }
+    // the item was actually found
+    if (strcmp(x, itemlist[l].name) == 0){
+        return l;
+    } else {
+        // otherwise we throw an error
+        printf("Item \"%s\" not found\n", x);
+        exit(EXIT_FAILURE);
+    }
+}
+
 
 /**
  * compare_store_name() used to sort cart_item_s based on store names
@@ -237,6 +283,9 @@ void load_normal_prices(store_s stores[], int n_stores, char filename[], int n_i
     }
     fclose(f); // remember to close the file
 
+    // We use qsort to sort the items in alphabetical order
+    qsort(normal_prices, n_items, sizeof(item_s), compare_item_names);
+
     // allocate out layer of 2d array, the size of n_stores
     item_s** items = malloc(sizeof(item_s) * n_stores);
     for (int i = 0; i < n_stores; i++) {
@@ -261,18 +310,18 @@ void load_normal_prices(store_s stores[], int n_stores, char filename[], int n_i
  * @param stores array of store_s
  * @param filename path to discounts.txt file
  */
-void load_discounts(store_s stores[], char filename[]) {
+void load_discounts(store_s stores[], char filename[], int n_items) {
     FILE* f = open_file(filename);
 
     char current_store[MAX_NAME_SIZE];
     char current_item[MAX_NAME_SIZE];
     double current_price;
     int i;
-    int j;
+    int item_index;
     // Runs over all rows in the file until it reaches the end of the file
     while (!feof(f)) {
         i = 0;
-        j = 0;
+
         // Scans for store name, item name and the price of an item. Excludes commas.
         fscanf(f, "%[^,], %[^,], %lf\n", current_store, current_item, &current_price);
 
@@ -281,11 +330,9 @@ void load_discounts(store_s stores[], char filename[]) {
             i++;
         }
 
-        // Searches through all the store's items until it reaches the current item we want to add a discount on
-        while (strcmp(stores[i].item[j].name, current_item)) {
-            j++;
-        }
-        stores[i].item[j].price = current_price; // Replaces the normal price with the discount
+        // Binary_search finds the index of the item in the item array
+        item_index = binary_search(stores[i].item, current_item, n_items);
+        stores[i].item[item_index].price = current_price; // Replaces the normal price with the discount
     }
     fclose(f);
 }
@@ -323,31 +370,25 @@ cart_item_s* create_shopping_cart(store_s stores[], shopping_list_s shopping_lis
     // We start by allocating space for the carts.
     cart_item_s* cart = malloc(n_shopping_list * n_stores * sizeof(cart_item_s));
     int cart_index = 0; // Index to identify where in the cart we are adding an item
+    int item_index = 0;
     // Iterates over all stores
-    item_s* current_item; // Initializes a current item in the store
+
     for (int i = 0; i < n_stores; i++) {
-        for (int j = 0; j < n_items; j++) {
-            // Iterate every item in the shopping list to see if it matches the current item in the store
-            for (int k = 0; k < n_shopping_list; k++) {
-                // If the current item match the item from the shopping list we add it to the cart
-                if (strcmp(stores[i].item[j].name, shopping_list[k].name) == 0) {
-                    strcpy(cart[cart_index].store.name, stores[i].name);
+        // Iterate every item in the shopping list
+        for (int j = 0; j < n_shopping_list; j++) {
+            // Binary search finds the index the item in the item array
+            item_index = binary_search(stores[i].item, shopping_list[j].name, n_items);
 
-                    // Copy coordinates into cart_item_s
-                    copy_coord(&cart[cart_index].store, &stores[i]);
-
-                    strcpy(cart[cart_index].item.name, stores[i].item[j].name);
-                    cart[cart_index].item.price = stores[i].item[j].price;
-                    cart_index++; // Updates the cart index to avoid overwriting already added items
-                    break; // Breaks out of the for loop when the item has been found, so we don't iterate over unnecessary items
-                }
-            }
+            // All the necessary information is copied from store and item into cart.
+            strcpy(cart[cart_index].store.name, stores[i].name);
+            copy_coord(&cart[cart_index].store, &stores[i]); // Copy coordinates into cart_item_s
+            strcpy(cart[cart_index].item.name, stores[i].item[item_index].name);
+            cart[cart_index].item.price = stores[i].item[item_index].price;
+            cart_index++; // Updates the cart index to avoid overwriting already added items
         }
     }
     return cart;
 }
-
-
 
 
 /**
@@ -393,7 +434,8 @@ void calc_across_stores(cart_item_s cart[], shopping_list_s shopping_list[], sto
  */
 void calc_per_store(cart_item_s cart_item[], int n_shopping_list, int n_stores, store_s* stores) {
     double sum[n_stores];
-    for (int i = 0; i < n_stores ; ++i) { //initializere til 0
+    // initialize list to 0, to avoid garbage
+    for (int i = 0; i < n_stores; i++) {
         sum[i] = 0;
     }
 
@@ -414,7 +456,7 @@ void calc_per_store(cart_item_s cart_item[], int n_shopping_list, int n_stores, 
     qsort(cart, n_stores, sizeof(cart_sum_s), compare_cart);
 
     //print function
-    for (int i = 0; i < n_stores; ++i) {
+    for (int i = 0; i < n_stores; i++) {
         printf("|Name > %8s : Distance > %4d : Total sum > %4.2lf|\n", cart[i].store.name,
                calc_base_to_store(cart[i].store), cart[i].sum);
     }
