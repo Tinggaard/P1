@@ -425,7 +425,7 @@ cart_item_s* create_shopping_cart(store_s stores[], shopping_list_s shopping_lis
  * @param n_shopping_list amount of items in our list
  * @return returns the final cart for which items are cheapest in which stores
  */
-void calc_across_stores(cart_item_s cart[], shopping_list_s shopping_list[], store_s store[], int n_stores, int n_shopping_list){
+void calc_across_stores(cart_item_s cart[], shopping_list_s shopping_list[], store_s store[], int n_stores, int n_shopping_list, double km_price){
     // Allocates space in the heap for each cart per item in the shopping list
     cart_item_s* cart_across = malloc(n_shopping_list * sizeof(cart_item_s));
     cart_item_s current_item;
@@ -446,7 +446,7 @@ void calc_across_stores(cart_item_s cart[], shopping_list_s shopping_list[], sto
 
     }
     // Calculates the shortest path and prints the new shopping list
-    shortest_path(cart_across, n_shopping_list, n_stores);
+    shortest_path(cart_across, n_shopping_list, n_stores, km_price);
 }
 
 
@@ -493,10 +493,10 @@ void calc_per_store(cart_item_s cart_item[], int n_shopping_list, int n_stores, 
 void user_input(char user_location_f[], int* user_location, double* user_lat,double* user_lon, double* km_price, int* radius, int* transport){
 
     FILE* f = open_file(user_location_f);
-    int current_location;
+    int current_location; //select from preivously loaded locations
     char by_car = 0;
     printf("Please select your location. \n Locations available: '1' school, '2' home >\n");
-    scanf(" %d", &current_location);
+    scanf(" %d", &current_location);//scans the location
 
     while(!feof(f)){
         fscanf(f,"%d, %lf, %lf\n",user_location,user_lat,user_lon);
@@ -509,11 +509,11 @@ void user_input(char user_location_f[], int* user_location, double* user_lat,dou
     printf("Please enter the radius that you want to shop within (in meters) >\n");
     scanf(" %d",radius);
 
-    while (by_car != 'y' && by_car != 'Y' && by_car != 'n' && by_car != 'N'){
+    while (by_car != 'y' && by_car != 'Y' && by_car != 'n' && by_car != 'N'){//checks if the user is driving or not
         printf("Do you travel by car (y/n)? \n");
         scanf(" %c",&by_car);
     }
-    if(by_car == 'y' || by_car == 'Y'){
+    if(by_car == 'y' || by_car == 'Y'){ //if the user is drivin the km price is entered
         *transport = 1;
         printf("Enter price per. kilometer > \n");
         scanf(" %lf", km_price);
@@ -528,7 +528,7 @@ void user_input(char user_location_f[], int* user_location, double* user_lat,dou
  * @param n_shopping_list amount of items in shopping list
  * @param n_stores amount of stores
  */
-void shortest_path(cart_item_s cart_across[], int n_shopping_list, int n_stores) {
+void shortest_path(cart_item_s cart_across[], int n_shopping_list, int n_stores, double km_price) {
     // sort the array, according to store names
     qsort(cart_across, n_shopping_list, sizeof(cart_item_s), compare_store_name);
 
@@ -634,9 +634,9 @@ void shortest_path(cart_item_s cart_across[], int n_shopping_list, int n_stores)
     }
     //Prints the final distance between the last store and home
     printf("Home %15dm \n",distance);
-
-    printf("\nTotal %14.4dm %23.2lf DKK\n",total_dist,total_sum);
-
+    //calc_gas_pirces calculates the travel expenses
+    //the total price is gained from calc_gas_prices + the total price of the items
+    printf("Total %.4dm Travel expenses %.2lf Item expenses %.2lf DKK Total price %.2lf\n\n",total_dist, calc_gas_price(km_price, total_dist), total_sum,calc_gas_price(km_price, total_dist) + total_sum);
 
 }
 
