@@ -27,7 +27,7 @@ int main(void) {
     // Finds the sum of the shopping list in each store and returns it in a price sorted array of cart_item_s structs
     cart_item_s* cart_item = create_shopping_cart(stores, shopping_list, n_stores, n_shopping_list, n_items);
 
-    calc_across_stores(cart_item, shopping_list, n_stores, n_shopping_list);
+    calc_across_stores(cart_item, shopping_list, stores, n_stores, n_shopping_list);
     calc_per_store(cart_item, n_shopping_list, n_stores, stores);
 
 
