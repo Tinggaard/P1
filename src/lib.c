@@ -281,8 +281,7 @@ store_s* load_distances(char filename[], int* n_stores, double user_lat, double 
     free(store_placeholder);
 
     *n_stores = n_store_counter;
-
-
+    qsort(store, *n_stores, sizeof(store_s), compare_store_name);
     fclose(f);
     return store;
 }
@@ -334,9 +333,8 @@ void load_normal_prices(store_s stores[], int n_stores, char filename[], int n_i
  * @param stores array of store_s
  * @param filename path to discounts.txt file
  */
-void load_discounts(store_s stores[], char filename[], int n_items) {
+void load_discounts(store_s stores[], char filename[], int n_items, int n_stores) {
     FILE* f = open_file(filename);
-    int n_stores = 3;
     char current_store[MAX_NAME_SIZE];
     char current_item[MAX_NAME_SIZE];
     double current_price;
@@ -344,20 +342,23 @@ void load_discounts(store_s stores[], char filename[], int n_items) {
     int item_index;
     // Runs over all rows in the file until it reaches the end of the file
     while (!feof(f)) {
-        i = 0;
+        i = -1;
 
         // Scans for store name, item name and the price of an item. Excludes commas.
         fscanf(f, "%[^,], %[^,], %lf\n", current_store, current_item, &current_price);
 
         // Gets the index of the store that matches the currently scanned one
-        while (strcmp(stores[i].name, current_store)) {
-            i++;
+        for (int j = 0; j < n_stores; ++j) {
+            if(strcmp(stores[j].name, current_store) == 0){
+                // Binary_search finds the index of the item in the item array
+                item_index = binary_search(stores[j].item, current_item, n_items);
+                stores[j].item[item_index].price = current_price; // Replaces the normal price with the discount
+                break;
+            }
         }
-        printf("%s %s______________________________________________\n",stores[i].name, current_store);
 
-        // Binary_search finds the index of the item in the item array
-        item_index = binary_search(stores[i].item, current_item, n_items);
-        stores[i].item[item_index].price = current_price; // Replaces the normal price with the discount
+
+
     }
     fclose(f);
 }

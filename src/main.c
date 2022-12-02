@@ -19,7 +19,7 @@ int main(void) {
     double user_lat = 57.0139045715332;
     double user_lon = 9.986823081970215;
     double km_price = 4;
-    int radius = 3500;
+    int radius = 2565;
     int transport = 1;
 
     //user_input(user_location_f,&user_location,&user_lat,&user_lon, &km_price,&radius,&transport);
@@ -36,7 +36,7 @@ int main(void) {
     load_normal_prices(stores, n_stores, normal_prices_f, n_items);
 
     // Overwrites the normal prices of items with a discount to their respective store
-    load_discounts(stores, discounts_f, n_items);
+    load_discounts(stores, discounts_f, n_items, n_stores);
 
     // Finds the sum of the shopping list in each store and returns it in a price sorted array of cart_item_s structs
     cart_item_s* cart_item = create_shopping_cart(stores, shopping_list, n_stores, n_shopping_list, n_items);
