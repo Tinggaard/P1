@@ -8,11 +8,21 @@ int main(void) {
     char stores_f[] = "src/files/distances.csv";
     char normal_prices_f[] = "src/files/normal_prices.csv";
     char discounts_f[] = "src/files/discounts.csv";
+    char user_location_f[] = "src/files/user_location.csv";
 
     // Counting amount of rows from distances.csv and shopping_list.csv, then stores it in two variables
     int n_items = get_new_lines(normal_prices_f); // Amount of rows = amount of items in total
     int n_stores = get_new_lines(stores_f); // Amount of rows = amount of stores
     int n_shopping_list = get_new_lines(shopping_list_f); // Amount of rows = amount of shopping list items
+
+    int user_location;
+    double user_lat;
+    double user_lon;
+    double km_price;
+    int radius;
+    int transport = 0;
+
+    user_input(user_location_f,&user_location,&user_lat,&user_lon, &km_price,&radius,&transport);
 
     // Loading stores and shopping list items from txt files into struct arrays.
     store_s* stores = load_distances(stores_f, n_stores);

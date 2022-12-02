@@ -387,3 +387,37 @@ void calc_per_store(cart_item_s cart_item[], int n_shopping_list, int n_stores, 
                calc_base_to_store(cart[i].store), cart[i].sum);
     }
 }
+
+void user_input(char user_location_f[], int* user_location, double* user_lat,double* user_lon, double* km_price, int* radius, int* transport){
+
+    FILE* f = open_file(user_location_f);
+    int current_location;
+    char by_car = 0;
+    printf("Please select your location. \n Locations available: '1' school, '2' home >\n");
+    scanf(" %d", &current_location);
+
+    while(!feof(f)){
+        fscanf(f,"%d, %lf, %lf\n",user_location,user_lat,user_lon);
+        if(*user_location == current_location){
+            break;
+        }
+    }
+
+    // radius input
+    printf("Please enter the radius that you want to shop within (in meters) >\n");
+    scanf(" %d",radius);
+
+    while (by_car != 'y' && by_car != 'Y' && by_car != 'n' && by_car != 'N'){
+        printf("Do you travel by car (y/n)? \n");
+        scanf(" %c",&by_car);
+    }
+    if(by_car == 'y' || by_car == 'Y'){
+        *transport = 1;
+        printf("Enter price per. kilometer > \n");
+        scanf(" %lf", km_price);
+    }
+
+    printf("You have selected location: %d, lat: %0.20lf, lon: %0.20lf \n radius: %d, by car? %d km/price = %lf ",
+           *user_location,*user_lat,*user_lon, *radius,*transport,*km_price);
+
+}
