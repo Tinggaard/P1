@@ -47,7 +47,7 @@ cart_item_s calc_cheapest_cart_item(cart_item_s cart[], cart_item_s current_item
 int get_new_lines(char filename[]);
 
 // load and init
-store_s* load_distances(char filename[], int n_stores);
+store_s* load_distances(char filename[], int* n_stores, double user_lat, double user_lon, int radius);
 void load_normal_prices(store_s stores[], int n_stores, char filename[], int n_items);
 void load_discounts(store_s stores[], char filename[]);
 shopping_list_s* load_shopping_list(char filename[], int n_shopping_list);

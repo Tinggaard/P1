@@ -162,19 +162,43 @@ int get_new_lines(char filename[]){
  * @param n_stores number of stores
  * @return returns stores in an array, as structs (store_s)
  */
-store_s* load_distances(char filename[], int n_stores) {
+store_s* load_distances(char filename[], int* n_stores, double user_lat, double user_lon, int radius) {
     FILE* f = open_file(filename);
+    int n_store_counter = 0;
+    int store_index = 0;
 
     // Allocates space in the heap for all the stores that are now being collected in a dynamic store_s struct array
-    store_s* store = malloc(n_stores * sizeof(store_s));
+    store_s* store_placeholder = malloc(*n_stores * sizeof(store_s));
 
     // Scans all stores and parses their values to an index in the struct array
-    for (int i = 0; i < n_stores; i++) {
-        fscanf(f, "%[^,], %lf, %lf\n", store[i].name, &store[i].store_coord.lat, &store[i].store_coord.lon);
-        store[i].item = NULL;
-        store[i].base_coord.lat = 57.0139045715332;
-        store[i].base_coord.lon = 9.986823081970215;
+    for (int i = 0; i < *n_stores; i++) {
+        fscanf(f, "%[^,], %lf, %lf\n", store_placeholder[i].name, &store_placeholder[i].store_coord.lat, &store_placeholder[i].store_coord.lon);
+        store_placeholder[i].item = NULL;
+        store_placeholder[i].base_coord.lat = user_lat;
+        store_placeholder[i].base_coord.lon = user_lon;
+        if(calc_base_to_store(store_placeholder[i]) <= radius){
+            n_store_counter++;
+        }
     }
+    printf("\n n_stores = %d \n", *n_stores);
+
+    store_s* store = malloc(n_store_counter * sizeof(store_s));
+    for (int i = 0; i < *n_stores; i++) {
+        if(calc_base_to_store(store_placeholder[i]) <= radius){
+            strcpy(store[store_index].name, store_placeholder[i].name);
+            store[store_index].item = NULL;
+            store[store_index].store_coord.lat = store_placeholder[i].store_coord.lat;
+            store[store_index].store_coord.lon = store_placeholder[i].store_coord.lon;
+            store[store_index].base_coord.lat = user_lat;
+            store[store_index].base_coord.lon = user_lon;
+            store_index++;
+        }
+    }
+    free(store_placeholder);
+
+    *n_stores = n_store_counter;
+
+
     fclose(f);
     return store;
 }
@@ -225,7 +249,7 @@ void load_normal_prices(store_s stores[], int n_stores, char filename[], int n_i
  */
 void load_discounts(store_s stores[], char filename[]) {
     FILE* f = open_file(filename);
-
+    int n_stores = 3;
     char current_store[MAX_NAME_SIZE];
     char current_item[MAX_NAME_SIZE];
     double current_price;
@@ -242,12 +266,14 @@ void load_discounts(store_s stores[], char filename[]) {
         while (strcmp(stores[i].name, current_store)) {
             i++;
         }
+        printf("%s %s______________________________________________\n",stores[i].name, current_store);
 
         // Searches through all the store's items until it reaches the current item we want to add a discount on
         while (strcmp(stores[i].item[j].name, current_item)) {
             j++;
         }
         stores[i].item[j].price = current_price; // Replaces the normal price with the discount
+        printf("%lf %lf______________________________________________\n",stores[i].item[j].price, current_price);
     }
     fclose(f);
 }
@@ -416,8 +442,4 @@ void user_input(char user_location_f[], int* user_location, double* user_lat,dou
         printf("Enter price per. kilometer > \n");
         scanf(" %lf", km_price);
     }
-
-    printf("You have selected location: %d, lat: %0.20lf, lon: %0.20lf \n radius: %d, by car? %d km/price = %lf ",
-           *user_location,*user_lat,*user_lon, *radius,*transport,*km_price);
-
 }
