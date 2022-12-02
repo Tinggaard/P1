@@ -45,7 +45,7 @@ int calc_base_to_store(store_s store);
 int calc_distance(coordinates_s cord_base, coordinates_s cord_dest);
 
 cart_item_s calc_cheapest_cart_item(cart_item_s cart[], cart_item_s current_item, int cart_index);
-void shortest_path (cart_item_s cart_across[],store_s store[], int n_shopping_list, int n_stores);
+void shortest_path (cart_item_s cart_across[], int n_shopping_list, int n_stores);
 // open_file function not in header as it returns FILE ptr, which is not defined here.
 int get_new_lines(char filename[]);
 
