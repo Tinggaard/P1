@@ -26,10 +26,7 @@ int main(void) {
 
     // Loading stores and shopping list items from txt files into struct arrays.
     store_s* stores = load_distances(stores_f, &n_stores, user_lat, user_lon, radius);
-    printf("\n n_stores = %d \n", n_stores);
-    for (int i = 0; i < n_stores ; ++i) {
-    printf("name: %s",stores[i].name);
-    }
+
     shopping_list_s* shopping_list = load_shopping_list(shopping_list_f, n_shopping_list);
 
     // Connecting all items available to the different stores using associative arrays. (Normal prices are used here)

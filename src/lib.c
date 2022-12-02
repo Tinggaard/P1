@@ -264,7 +264,6 @@ store_s* load_distances(char filename[], int* n_stores, double user_lat, double 
             n_store_counter++;
         }
     }
-    printf("\n n_stores = %d \n", *n_stores);
 
     store_s* store = malloc(n_store_counter * sizeof(store_s));
     for (int i = 0; i < *n_stores; i++) {
@@ -482,7 +481,7 @@ void calc_per_store(cart_item_s cart_item[], int n_shopping_list, int n_stores, 
     qsort(cart, n_stores, sizeof(cart_sum_s), compare_cart);
 
 
-    //print function
+    //print function, prints the store name, prints the distance to the store, prisen for distance, prints the item expenesses og summert af item expenses og travel exprenses
     for (int i = 0; i < n_stores; i++) {
         printf("|Name > %8s : Distance > %4d Travel expenses > %5.2lf: Item expenses > %4.2lf Total sum %4.2lf|\n", cart[i].store.name,
                calc_base_to_store(cart[i].store),calc_gas_price(km_price, calc_base_to_store(cart[i].store)), cart[i].sum, calc_gas_price(km_price, calc_base_to_store(cart[i].store)) + cart[i].sum);
