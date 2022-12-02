@@ -18,7 +18,7 @@ int main(void) {
     int user_location;
     double user_lat = 57.0139045715332;
     double user_lon = 9.986823081970215;
-    double km_price = 4;
+    double km_price = 4; //husk at sette km_price til 0 og kalde user_input efter
     int radius = 2565;
     int transport = 1;
 
@@ -42,7 +42,7 @@ int main(void) {
     cart_item_s* cart_item = create_shopping_cart(stores, shopping_list, n_stores, n_shopping_list, n_items);
 
     calc_across_stores(cart_item, shopping_list, stores, n_stores, n_shopping_list);
-    calc_per_store(cart_item, n_shopping_list, n_stores, stores);
+    calc_per_store(cart_item, n_shopping_list, n_stores, stores, km_price);
 
 
     // Free up the memory of each array
