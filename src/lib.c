@@ -14,10 +14,10 @@
 int compare_cart(const void* ptr1, const void* ptr2) {
     const cart_sum_s* item_1 = ptr1;
     const cart_sum_s* item_2 = ptr2;
-    if (item_1->sum - item_2->sum == 0) {
+    if (item_1->total_sum - item_2->total_sum == 0) {
         return (int)(calc_base_to_store(item_1->store) - calc_base_to_store(item_2->store));
     }
-    return (int)(item_1->sum - item_2->sum);
+    return (int)(item_1->total_sum - item_2->total_sum);
 }
 
 /**
@@ -473,9 +473,10 @@ void calc_per_store(cart_item_s cart_item[], int n_shopping_list, int n_stores, 
     cart_sum_s* cart = malloc(n_stores * sizeof(cart_sum_s));
 
     for (int i = 0; i < n_stores; i++) {
-        cart[i].sum = sum[i]; //copies the item price from the array
+        cart[i].item_sum = sum[i]; //copies the item price from the array
         strcpy(cart[i].store.name, stores[i].name); //copies the name of the stores into the new struct
         copy_coord(&cart[i].store, &stores[i]);
+        cart[i].total_sum = calc_gas_price(km_price, calc_base_to_store(cart[i].store)) + cart[i].item_sum;
     }
 
     qsort(cart, n_stores, sizeof(cart_sum_s), compare_cart);
@@ -484,7 +485,7 @@ void calc_per_store(cart_item_s cart_item[], int n_shopping_list, int n_stores, 
     //print function, prints the store name, prints the distance to the store, prisen for distance, prints the item expenesses og summert af item expenses og travel exprenses
     for (int i = 0; i < n_stores; i++) {
         printf("|Name > %8s : Distance > %4d Travel expenses > %5.2lf: Item expenses > %4.2lf Total sum %4.2lf|\n", cart[i].store.name,
-               calc_base_to_store(cart[i].store),calc_gas_price(km_price, calc_base_to_store(cart[i].store)), cart[i].sum, calc_gas_price(km_price, calc_base_to_store(cart[i].store)) + cart[i].sum);
+               calc_base_to_store(cart[i].store),calc_gas_price(km_price, calc_base_to_store(cart[i].store)), cart[i].item_sum, cart[i].total_sum);
     }
     // could add an if statement, so it doesnt print travel expenses.
 }
