@@ -15,16 +15,18 @@ int main(void) {
     int n_stores = get_new_lines(stores_f); // Amount of rows = amount of stores
     int n_shopping_list = get_new_lines(shopping_list_f); // Amount of rows = amount of shopping list items
 
-    int user_location;
-    double user_lat = 57.0139045715332;
-    double user_lon = 9.986823081970215;
+    int user_place;
+
+    coordinates_s user_loctaion;
+    user_loctaion.lat = 57.0139045715332;
+    user_loctaion.lon = 9.986823081970215;
     double km_price = 0;
     int radius = 0;
 
-    user_input(user_location_f,&user_location,&user_lat,&user_lon, &km_price,&radius);
+    user_input(user_location_f,&user_place, user_loctaion, &km_price,&radius);
 
     // Loading stores and shopping list items from txt files into struct arrays.
-    store_s* stores = load_distances(stores_f, &n_stores, user_lat, user_lon, radius);
+    store_s* stores = load_distances(stores_f, &n_stores, user_loctaion , radius);
 
     shopping_list_s* shopping_list = load_shopping_list(shopping_list_f, n_shopping_list);
 

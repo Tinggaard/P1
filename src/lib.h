@@ -51,7 +51,7 @@ int binary_search(item_s itemlist[], const char x[], int n_items);
 int get_new_lines(char filename[]);
 
 // load and init
-store_s* load_distances(char filename[], int* n_stores, double user_lat, double user_lon, int radius);
+store_s* load_distances(char filename[], int* n_stores, coordinates_s , int radius);
 void load_normal_prices(store_s stores[], int n_stores, char filename[], int n_items);
 void load_discounts(store_s stores[], char filename[], int n_items, int n_stores);
 shopping_list_s* load_shopping_list(char filename[], int n_shopping_list);
@@ -62,4 +62,4 @@ void calc_across_stores(cart_item_s cart[], shopping_list_s shopping_list[], sto
 void calc_per_store(cart_item_s cart_item[], int n_shopping_list, int n_stores, store_s* stores, double km_price);
 double calc_gas_price(double km_price, int dist);
 // user input
-void user_input(char user_location_f[],int* user_location, double* user_lat,double* user_lon, double* km_price, int* radius);
+void user_input(char user_location_f[],int* user_places_location, coordinates_s user_location, double* km_price, int* radius);

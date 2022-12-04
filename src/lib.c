@@ -246,7 +246,7 @@ int get_new_lines(char filename[]){
  * @param n_stores number of stores
  * @return returns stores in an array, as structs (store_s)
  */
-store_s* load_distances(char filename[], int* n_stores, double user_lat, double user_lon, int radius) {
+store_s* load_distances(char filename[], int* n_stores, coordinates_s user_location, int radius) {
     FILE* f = open_file(filename);
     int n_store_counter = 0;
     int store_index = 0;
@@ -258,8 +258,8 @@ store_s* load_distances(char filename[], int* n_stores, double user_lat, double 
     for (int i = 0; i < *n_stores; i++) {
         fscanf(f, "%[^,], %lf, %lf\n", store_placeholder[i].name, &store_placeholder[i].store_coord.lat, &store_placeholder[i].store_coord.lon);
         store_placeholder[i].item = NULL;
-        store_placeholder[i].base_coord.lat = user_lat;
-        store_placeholder[i].base_coord.lon = user_lon;
+        store_placeholder[i].base_coord.lat = user_location.lat;
+        store_placeholder[i].base_coord.lon = user_location.lon;
         if(calc_base_to_store(store_placeholder[i]) <= radius){
             n_store_counter++;
         }
@@ -272,8 +272,8 @@ store_s* load_distances(char filename[], int* n_stores, double user_lat, double 
             store[store_index].item = NULL;
             store[store_index].store_coord.lat = store_placeholder[i].store_coord.lat;
             store[store_index].store_coord.lon = store_placeholder[i].store_coord.lon;
-            store[store_index].base_coord.lat = user_lat;
-            store[store_index].base_coord.lon = user_lon;
+            store[store_index].base_coord.lat = user_location.lat;
+            store[store_index].base_coord.lon = user_location.lon;
             store_index++;
         }
     }
@@ -509,7 +509,7 @@ void calc_per_store(cart_item_s cart_item[], int n_shopping_list, int n_stores, 
     // could add an if statement, so it doesnt print travel expenses.
 }
 
-void user_input(char user_location_f[], int* user_location, double* user_lat,double* user_lon, double* km_price, int* radius){
+void user_input(char user_location_f[], int* user_place, coordinates_s user_loctaion,double* km_price, int* radius){
 
     FILE* f = open_file(user_location_f);
     //select from preivously loaded locations
@@ -520,8 +520,8 @@ void user_input(char user_location_f[], int* user_location, double* user_lat,dou
     scanf(" %d", &current_location);
 
     while(!feof(f)){
-        fscanf(f,"%d, %lf, %lf\n",user_location,user_lat,user_lon);
-        if(*user_location == current_location){
+        fscanf(f,"%d, %lf, %lf\n",user_place, &user_loctaion.lat, &user_loctaion.lon);
+        if(*user_place == current_location){
             break;
         }
     }
