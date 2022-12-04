@@ -62,4 +62,4 @@ void calc_across_stores(cart_item_s cart[], shopping_list_s shopping_list[], sto
 void calc_per_store(cart_item_s cart_item[], int n_shopping_list, int n_stores, store_s* stores, double km_price);
 double calc_gas_price(double km_price, int dist);
 // user input
-void user_input(char user_location_f[],int* user_location, double* user_lat,double* user_lon, double* km_price, int* radius, int* transport);
+void user_input(char user_location_f[],int* user_location, double* user_lat,double* user_lon, double* km_price, int* radius);
