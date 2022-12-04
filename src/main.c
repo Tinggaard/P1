@@ -17,13 +17,9 @@ int main(void) {
 
     int user_place;
 
-    coordinates_s user_loctaion;
-    user_loctaion.lat = 57.0139045715332;
-    user_loctaion.lon = 9.986823081970215;
     double km_price = 0;
     int radius = 0;
-
-    user_input(user_location_f,&user_place, user_loctaion, &km_price,&radius);
+    coordinates_s user_loctaion = user_input(user_location_f,&user_place, &km_price,&radius);
 
     // Loading stores and shopping list items from txt files into struct arrays.
     store_s* stores = load_distances(stores_f, &n_stores, user_loctaion , radius);

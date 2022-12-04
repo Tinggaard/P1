@@ -337,21 +337,18 @@ void load_discounts(store_s stores[], char filename[], int n_items, int n_stores
     char current_store[MAX_NAME_SIZE];
     char current_item[MAX_NAME_SIZE];
     double current_price;
-    int i;
     int item_index;
     // Runs over all rows in the file until it reaches the end of the file
     while (!feof(f)) {
-        i = -1;
-
         // Scans for store name, item name and the price of an item. Excludes commas.
         fscanf(f, "%[^,], %[^,], %lf\n", current_store, current_item, &current_price);
 
         // Gets the index of the store that matches the currently scanned one
-        for (int j = 0; j < n_stores; ++j) {
-            if(strcmp(stores[j].name, current_store) == 0){
+        for (int i = 0; i < n_stores; ++i) {
+            if(strcmp(stores[i].name, current_store) == 0){
                 // Binary_search finds the index of the item in the item array
-                item_index = binary_search(stores[j].item, current_item, n_items);
-                stores[j].item[item_index].price = current_price; // Replaces the normal price with the discount
+                item_index = binary_search(stores[i].item, current_item, n_items);
+                stores[i].item[item_index].price = current_price; // Replaces the normal price with the discount
                 break;
             }
         }
@@ -481,7 +478,8 @@ void calc_per_store(cart_item_s cart_item[], int n_shopping_list, int n_stores, 
     qsort(cart, n_stores, sizeof(cart_sum_s), compare_cart);
 
 
-    //print function, prints the store name, prints the distance to the store, prisen for distance,
+    //print function, prints the store name,
+    // prints the distance to the store, prisen for distance,
     //prints the item expenesses og summert af item expenses og travel exprenses
     int base_to_store = 0;
     double travel_expense = 0;
@@ -509,7 +507,7 @@ void calc_per_store(cart_item_s cart_item[], int n_shopping_list, int n_stores, 
     // could add an if statement, so it doesnt print travel expenses.
 }
 
-void user_input(char user_location_f[], int* user_place, coordinates_s user_loctaion,double* km_price, int* radius){
+coordinates_s user_input(char user_location_f[], int* user_place,double* km_price, int* radius){
 
     FILE* f = open_file(user_location_f);
     //select from preivously loaded locations
@@ -518,9 +516,10 @@ void user_input(char user_location_f[], int* user_place, coordinates_s user_loct
     printf("Please select your location. \n Locations available: '1' school, '2' home >\n");
     //scans the location
     scanf(" %d", &current_location);
+    coordinates_s user_location;
 
     while(!feof(f)){
-        fscanf(f,"%d, %lf, %lf\n",user_place, &user_loctaion.lat, &user_loctaion.lon);
+        fscanf(f,"%d, %lf, %lf\n",user_place, &user_location.lat, &user_location.lon);
         if(*user_place == current_location){
             break;
         }
@@ -539,6 +538,7 @@ void user_input(char user_location_f[], int* user_place, coordinates_s user_loct
         printf("Enter price per. kilometer > \n");
         scanf(" %lf", km_price);
     }
+    return user_location;
 }
 
 
