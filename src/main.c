@@ -15,7 +15,7 @@ int main(void) {
     int n_shopping_list = get_new_lines(shopping_list_f); // Amount of rows = amount of shopping list items
 
     // Loading stores and shopping list items from txt files into struct arrays.
-    store_s* stores = load_distances(stores_f, n_stores);
+    store_s* stores = load_coordinates(stores_f, n_stores);
     shopping_list_s* shopping_list = load_shopping_list(shopping_list_f, n_shopping_list);
 
     // Connecting all items available to the different stores using associative arrays. (Normal prices are used here)

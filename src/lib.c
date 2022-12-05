@@ -246,7 +246,7 @@ int get_new_lines(char filename[]){
  * @param n_stores number of stores
  * @return returns stores in an array, as structs (store_s)
  */
-store_s* load_distances(char filename[], int n_stores) {
+store_s* load_coordinates(char filename[], int n_stores) {
     FILE* f = open_file(filename);
 
     // Allocates space in the heap for all the stores that are now being collected in a dynamic store_s struct array
