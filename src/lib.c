@@ -247,20 +247,41 @@ int get_new_lines(char filename[]){
  * @return returns stores in an array, as structs (store_s)
  */
 store_s* load_coordinates(char filename[], int n_stores) {
+
     FILE* f = open_file(filename);
+    int n_store_counter = 0;
+    int store_index = 0;
 
     // Allocates space in the heap for all the stores that are now being collected in a dynamic store_s struct array
-    store_s* store = malloc(n_stores * sizeof(store_s));
+    store_s* store_placeholder = malloc(*n_stores * sizeof(store_s));
 
     // Scans all stores and parses their values to an index in the struct array
-    for (int i = 0; i < n_stores; i++) {
-        fscanf(f, "%[^,], %lf, %lf\n", store[i].name, &store[i].store_coord.lat, &store[i].store_coord.lon);
-        store[i].item = NULL;
-        store[i].base_coord.lat = 57.0139045715332;
-        store[i].base_coord.lon = 9.986823081970215;
+    for (int i = 0; i < *n_stores; i++) {
+        fscanf(f, "%[^,], %lf, %lf\n", store_placeholder[i].name, &store_placeholder[i].store_coord.lat, &store_placeholder[i].store_coord.lon);
+        store_placeholder[i].base_coord.lat = user_location.lat;
+        store_placeholder[i].base_coord.lon = user_location.lon;
+        if(calc_base_to_store(store_placeholder[i]) <= radius){
+            n_store_counter++;
+        }
     }
+
+    store_s* stores = malloc(n_store_counter * sizeof(store_s));
+    for (int i = 0; i < *n_stores; i++) {
+        if(calc_base_to_store(store_placeholder[i]) <= radius){
+            strcpy(stores[store_index].name, store_placeholder[i].name);
+            stores[store_index].store_coord.lat = store_placeholder[i].store_coord.lat;
+            stores[store_index].store_coord.lon = store_placeholder[i].store_coord.lon;
+            stores[store_index].base_coord.lat = user_location.lat;
+            stores[store_index].base_coord.lon = user_location.lon;
+            store_index++;
+        }
+    }
+    free(store_placeholder);
+
+    *n_stores = n_store_counter;
+    //qsort(store, *n_stores, sizeof(store_s), compare_store_name);
     fclose(f);
-    return store;
+    return stores;
 }
 
 
@@ -310,29 +331,29 @@ void load_normal_prices(store_s stores[], int n_stores, char filename[], int n_i
  * @param stores array of store_s
  * @param filename path to discounts.txt file
  */
-void load_discounts(store_s stores[], char filename[], int n_items) {
+void load_discounts(store_s stores[], char filename[], int n_items, int n_stores) {
     FILE* f = open_file(filename);
-
     char current_store[MAX_NAME_SIZE];
     char current_item[MAX_NAME_SIZE];
     double current_price;
-    int i;
     int item_index;
     // Runs over all rows in the file until it reaches the end of the file
     while (!feof(f)) {
-        i = 0;
-
         // Scans for store name, item name and the price of an item. Excludes commas.
         fscanf(f, "%[^,], %[^,], %lf\n", current_store, current_item, &current_price);
 
         // Gets the index of the store that matches the currently scanned one
-        while (strcmp(stores[i].name, current_store)) {
-            i++;
+        for (int i = 0; i < n_stores; ++i) {
+            if(strcmp(stores[i].name, current_store) == 0){
+                // Binary_search finds the index of the item in the item array
+                item_index = binary_search(stores[i].item, current_item, n_items);
+                stores[i].item[item_index].price = current_price; // Replaces the normal price with the discount
+                break;
+            }
         }
 
-        // Binary_search finds the index of the item in the item array
-        item_index = binary_search(stores[i].item, current_item, n_items);
-        stores[i].item[item_index].price = current_price; // Replaces the normal price with the discount
+
+
     }
     fclose(f);
 }
@@ -399,7 +420,7 @@ cart_item_s* create_shopping_cart(store_s stores[], shopping_list_s shopping_lis
  * @param n_shopping_list amount of items in our list
  * @return returns the final cart for which items are cheapest in which stores
  */
-void calc_across_stores(cart_item_s cart[], shopping_list_s shopping_list[], store_s store[], int n_stores, int n_shopping_list){
+void calc_across_stores(cart_item_s cart[], shopping_list_s shopping_list[], store_s store[], int n_stores, int n_shopping_list, double km_price){
     // Allocates space in the heap for each cart per item in the shopping list
     cart_item_s* cart_across = malloc(n_shopping_list * sizeof(cart_item_s));
     cart_item_s current_item;
@@ -420,7 +441,7 @@ void calc_across_stores(cart_item_s cart[], shopping_list_s shopping_list[], sto
 
     }
     // Calculates the shortest path and prints the new shopping list
-    shortest_path(cart_across, n_shopping_list, n_stores);
+    shortest_path(cart_across, n_shopping_list, n_stores, km_price);
 }
 
 
@@ -432,7 +453,7 @@ void calc_across_stores(cart_item_s cart[], shopping_list_s shopping_list[], sto
  * @param stores array of stores
  * @return returns an array of cart_sum, one for each store
  */
-void calc_per_store(cart_item_s cart_item[], int n_shopping_list, int n_stores, store_s* stores) {
+void calc_per_store(cart_item_s cart_item[], int n_shopping_list, int n_stores, store_s* stores, double km_price){
     double sum[n_stores];
     // initialize list to 0, to avoid garbage
     for (int i = 0; i < n_stores; i++) {
@@ -455,11 +476,69 @@ void calc_per_store(cart_item_s cart_item[], int n_shopping_list, int n_stores, 
 
     qsort(cart, n_stores, sizeof(cart_sum_s), compare_cart);
 
-    //print function
-    for (int i = 0; i < n_stores; i++) {
-        printf("|Name > %8s : Distance > %4d : Total sum > %4.2lf|\n", cart[i].store.name,
-               calc_base_to_store(cart[i].store), cart[i].sum);
+
+    //print function, prints the store name,
+    // prints the distance to the store, prisen for distance,
+    //prints the item expenesses and the sum of item expenses and travel exprenses
+    int base_to_store = 0;
+    double travel_expense = 0;
+    double total_price = 0;
+    if(km_price != 0) {
+        for (int i = 0; i < n_stores; i++) {
+            base_to_store = calc_base_to_store(cart[i].store);
+            travel_expense = calc_gas_price(km_price, base_to_store);
+            total_price = travel_expense + cart[i].sum;
+            printf("|Name > %8s : Distance > %4d Travel expenses > %5.2lf: Item expenses > %4.2lf Total sum %4.2lf|\n",
+                   cart[i].store.name,
+                   base_to_store, travel_expense, cart[i].sum, total_price);
+        }
     }
+    else{
+        for (int i = 0; i < n_stores; i++) {
+            base_to_store = calc_base_to_store(cart[i].store);
+            total_price = calc_gas_price(km_price, base_to_store) + cart[i].sum;
+            printf("|Name > %8s : Distance > %4d: Total sum %4.2lf|\n",
+                   cart[i].store.name,
+                   base_to_store, total_price);
+        }
+
+    }
+    // could add an if statement, so it doesnt print travel expenses.
+}
+
+coordinates_s user_input(char user_location_f[], double* km_price, int* radius){
+
+    FILE* f = open_file(user_location_f);
+    //select from preivously loaded locations
+    int current_location;
+    int user_place;
+    char by_car = 0;
+    printf("Please select your location. \n Locations available: '1' school, '2' home >\n");
+    //scans the location
+    scanf(" %d", &current_location);
+    coordinates_s user_location;
+
+    while(!feof(f)){
+        fscanf(f,"%d, %lf, %lf\n",&user_place, &user_location.lat, &user_location.lon);
+        if(user_place == current_location){
+            break;
+        }
+    }
+
+    // radius input
+    printf("Please enter the radius that you want to shop within (in meters) >\n");
+    scanf(" %d",radius);
+
+    while (by_car != 'y' && by_car != 'Y' && by_car != 'n' && by_car != 'N'){//checks if the user is driving or not
+        printf("Do you travel by car (y/n)? \n");
+        scanf(" %c",&by_car);
+    }
+    //if the user is drivin the km price is entered
+    if(by_car == 'y' || by_car == 'Y'){
+        printf("Enter price per. kilometer > \n");
+        scanf(" %lf", km_price);
+    }
+    return user_location;
 }
 
 
@@ -470,7 +549,7 @@ void calc_per_store(cart_item_s cart_item[], int n_shopping_list, int n_stores, 
  * @param n_shopping_list amount of items in shopping list
  * @param n_stores amount of stores
  */
-void shortest_path(cart_item_s cart_across[], int n_shopping_list, int n_stores) {
+void shortest_path(cart_item_s cart_across[], int n_shopping_list, int n_stores, double km_price) {
     // sort the array, according to store names
     qsort(cart_across, n_shopping_list, sizeof(cart_item_s), compare_store_name);
 
@@ -541,7 +620,7 @@ void shortest_path(cart_item_s cart_across[], int n_shopping_list, int n_stores)
         }
     }
 
-    double total_sum = 0;
+    double total_itemprice = 0;
     int index;
     cart_item_s* first_item;
     coordinates_s base = cart_across[0].store.base_coord;
@@ -557,13 +636,13 @@ void shortest_path(cart_item_s cart_across[], int n_shopping_list, int n_stores)
         first_item = index_of_first[index];
         printf("%-15s %.4dm %-15s %7.2lf DKK \n", stores_to_visit[index].store.name,
                distance, first_item->item.name, first_item->item.price);
-        total_sum += first_item->item.price;
+        total_itemprice += first_item->item.price;
 
         // if there is more than 1 item in this store, we print it here
         for (int j = 1; j < items_per_store[index]; j++) {
             first_item++;
             printf("%28s %16.2lf DKK \n", first_item->item.name, first_item->item.price);
-            total_sum += first_item->item.price;
+            total_itemprice += first_item->item.price;
         }
         // Prevent indexing error
         if (i < n_locations-1) {
@@ -576,8 +655,20 @@ void shortest_path(cart_item_s cart_across[], int n_shopping_list, int n_stores)
     }
     //Prints the final distance between the last store and home
     printf("Home %15dm \n",distance);
+    //calc_gas_pirces calculates the travel expenses
+    //the total price is gained from calc_gas_prices + the total price of the items
+    double travel_expenses = calc_gas_price(km_price, total_dist);
+    double total_price = calc_gas_price(km_price, total_dist) + total_itemprice;
+    if(km_price != 0){
+        printf("Total %.4dm Travel expenses %.2lf Item expenses %.2lf DKK Total price %.2lf\n\n",total_dist,
+               travel_expenses, total_itemprice, total_price);
+    }
+    else{
+        printf("Total %.4dm DKK Total price %.2lf\n\n",total_dist, total_price);
+    }
 
-    printf("\nTotal %14.4dm %23.2lf DKK\n",total_dist,total_sum);
+}
 
-
+double calc_gas_price(double km_price, int dist){
+    return (km_price * dist)/1000;
 }
