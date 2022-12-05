@@ -257,7 +257,6 @@ store_s* load_distances(char filename[], int* n_stores, coordinates_s user_locat
     // Scans all stores and parses their values to an index in the struct array
     for (int i = 0; i < *n_stores; i++) {
         fscanf(f, "%[^,], %lf, %lf\n", store_placeholder[i].name, &store_placeholder[i].store_coord.lat, &store_placeholder[i].store_coord.lon);
-        store_placeholder[i].item = NULL;
         store_placeholder[i].base_coord.lat = user_location.lat;
         store_placeholder[i].base_coord.lon = user_location.lon;
         if(calc_base_to_store(store_placeholder[i]) <= radius){
@@ -265,15 +264,14 @@ store_s* load_distances(char filename[], int* n_stores, coordinates_s user_locat
         }
     }
 
-    store_s* store = malloc(n_store_counter * sizeof(store_s));
+    store_s* stores = malloc(n_store_counter * sizeof(store_s));
     for (int i = 0; i < *n_stores; i++) {
         if(calc_base_to_store(store_placeholder[i]) <= radius){
-            strcpy(store[store_index].name, store_placeholder[i].name);
-            store[store_index].item = NULL;
-            store[store_index].store_coord.lat = store_placeholder[i].store_coord.lat;
-            store[store_index].store_coord.lon = store_placeholder[i].store_coord.lon;
-            store[store_index].base_coord.lat = user_location.lat;
-            store[store_index].base_coord.lon = user_location.lon;
+            strcpy(stores[store_index].name, store_placeholder[i].name);
+            stores[store_index].store_coord.lat = store_placeholder[i].store_coord.lat;
+            stores[store_index].store_coord.lon = store_placeholder[i].store_coord.lon;
+            stores[store_index].base_coord.lat = user_location.lat;
+            stores[store_index].base_coord.lon = user_location.lon;
             store_index++;
         }
     }
@@ -282,7 +280,7 @@ store_s* load_distances(char filename[], int* n_stores, coordinates_s user_locat
     *n_stores = n_store_counter;
     //qsort(store, *n_stores, sizeof(store_s), compare_store_name);
     fclose(f);
-    return store;
+    return stores;
 }
 
 
