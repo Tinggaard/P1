@@ -577,7 +577,7 @@ void shortest_path(cart_item_s cart_across[], int n_shopping_list, int n_stores,
         // add another item to this store (index -1 because indexes start at 0)
         items_per_store[n_locations - 1]++;
     }
-    coordinates_s current_location ={57.0139045715332, 9.986823081970215};
+    coordinates_s current_location = stores_to_visit[0].base_coord;
     int index_of_nearest;
     double distance_to_nearest;
     double temp_distance;
@@ -596,7 +596,6 @@ void shortest_path(cart_item_s cart_across[], int n_shopping_list, int n_stores,
         n_stores_visited++;
     }
     for (int i = 0; i < 4; ++i) {
-        printf("%s\n", stores_to_visit[i].name);
     }
 
 //
@@ -694,7 +693,8 @@ void shortest_path(cart_item_s cart_across[], int n_shopping_list, int n_stores,
 void swap(store_s stores_to_visit[], int i, int j){
     store_s temp = stores_to_visit[i];
     stores_to_visit[i] = stores_to_visit[j];
-    stores_to_visit[j] = temp;
+    stores_to_visit[j].store_coord = temp.store_coord;
+    strcpy(stores_to_visit[j].name, temp.name);
 }
 
     double calc_gas_price(double km_price, int dist) {
