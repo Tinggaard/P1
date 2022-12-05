@@ -5,11 +5,11 @@
 int main(void) {
     // Initializing and declaring strings with our txt file paths
     char shopping_list_f[] = "src/files/shopping_list.csv";
-    char stores_f[] = "src/files/distances.csv";
+    char stores_f[] = "src/files/coordinates.csv";
     char normal_prices_f[] = "src/files/normal_prices.csv";
     char discounts_f[] = "src/files/discounts.csv";
 
-    // Counting amount of rows from distances.csv and shopping_list.csv, then stores it in two variables
+    // Counting amount of rows from coordinates.csv and shopping_list.csv, then stores it in two variables
     int n_items = get_new_lines(normal_prices_f); // Amount of rows = amount of items in total
     int n_stores = get_new_lines(stores_f); // Amount of rows = amount of stores
     int n_shopping_list = get_new_lines(shopping_list_f); // Amount of rows = amount of shopping list items
