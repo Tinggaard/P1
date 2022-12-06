@@ -555,191 +555,93 @@ void shortest_path(cart_item_s cart_across[], int n_shopping_list, int n_stores,
     int n_locations = 1; // minimum 1 store
     // need to make this n_stores long, as we might only have 1 item in each store
     store_s stores_to_visit[n_stores];
-    //store_s *stores_to_visit = malloc(n_stores * sizeof(store_s));
+
+    //index of first is the index of the first item in cart_across for each store in stores_to_visit.
     int index_of_first[n_stores];
 
-    // create first index manually
+    // create first store manually
     strcpy(stores_to_visit[0].name, cart_across[0].store.name);
     copy_coord(&stores_to_visit[0], &cart_across[0].store);
     index_of_first[0] = 0;
-    // Creates the chars in the array with only of the stores you have to visit
+    // Creates an array with only of the stores you have to visit with no repeating stores.
     for (int i = 1; i < n_shopping_list; i++) {
         // if this store is not seen before we add it
         if (strcmp(cart_across[i].store.name, stores_to_visit[n_locations-1].name) != 0) {
             strcpy(stores_to_visit[n_locations].name, cart_across[i].store.name);
             copy_coord(&stores_to_visit[n_locations], &cart_across[i].store);
-            index_of_first[n_locations] = i;
-            // index_of_first[n_locations] = &cart_across[i];
+            index_of_first[n_locations] = i; //index of where the store's first item can be found in cart_across
             n_locations++;
         }
-        // add another item to this store (index -1 because indexes start at 0)
     }
 
-
     coordinates_s current_location = stores_to_visit[0].base_coord;
-    int index_of_nearest;
+    int index_of_nearest;  // the index of the nearest store in stores_to_visit[]
     double distance_to_nearest;
     double temp_distance;
-    int n_stores_visited = 0;
-    int distances[n_stores];
+    int n_stores_visited = 0;  // number of stores already visited
+    int distances[n_stores];   // array of distances between each location, which is stored for later use in printf()
     int total_distance = 0;
+    // while loop runs until every store has been visited, in each iteration of the while loop we find the nearest store
     while (n_stores_visited < n_locations) {
         distance_to_nearest = calc_distance(current_location, stores_to_visit[n_stores_visited].store_coord);
         index_of_nearest = n_stores_visited;
+        // Iterates through every store. i = n_stores_visited so that we won't go to the same store twice
         for (int i = n_stores_visited; i < n_locations; ++i) {
+            //Distance from current location to current store is calculated
             temp_distance = calc_distance(current_location, stores_to_visit[i].store_coord);
-            printf("%s\n",stores_to_visit[i].name);
-            if (temp_distance < distance_to_nearest) {
-                distance_to_nearest = temp_distance;
+            if (temp_distance < distance_to_nearest) { // If the distance is shorter than the currently shortest,
+                distance_to_nearest = temp_distance;   // then the distance and the index of the store is saved
                 index_of_nearest = i;
             }
         }
-        printf("----------\n");
-        current_location = stores_to_visit[index_of_nearest].store_coord;
+        current_location = stores_to_visit[index_of_nearest].store_coord; // location is changed to the nearest store
         total_distance += distance_to_nearest;
+        // the stores in stores_to_visit is swapped around so that they are in the same order as we visit them
         swap_stores(stores_to_visit, n_stores_visited, index_of_nearest);
         swap_int(index_of_first, n_stores_visited, index_of_nearest);
         distances[n_stores_visited] = distance_to_nearest;
         n_stores_visited++;
     }
 
+    // Calculates the distance from the last store to home and adds it to the total distance.
     int dist_last_store_to_home = calc_base_to_store(stores_to_visit[n_locations-1]);
     total_distance += dist_last_store_to_home;
 
-
-    for (int i = 0; i < 4; ++i) {
-        printf("%s\n",stores_to_visit[i].name);
-    }
-    printf("..%d..", distances[0]);
-
-    double total_itemprice = 0;
+    double item_price_sum = 0;
     printf("Your absolute cheapest customized shopping list\n");
-    printf("| Store    | Distance | Item |           Price    |\n");
-    for (int i = 0; i < n_locations; ++i) {
-        printf("%-15s %.4dm %-15s %7.2lf DKK \n", stores_to_visit[i].name,
+    printf("| Store      | Distance | Item         |   Price   |\n");
+    for (int i = 0; i < n_locations; ++i) { // Iterates through every store that was visited
+        // index_of_first[i] is used to get the index of the current store's first item in cart_across[]
+        printf("%-14s %.4dm \t  %-12s %7.2lf DKK \n", stores_to_visit[i].name,
                distances[i], cart_across[index_of_first[i]].item.name, cart_across[index_of_first[i]].item.price);
-        total_itemprice += cart_across[index_of_first[i]].item.price;
+        item_price_sum += cart_across[index_of_first[i]].item.price;
 
+        // The while-loop prints the rest of the items from the current store
         while(strcmp(cart_across[index_of_first[i]].store.name, cart_across[index_of_first[i]+1].store.name) == 0){
-            printf("%28s %16.2lf DKK \n", cart_across[index_of_first[i]+1].item.name, cart_across[index_of_first[i]+1].item.price);
-            total_itemprice += cart_across[index_of_first[i]].item.price;
+            printf("%32s %13.2lf DKK \n", cart_across[index_of_first[i]+1].item.name, cart_across[index_of_first[i]+1].item.price);
+            item_price_sum += cart_across[index_of_first[i]].item.price;
             index_of_first[i]++;
         }
     }
 
-    printf("Home %15dm \n", dist_last_store_to_home);
+    printf("Home %14dm \n", dist_last_store_to_home);
 
+    // Prints the total distance, travel expenses and total price
     if(km_price != 0){
         double travel_expenses = calc_gas_price(km_price, total_distance);
-        double total_price = total_itemprice + travel_expenses;
-        printf("Total %.4dm Travel expenses %.2lf Item expenses %.2lf DKK Total price %.2lf\n\n",total_distance,
-               travel_expenses, total_itemprice, total_price);
+        double total_price = item_price_sum + travel_expenses;
+        printf(" --------------------------------------------------------------------------------------------------------------\n");
+        printf("| Total distance: %6.4dm | Travel expenses: %6.2lf DKK | Item expenses: %6.2lf DKK | Total price: %7.2lf DKK |\n",total_distance,
+               travel_expenses, item_price_sum, total_price);
+        printf(" --------------------------------------------------------------------------------------------------------------\n\n");
+
     }
     else{
-        printf("Total %.4dm DKK Total price %.2lf\n\n",total_distance, total_itemprice);
+        printf(" ---------------------------------------------------\n");
+        printf("| Total distance: %6.4dm | Total price: %6.2lf DKK |\n",total_distance, item_price_sum);
+        printf(" ---------------------------------------------------\n\n");
+
     }
-
-
-
-    // if there is more than 1 item in this store, we print it here
-//        for (int j = 1; j < items_per_store[index]; j++) {
-//            first_item++;
-//            printf("%28s %16.2lf DKK \n", first_item->item.name, first_item->item.price);
-//            total_itemprice += first_item->item.price;
-//        }
-
-
-
-//
-//    // Values for finding all possible combinations
-//    int comb[n_locations];
-//    int temp;
-//    coordinates_s current_dest;
-//    coordinates_s current_base;
-//    // Creates numbers for combinations starting from 0 to number of locations
-//    for (int i = 0; i < n_locations; ++i) {
-//        comb[i] = i;
-//    }
-//    int fastest_comb[n_locations];
-//    int temp_dist;
-//    int total_dist = 0;
-//    for (int j = 1; j <= n_locations; j++) {
-//        for (int i = 0; i < n_locations-1; i++) {
-//            // Permutates the list of combination numbers
-//            temp_dist = 0;
-//            temp = comb[i];
-//            comb[i] = comb[i + 1];
-//            comb[i + 1] = temp;
-//
-//            // Calculates the distance between every store
-//            for (int h = 0 ; h < n_locations-1 ; h++) {
-//                current_dest = stores_to_visit[comb[h+1]].store.store_coord;
-//                current_base = stores_to_visit[comb[h]].store.store_coord;
-//                temp_dist += calc_distance(current_dest, current_base);
-//            }
-//            // Adds the distance to and from home
-//            temp_dist += calc_distance(stores_to_visit[comb[0]].store.base_coord,
-//                                       stores_to_visit[comb[0]].store.store_coord);
-//            temp_dist += calc_distance(stores_to_visit[comb[n_locations-1]].store.base_coord,
-//                                       stores_to_visit[comb[n_locations-1]].store.store_coord);
-//            // If the calculated distance is less than the current minimum, we save it.
-//            if (total_dist > temp_dist || total_dist == 0){
-//                total_dist = temp_dist;
-//                for (int k = 0; k < n_locations; ++k) {
-//                    fastest_comb[k] = comb[k];
-//                }
-//            }
-//        }
-//    }
-//
-//    double total_itemprice = 0;
-//    int index;
-//    cart_item_s* first_item;
-//    coordinates_s base = cart_across[0].store.base_coord;
-//    // Distance to first store
-//    int distance = calc_distance(stores_to_visit[fastest_comb[0]].store.store_coord, base);
-//
-//    printf("Your absolute cheapest customized shopping list\n");
-//    printf("| Store    | Distance | Item |           Price    |\n");
-//
-//    // Calculates and prints the sum of prices and the distances between store a to store b.
-//    for (int i = 0; i < n_locations; ++i) {
-//        index = fastest_comb[i];
-//        first_item = index_of_first[index];
-//        printf("%-15s %.4dm %-15s %7.2lf DKK \n", stores_to_visit[index].store.name,
-//               distance, first_item->item.name, first_item->item.price);
-//        total_itemprice += first_item->item.price;
-//
-//        // if there is more than 1 item in this store, we print it here
-//        for (int j = 1; j < items_per_store[index]; j++) {
-//            first_item++;
-//            printf("%28s %16.2lf DKK \n", first_item->item.name, first_item->item.price);
-//            total_itemprice += first_item->item.price;
-//        }
-//        // Prevent indexing error
-//        if (i < n_locations-1) {
-//            current_dest = stores_to_visit[fastest_comb[i+1]].store.store_coord;
-//            current_base = stores_to_visit[index].store.store_coord;
-//            distance = calc_distance(current_dest, current_base);
-//        } else {
-//            distance = calc_distance(stores_to_visit[index].store.store_coord, base);
-//        }
-//    }
-//    //Prints the final distance between the last store and home
-//    printf("Home %15dm \n",distance);
-//    //calc_gas_pirces calculates the travel expenses
-//    //the total price is gained from calc_gas_prices + the total price of the items
-//    double travel_expenses = calc_gas_price(km_price, total_dist);
-//    double total_price = calc_gas_price(km_price, total_dist) + total_itemprice;
-//    if(km_price != 0){
-//        printf("Total %.4dm Travel expenses %.2lf Item expenses %.2lf DKK Total price %.2lf\n\n",total_dist,
-//               travel_expenses, total_itemprice, total_price);
-//    }
-//    else{
-//        printf("Total %.4dm DKK Total price %.2lf\n\n",total_dist, total_price);
-//    }
-//
-
 }
 
 void swap_stores(store_s stores_to_visit[], int i, int j){
@@ -754,6 +656,6 @@ void swap_int(int arr[], int i, int j){
     arr[j] = temp;
 }
 
-    double calc_gas_price(double km_price, int dist) {
-        return (km_price * dist) / 1000;
-    }
+double calc_gas_price(double km_price, int dist) {
+    return (km_price * dist) / 1000;
+}
