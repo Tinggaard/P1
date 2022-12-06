@@ -43,7 +43,9 @@ int compare_cart(const void* ptr1, const void* ptr2);
 void copy_coord(store_s* target, store_s* base);
 int calc_base_to_store(store_s store);
 int calc_distance(coordinates_s cord_base, coordinates_s cord_dest);
-void swap(store_s stores_to_visit[], int i, int j);
+void swap_stores(store_s stores_to_visit[], int i, int j);
+void swap_int(int arr[], int i, int j);
+
 
 cart_item_s calc_cheapest_cart_item(cart_item_s cart[], cart_item_s current_item, int cart_index);
 void shortest_path(cart_item_s cart_across[], int n_shopping_list, int n_stores, double km_price);

@@ -158,32 +158,29 @@ int calc_distance(coordinates_s cord_base, coordinates_s cord_dest){
 * @return returns the cheapest item of the two compared, if the parsed cart item had the same name as the parsed current_item
 */
 cart_item_s calc_cheapest_cart_item(cart_item_s cart[], cart_item_s current_item, int cart_index) {
-    // First it check if the two parsed items have the same name, if not, it just returns the current_item that was parsed
-    if (strcmp(current_item.item.name, cart[cart_index].item.name) == 0) {
 
-        // Checks to see if the price is 0
-        if (current_item.item.price == 0) {
-            // if it is 0, it knows that this current_item has not yet been initialized with any values but a name
-            // and therefore transfers the first match's values
-            current_item.item.price = cart[cart_index].item.price;
-            strcpy(current_item.store.name, cart[cart_index].store.name);
-            copy_coord(&current_item.store, &cart[cart_index].store);
-        }
+    // Checks to see if the price is 0
+    if (current_item.item.price == 0) {
+        // if it is 0, it knows that this current_item has not yet been initialized with any values but a name
+        // and therefore transfers the first match's values
+        current_item.item.price = cart[cart_index].item.price;
+        strcpy(current_item.store.name, cart[cart_index].store.name);
+        copy_coord(&current_item.store, &cart[cart_index].store);
+    }
 
-        // Checks to see if the two items have the same price. if they have the same price, it takes the closest store
-        if (current_item.item.price == cart[cart_index].item.price &&
-            calc_base_to_store(current_item.store) > calc_base_to_store(cart[cart_index].store)) {
-            current_item.item.price = cart[cart_index].item.price;
-            strcpy(current_item.store.name, cart[cart_index].store.name);
-            copy_coord(&current_item.store, &cart[cart_index].store);
-        }
+    // Checks to see if the two items have the same price. if they have the same price, it takes the closest store
+    if (current_item.item.price == cart[cart_index].item.price &&
+        calc_base_to_store(current_item.store) > calc_base_to_store(cart[cart_index].store)) {
+        current_item.item.price = cart[cart_index].item.price;
+        strcpy(current_item.store.name, cart[cart_index].store.name);
+        copy_coord(&current_item.store, &cart[cart_index].store);
+    }
 
-        //  Compare prices and transfers the cheapest option to the current item
-        if (current_item.item.price > cart[cart_index].item.price) {
-            current_item.item.price = cart[cart_index].item.price;
-            strcpy(current_item.store.name, cart[cart_index].store.name);
-            copy_coord(&current_item.store, &cart[cart_index].store);
-        }
+    //  Compare prices and transfers the cheapest option to the current item
+    if (current_item.item.price > cart[cart_index].item.price) {
+        current_item.item.price = cart[cart_index].item.price;
+        strcpy(current_item.store.name, cart[cart_index].store.name);
+        copy_coord(&current_item.store, &cart[cart_index].store);
     }
     return current_item; // Returns the cheapest option
 }
@@ -430,7 +427,10 @@ void calc_across_stores(cart_item_s cart[], shopping_list_s shopping_list[], sto
         current_item.item.price = 0;
         // iterates over all cart items
         for (int cart_index = 0; cart_index < n_shopping_list * n_stores; ++cart_index) {
-            current_item = calc_cheapest_cart_item(cart, current_item, cart_index);
+            // First it check if the two items have the same name, if they have then calc_cheapest_cart_item
+            if (strcmp(current_item.item.name, cart[cart_index].item.name) == 0) {
+                current_item = calc_cheapest_cart_item(cart, current_item, cart_index);
+            }
         }
         // makes a copy of current_item in cart_across.
         strcpy(cart_across[shopping_list_index].item.name, current_item.item.name);
@@ -555,48 +555,100 @@ void shortest_path(cart_item_s cart_across[], int n_shopping_list, int n_stores,
     int n_locations = 1; // minimum 1 store
     // need to make this n_stores long, as we might only have 1 item in each store
     store_s stores_to_visit[n_stores];
-   // cart_item_s *index_of_first[n_stores];
-    int items_per_store[n_stores];
-    int n_stores_visited = 0;
+    //store_s *stores_to_visit = malloc(n_stores * sizeof(store_s));
+    int index_of_first[n_stores];
 
     // create first index manually
     strcpy(stores_to_visit[0].name, cart_across[0].store.name);
     copy_coord(&stores_to_visit[0], &cart_across[0].store);
-    // index_of_first[0] = &cart_across[0];
-    items_per_store[0] = 0;
+    index_of_first[0] = 0;
     // Creates the chars in the array with only of the stores you have to visit
     for (int i = 1; i < n_shopping_list; i++) {
         // if this store is not seen before we add it
-        if (strcmp(cart_across[i].store.name, stores_to_visit[n_locations - 1].name) != 0) {
+        if (strcmp(cart_across[i].store.name, stores_to_visit[n_locations-1].name) != 0) {
             strcpy(stores_to_visit[n_locations].name, cart_across[i].store.name);
             copy_coord(&stores_to_visit[n_locations], &cart_across[i].store);
+            index_of_first[n_locations] = i;
             // index_of_first[n_locations] = &cart_across[i];
-            items_per_store[n_locations] = 0;
             n_locations++;
         }
         // add another item to this store (index -1 because indexes start at 0)
-        items_per_store[n_locations - 1]++;
     }
+
+
     coordinates_s current_location = stores_to_visit[0].base_coord;
     int index_of_nearest;
     double distance_to_nearest;
     double temp_distance;
+    int n_stores_visited = 0;
+    int distances[n_stores];
+    int total_distance = 0;
     while (n_stores_visited < n_locations) {
         distance_to_nearest = calc_distance(current_location, stores_to_visit[n_stores_visited].store_coord);
         index_of_nearest = n_stores_visited;
         for (int i = n_stores_visited; i < n_locations; ++i) {
             temp_distance = calc_distance(current_location, stores_to_visit[i].store_coord);
+            printf("%s\n",stores_to_visit[i].name);
             if (temp_distance < distance_to_nearest) {
                 distance_to_nearest = temp_distance;
                 index_of_nearest = i;
             }
         }
+        printf("----------\n");
         current_location = stores_to_visit[index_of_nearest].store_coord;
-        swap(stores_to_visit, n_stores_visited, index_of_nearest);
+        total_distance += distance_to_nearest;
+        swap_stores(stores_to_visit, n_stores_visited, index_of_nearest);
+        swap_int(index_of_first, n_stores_visited, index_of_nearest);
+        distances[n_stores_visited] = distance_to_nearest;
         n_stores_visited++;
     }
+
+    int dist_last_store_to_home = calc_base_to_store(stores_to_visit[n_locations-1]);
+    total_distance += dist_last_store_to_home;
+
+
     for (int i = 0; i < 4; ++i) {
+        printf("%s\n",stores_to_visit[i].name);
     }
+    printf("..%d..", distances[0]);
+
+    double total_itemprice = 0;
+    printf("Your absolute cheapest customized shopping list\n");
+    printf("| Store    | Distance | Item |           Price    |\n");
+    for (int i = 0; i < n_locations; ++i) {
+        printf("%-15s %.4dm %-15s %7.2lf DKK \n", stores_to_visit[i].name,
+               distances[i], cart_across[index_of_first[i]].item.name, cart_across[index_of_first[i]].item.price);
+        total_itemprice += cart_across[index_of_first[i]].item.price;
+
+        while(strcmp(cart_across[index_of_first[i]].store.name, cart_across[index_of_first[i]+1].store.name) == 0){
+            printf("%28s %16.2lf DKK \n", cart_across[index_of_first[i]+1].item.name, cart_across[index_of_first[i]+1].item.price);
+            total_itemprice += cart_across[index_of_first[i]].item.price;
+            index_of_first[i]++;
+        }
+    }
+
+    printf("Home %15dm \n", dist_last_store_to_home);
+
+    if(km_price != 0){
+        double travel_expenses = calc_gas_price(km_price, total_distance);
+        double total_price = total_itemprice + travel_expenses;
+        printf("Total %.4dm Travel expenses %.2lf Item expenses %.2lf DKK Total price %.2lf\n\n",total_distance,
+               travel_expenses, total_itemprice, total_price);
+    }
+    else{
+        printf("Total %.4dm DKK Total price %.2lf\n\n",total_distance, total_itemprice);
+    }
+
+
+
+    // if there is more than 1 item in this store, we print it here
+//        for (int j = 1; j < items_per_store[index]; j++) {
+//            first_item++;
+//            printf("%28s %16.2lf DKK \n", first_item->item.name, first_item->item.price);
+//            total_itemprice += first_item->item.price;
+//        }
+
+
 
 //
 //    // Values for finding all possible combinations
@@ -690,11 +742,16 @@ void shortest_path(cart_item_s cart_across[], int n_shopping_list, int n_stores,
 
 }
 
-void swap(store_s stores_to_visit[], int i, int j){
+void swap_stores(store_s stores_to_visit[], int i, int j){
     store_s temp = stores_to_visit[i];
     stores_to_visit[i] = stores_to_visit[j];
-    stores_to_visit[j].store_coord = temp.store_coord;
-    strcpy(stores_to_visit[j].name, temp.name);
+    stores_to_visit[j] = temp;
+}
+
+void swap_int(int arr[], int i, int j){
+    int temp = arr[i];
+    arr[i] = arr[j];
+    arr[j] = temp;
 }
 
     double calc_gas_price(double km_price, int dist) {
