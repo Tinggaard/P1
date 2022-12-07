@@ -637,7 +637,7 @@ void shortest_path(cart_item_s cart_across[], int n_shopping_list, int n_stores,
 
         // The while-loop prints the rest of the items from the current store
         while(strcmp(cart_across[index_of_first[i]].store.name, cart_across[index_of_first[i]+1].store.name) == 0){
-            printf("%32s %13.2lf DKK \n", cart_across[index_of_first[i]+1].item.name, cart_across[index_of_first[i]+1].item.price);
+            printf("             |                              %-15s%6.2lf DKK      |\n", cart_across[index_of_first[i]+1].item.name, cart_across[index_of_first[i]+1].item.price);
             item_price_sum += cart_across[index_of_first[i]+1].item.price;
             index_of_first[i]++;
         }
