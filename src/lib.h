@@ -30,7 +30,7 @@ typedef struct {
 typedef struct {
     store_s store;
     double item_sum;
-    double total_sum
+    double total_sum;
 } cart_sum_s;
 
 // shopping_list_s is a struct used to hold the users shopping list items
