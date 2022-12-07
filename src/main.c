@@ -4,7 +4,7 @@
 
 int main(void) {
     // Initializing and declaring strings with our txt file paths
-    char stores_f[] = "src/files/distances.csv";
+    char stores_f[] = "src/files/coordinates.csv";
     char normal_prices_f[] = "src/files/normal_prices.csv";
     char discounts_f[] = "src/files/discounts.csv";
     char user_location_f[] = "src/files/user_location.csv";
@@ -22,7 +22,7 @@ int main(void) {
     coordinates_s user_loctaion = user_input(user_location_f, &km_price, &radius);
 
     // Loading stores and shopping list items from txt files into struct arrays.
-    store_s* stores = load_distances(stores_f, &n_stores, user_loctaion , radius);
+    store_s* stores = load_coordinates(stores_f, &n_stores, user_loctaion , radius);
 
     shopping_list_s* shopping_list = load_shopping_list(shopping_list_f, n_shopping_list);
 

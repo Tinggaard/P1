@@ -246,7 +246,7 @@ int get_new_lines(char filename[]){
  * @param n_stores number of stores
  * @return returns stores in an array, as structs (store_s)
  */
-store_s* load_distances(char filename[], int* n_stores, coordinates_s user_location, int radius) {
+store_s* load_coordinates(char filename[], int* n_stores, coordinates_s user_location, int radius) {
     FILE* f = open_file(filename);
     int n_store_counter = 0;
     int store_index = 0;
