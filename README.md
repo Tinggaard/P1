@@ -1,63 +1,55 @@
 # P1 projekt
 
-P1 projekt løsningen skal handle om at informere den bedvidste forbruger om hvilken indkøbsmulighed der er billigst ud fra deres indkøbsliste
+P1 projekt for gruppe `cs-22-dat-1-p1-05` på datalogiuddannelsen, Aalborg Universitet.
 
-Her er lidt grim pseudokode, som ikke er færdigt:
+Projektet omhandler optimering af tilbudsjagt på dagligvarer, og er skrevet i C.
 
-### file structures
 
-`normal_prices.txt`
-```
-item, price
-ost, 50
-```
+## Kompilering
 
-`discounts.txt`
-```
-store, item, price
-rema, ost, 40
+Projektet er skrevet i CLion, og er kompileret med [cmake](https://cmake.org/install/).
+
+```bash
+git clone https://github.com/Tinggaard/P1
+cd P1
+cmake . # initialiser cmake
 ```
 
-`distances.txt`
-```
-store, distance
-rema, 1000
-```
+Herefter kan selve projektet kompileres enten med `cmake`, eller `make`.
 
-`shopping_list.txt`
-```
-item
-ost
+```bash
+cmake --build .
+# eller
+make
 ```
 
-```
-struct vare 
-	char 	navn[]
-	int 	pris
+Nu kan det kompilerede program findes i `src` mappen.
 
-struct butik
-	char 	navn[]
-	int 	afstand
-	vare*	varer
-
-struct handel
-	butik butikken
-	vare varen
-
-
-main()
-	indlæs afstande
-	indlæs normalpriser
-	indlæs tilbud
-	indlæs brugerens indkøbsliste
-
-    lav struct arrays for alle
-
-if aller billigste
-	handel indkøb[] 
-	for alle varer i brugerens indkøbsliste
-		for alle tilbud
-			Hvis billigste
-				Handel
+```bash
+cd src
+./P1 # kør programmet
+# på Windows hedder den eksekverbare fil 'P1.exe'
 ```
 
+For at fjerne de kompilerede filer igen, bruges `clean` argumentet til enten `cmake` eller `make`.
+
+```bash
+cmake --build . --target clean
+# eller
+make clean
+```
+
+
+### Filstruktur
+
+`src/files/shopping_list.txt`: Filen betår af de varer som ønskes handlet - én vare pr. linje.
+Disse varer *skal* fremgå i filen `src/files/normal_prices.txt`, ellers terminerer programmet, idet der ønskes en vare som ikke findes.
+
+Filen har format som følger:
+```
+cheese
+milk
+chicken breast
+vare 4
+vare 5
+```
