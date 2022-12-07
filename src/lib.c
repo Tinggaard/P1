@@ -483,27 +483,40 @@ void calc_per_store(cart_item_s cart_item[], int n_shopping_list, int n_stores, 
     int base_to_store = 0;
     double travel_expense = 0;
     double total_price = 0;
+    printf("\n\n^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n");
+
     if(km_price != 0) {
+        printf("  ------------------------------------------------------------------------------------\n");
+        printf("  |                        If you want to shop in one store only,                    |\n");
+        printf("  |                  we have sorted a list of cheapest stores for you.               |\n");
+        printf("  ------------------------------------------------------------------------------------\n");
+        printf("  |Store          |Distance     |Travel expenses    |Item expenses    |Total sum     |\n");
         for (int i = 0; i < n_stores; i++) {
             base_to_store = calc_base_to_store(cart[i].store);
             travel_expense = calc_gas_price(km_price, base_to_store);
             total_price = travel_expense + cart[i].item_sum;
-            printf("|Name > %8s : Distance > %4d Travel expenses > %5.2lf: Item expenses > %4.2lf Total sum %4.2lf|\n",
-                   cart[i].store.name,
-                   base_to_store, travel_expense, cart[i].item_sum, cart[i].total_sum);
+            printf("  |%-15s%5.4dm      %8.2lf DKK         %8.2lf DKK      %8.2lf DKK    |\n",cart[i].store.name,base_to_store,
+                   travel_expense, cart[i].item_sum, cart[i].total_sum);
         }
+        printf("  ------------------------------------------------------------------------------------\n");
+
     }
     else{
+        printf("            ---------------------------------------------------------------\n");
+        printf("            |            If you want to shop in one store only,           |\n");
+        printf("            |      we have sorted a list of cheapest stores for you.      |\n");
+        printf("            ---------------------------------------------------------------\n");
+        printf("            |Store          |Distance                        |Total sum   |\n");
         for (int i = 0; i < n_stores; i++) {
             base_to_store = calc_base_to_store(cart[i].store);
             total_price = calc_gas_price(km_price, base_to_store) + cart[i].item_sum;
-            printf("|Name > %8s : Distance > %4d: Total sum %4.2lf|\n",
+            printf("            |%-15s%5.4dm                            %6.2lf DKK  |\n",
                    cart[i].store.name,
                    base_to_store, total_price);
         }
-
+        printf("            ---------------------------------------------------------------\n");
     }
-    // could add an if statement, so it doesnt print travel expenses.
+    printf("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n");
 }
 
 coordinates_s user_input(char user_location_f[], double* km_price, int* radius){
@@ -609,38 +622,49 @@ void shortest_path(cart_item_s cart_across[], int n_shopping_list, int n_stores,
     total_distance += dist_last_store_to_home;
 
     double item_price_sum = 0;
-    printf("Your absolute cheapest customized shopping list\n");
-    printf("| Store      | Distance | Item         |   Price   |\n");
+    printf("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n");
+    printf("             ---------------------------------------------------------------\n");
+    printf("             |           Your absolute cheapest shopping list              |\n");
+    printf("             |   Follow the order of stores to achieve the shortest rute   |\n");
+    printf("             ---------------------------------------------------------------\n");
+
+    printf("             |Store          |Distance     |Item           |Price          |\n");
     for (int i = 0; i < n_locations; ++i) { // Iterates through every store that was visited
         // index_of_first[i] is used to get the index of the current store's first item in cart_across[]
-        printf("%-14s %.4dm \t  %-12s %7.2lf DKK \n", stores_to_visit[i].name,
-               distances[i], cart_across[index_of_first[i]].item.name, cart_across[index_of_first[i]].item.price);
+        printf("             |%-15s%5.4dm         %-15s%6.2lf DKK      |\n", stores_to_visit[i].name,
+               distances[i], cart_across[index_of_first[i]].item.name,cart_across[index_of_first[i]].item.price);
         item_price_sum += cart_across[index_of_first[i]].item.price;
 
         // The while-loop prints the rest of the items from the current store
         while(strcmp(cart_across[index_of_first[i]].store.name, cart_across[index_of_first[i]+1].store.name) == 0){
-            printf("%32s %13.2lf DKK \n", cart_across[index_of_first[i]+1].item.name, cart_across[index_of_first[i]+1].item.price);
+            printf("             |                              %-15s%6.2lf DKK      |\n", cart_across[index_of_first[i]+1].item.name, cart_across[index_of_first[i]+1].item.price);
             item_price_sum += cart_across[index_of_first[i]].item.price;
             index_of_first[i]++;
         }
     }
 
-    printf("Home %14dm \n", dist_last_store_to_home);
+    printf("             |Home           %5.4dm                                        |\n", dist_last_store_to_home);
 
     // Prints the total distance, travel expenses and total price
     if(km_price != 0){
         double travel_expenses = calc_gas_price(km_price, total_distance);
         double total_price = item_price_sum + travel_expenses;
-        printf(" --------------------------------------------------------------------------------------------------------------\n");
-        printf("| Total distance: %6.4dm | Travel expenses: %6.2lf DKK | Item expenses: %6.2lf DKK | Total price: %7.2lf DKK |\n",total_distance,
-               travel_expenses, item_price_sum, total_price);
-        printf(" --------------------------------------------------------------------------------------------------------------\n\n");
+
+        printf("             ---------------------------------------------------------------\n");
+        printf("             |   Travel expenses: %6.2lf DKK | Item expenses: %6.2lf DKK   |\n",travel_expenses, item_price_sum);
+        printf("             ---------------------------------------------------------------\n");
+        printf("             ---------------------------------------------------------------\n");
+        printf("             |     Total distance: %6.4dm | Total price: %7.2lf DKK      |\n",total_distance, total_price);
+        printf("             ---------------------------------------------------------------\n");
+        printf("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n");
 
     }
     else{
-        printf(" ---------------------------------------------------\n");
-        printf("| Total distance: %6.4dm | Total price: %6.2lf DKK |\n",total_distance, item_price_sum);
-        printf(" ---------------------------------------------------\n\n");
+        printf("             ---------------------------------------------------------------\n");
+        printf("             |      Total distance: %6.4dm | Total price: %6.2lf DKK      |\n",total_distance, item_price_sum);
+        printf("             ---------------------------------------------------------------\n");
+        printf("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n");
+
 
     }
 }
