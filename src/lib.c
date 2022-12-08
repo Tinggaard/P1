@@ -518,18 +518,11 @@ coordinates_s user_input(char user_location_f[], double* km_price, int* radius){
     FILE* f = open_file(user_location_f);
     //select from preivously loaded locations
     int current_location;
-    int user_place;
     char by_car = 0;
-    printf("Please select your location. \n Locations available: '1' school, '2' home >\n");
-    //scans the location
-    scanf(" %d", &current_location);
     coordinates_s user_location;
 
     while(!feof(f)){
-        fscanf(f,"%d, %lf, %lf\n",&user_place, &user_location.lat, &user_location.lon);
-        if(user_place == current_location){
-            break;
-        }
+        fscanf(f,"%lf, %lf\n",&user_location.lat, &user_location.lon);
     }
 
     // radius input
