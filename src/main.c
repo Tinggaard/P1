@@ -35,7 +35,7 @@ int main(void) {
     cart_item_s* cart_item = create_shopping_cart(stores, shopping_list, n_stores, n_shopping_list, n_items);
 
     calc_across_stores(cart_item, shopping_list, stores, n_stores, n_shopping_list, km_price);
-    calc_per_store(cart_item, n_shopping_list, n_stores, stores, km_price);
+    calc_per_store(cart_item, stores, n_shopping_list, n_stores, km_price);
 
 
     // Free up the memory of each array
