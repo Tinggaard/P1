@@ -242,6 +242,8 @@ int get_new_lines(char filename[]) {
  * load_distances() loads the distances to the stores
  * @param filename path to distances.txt file
  * @param n_stores number of stores
+ * @param user_location coordinates_s of the home of the user
+ * @param radius radius to search within
  * @return returns stores in an array, as structs (store_s)
  */
 store_s* load_coordinates(char filename[], int* n_stores, coordinates_s user_location, int radius) {
@@ -289,12 +291,12 @@ store_s* load_coordinates(char filename[], int* n_stores, coordinates_s user_loc
 
 /**
  * load_normal_prices() loads the normal prices into the store array.
+ * @param filename path to normal_prices.txt
  * @param stores array of store_s
  * @param n_stores amount of stores
- * @param filename path to normal_prices.txt
  * @param n_items number of items
  */
-void load_normal_prices(store_s stores[], int n_stores, char filename[], int n_items) {
+void load_normal_prices(char filename[], store_s stores[], int n_stores, int n_items) {
     FILE* f = open_file(filename);
 
     // allocate space enough for the amount of items
@@ -330,10 +332,12 @@ void load_normal_prices(store_s stores[], int n_stores, char filename[], int n_i
 
 /**
  * load_discounts() overrides the discounts to their respective stores
- * @param stores array of store_s
  * @param filename path to discounts.txt file
+ * @param stores array of store_s
+ * @param n_stores Amount of stores
+ * @param n_items Amount of items in total
  */
-void load_discounts(store_s stores[], char filename[], int n_items, int n_stores) {
+void load_discounts(char filename[], store_s stores[], int n_stores, int n_items) {
     FILE* f = open_file(filename);
     char current_store[MAX_NAME_SIZE];
     char current_item[MAX_NAME_SIZE];
@@ -361,6 +365,7 @@ void load_discounts(store_s stores[], char filename[], int n_items, int n_stores
 /**
  * load_shopping_list() loads all shopping list items into a struct array
  * @param filename file to parse
+ * @param n_shopping_list Amount of items on the shopping list
  * @return returns a shopping_list_s array of all items from the users shopping list
  */
 shopping_list_s* load_shopping_list(char filename[], int n_shopping_list) {
@@ -384,6 +389,7 @@ shopping_list_s* load_shopping_list(char filename[], int n_shopping_list) {
  * @param shopping_list Struct array of the users shopping list.
  * @param n_stores Amount of stores.
  * @param n_shopping_list Amount of items on the shopping list
+ * @param n_items Amount of items in total
  * @return Returns the final cart including all shopping list items in each store.
  */
 cart_item_s* create_shopping_cart(store_s stores[], shopping_list_s shopping_list[], int n_stores, int n_shopping_list, int n_items) {
@@ -413,13 +419,14 @@ cart_item_s* create_shopping_cart(store_s stores[], shopping_list_s shopping_lis
 
 /**
  * a function that finds the cheapest possible comb of a cart across all stores.
- * @param cart contain all shopping list items in every store
  * @param shopping_list array of item names
+ * @param cart contain all shopping list items in every store
  * @param n_stores amount of stores
  * @param n_shopping_list amount of items in our list
+ * @param km_price price per km driven
  * @return returns the final cart for which items are cheapest in which stores
  */
-void calc_across_stores(cart_item_s cart[], shopping_list_s shopping_list[], store_s store[], int n_stores, int n_shopping_list, double km_price) {
+void calc_across_stores(shopping_list_s shopping_list[], cart_item_s cart[], int n_stores, int n_shopping_list, double km_price) {
     // Allocates space in the heap for each cart per item in the shopping list
     cart_item_s* cart_across = malloc(n_shopping_list * sizeof(cart_item_s));
     cart_item_s current_item;
@@ -450,9 +457,10 @@ void calc_across_stores(cart_item_s cart[], shopping_list_s shopping_list[], sto
 /**
  * print_cart_sum_per_store() prints a sorted list for the cheapest option to shop in
  * @param cart_item an array of cart_item
+ * @param stores array of stores
  * @param n_shopping_list number of items in shopping list
  * @param n_stores number of stores
- * @param stores array of stores
+ * @param km_price price pr km driven
  * @return returns an array of cart_sum, one for each store
  */
 void calc_per_store(cart_item_s cart_item[], store_s stores[], int n_shopping_list, int n_stores, double km_price) {
@@ -527,8 +535,16 @@ void calc_per_store(cart_item_s cart_item[], store_s stores[], int n_shopping_li
     printf("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n");
 }
 
-coordinates_s user_input(char user_location_f[], double* km_price, int* radius){
-    FILE* f = open_file(user_location_f);
+
+/**
+ * user_input() asks the user for a radius to search, weather they are driving, and a price if they are
+ * @param filename user_location.csv file to read off
+ * @param km_price pointer to price pr km double
+ * @param radius pointer to radius int
+ * @return coordinates_s for the current location
+ */
+coordinates_s user_input(char filename[], double* km_price, int* radius){
+    FILE* f = open_file(filename);
     //select from preivously loaded locations
     char by_car = 0;
     coordinates_s user_location;
@@ -558,9 +574,9 @@ coordinates_s user_input(char user_location_f[], double* km_price, int* radius){
 /**
  * shortest_path calculates the shortest path and outputs the new shopping list
  * @param cart_across The cart with the cheapest option across stores
- * @param store Array of stores
  * @param n_shopping_list amount of items in shopping list
  * @param n_stores amount of stores
+ * @param km_price price pr km driven
  */
 void shortest_path(cart_item_s cart_across[], int n_shopping_list, int n_stores, double km_price) {
     // sort the array, according to store names
