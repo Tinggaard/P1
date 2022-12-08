@@ -172,35 +172,22 @@ int calc_distance(coordinates_s location1, coordinates_s location2) {
 * @param cart_index index for where we are in the cart
 * @return returns the cheapest item of the two compared, if the parsed cart item had the same name as the parsed current_item
 */
-cart_item_s calc_cheapest_cart_item(cart_item_s cart[], cart_item_s current_item, int cart_index) {
+cart_item_s calc_cheapest_cart_item(cart_item_s current_item, cart_item_s other_item) {
+    double current = current_item.item.price;
+    double other = other_item.item.price;
+    int dist_1 = calc_distance(current_item.store.base_coord, current_item.store.store_coord);
+    int dist_2 = calc_distance(other_item.store.base_coord, other_item.store.store_coord);
 
-    // Checks to see if the price is 0
-    if (current_item.item.price == 0) {
-        // if it is 0, it knows that this current_item has not yet been initialized with any values but a name
-        // and therefore transfers the first match's values
-
-        current_item.item.price = cart[cart_index].item.price;
-        strcpy(current_item.store.name, cart[cart_index].store.name);
-        copy_coord(&current_item.store, &cart[cart_index].store);
+    // Checks to see if the price is 0, then it is not initialized
+    // otherwise if 'other' is cheaper, we set it to the current
+    // and also if they are equally cheap, we set it to the closest
+    if (current == 0 || current > other || current == other && dist_1 > dist_2) {
+        // copy variables
+        current_item.item.price = other;
+        strcpy(current_item.store.name, other_item.store.name);
+        copy_coord(&current_item.store, &other_item.store);
     }
 
-    // Checks to see if the two items have the same price. if they have the same price, it takes the closest store
-    else if (current_item.item.price == cart[cart_index].item.price &&
-        calc_distance(current_item.store.base_coord, current_item.store.store_coord) >
-        calc_distance(cart[cart_index].store.base_coord, cart[cart_index].store.store_coord)) {
-
-        current_item.item.price = cart[cart_index].item.price;
-        strcpy(current_item.store.name, cart[cart_index].store.name);
-        copy_coord(&current_item.store, &cart[cart_index].store);
-    }
-
-    //  Compare prices and transfers the cheapest option to the current item
-    else if (current_item.item.price > cart[cart_index].item.price) {
-
-        current_item.item.price = cart[cart_index].item.price;
-        strcpy(current_item.store.name, cart[cart_index].store.name);
-        copy_coord(&current_item.store, &cart[cart_index].store);
-    }
     return current_item; // Returns the cheapest option
 }
 
@@ -439,7 +426,8 @@ void calc_across_stores(shopping_list_s shopping_list[], cart_item_s cart[], int
         for (int cart_index = 0; cart_index < n_shopping_list * n_stores; ++cart_index) {
             // First it check if the two items have the same name, if they have then calc_cheapest_cart_item
             if (strcmp(current_item.item.name, cart[cart_index].item.name) == 0) {
-                current_item = calc_cheapest_cart_item(cart, current_item, cart_index);
+//                current_item = calc_cheapest_cart_item(cart, current_item, cart_index);
+                current_item = calc_cheapest_cart_item(current_item, cart[cart_index]);
             }
         }
         // makes a copy of current_item in cart_across.
