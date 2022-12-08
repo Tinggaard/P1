@@ -15,7 +15,7 @@ int compare_cart(const void* ptr1, const void* ptr2) {
     const cart_sum_s* item_1 = ptr1;
     const cart_sum_s* item_2 = ptr2;
     if (item_1->total_sum - item_2->total_sum == 0) {
-        return (int)(calc_base_to_store(item_1->store) - calc_base_to_store(item_2->store));
+        return (int)(calc_distance(item_1->store.base_coord, item_1->store.store_coord) - calc_distance(item_2->store.base_coord, item_2->store.store_coord));
     }
     return (int)(item_1->total_sum - item_2->total_sum);
 }
@@ -94,48 +94,41 @@ void copy_coord(store_s* target, store_s* base){
 }
 
 
-/**
- * distance_user_to_stares() calculates the distance between base and store coordinates
- * @param store the store to calculate on
- * @return the distance in meters (double)
- */
-// courtesy of https://stackoverflow.com/questions/27126714/c-latitude-and-longitude-distance-calculator
-int calc_base_to_store(store_s store){
-    double EARTH_RADIUS = 6372797.56085; // in meters
-    double DEGREES_RADIANS = M_PI / 180; // from degrees to radians
-
-    double haversine, arcsin, distance, sin_lat, cos_lat, lon, minimum;
-
-    // we convert degrees to radians
-    double lat1 = store.store_coord.lat * DEGREES_RADIANS;
-    double lon1 = store.store_coord.lon * DEGREES_RADIANS;
-    double lat2 = store.base_coord.lat * DEGREES_RADIANS;
-    double lon2 = store.base_coord.lon * DEGREES_RADIANS;
-
-    // haversine formula
-    sin_lat = pow(sin(0.5 * (lat2 - lat1)), 2);
-    cos_lat = cos(lat1) * cos(lat2);
-    lon = pow(sin(0.5 * (lon2 - lon1)), 2);
-    haversine = sin_lat+ (cos_lat* lon);
-
-    minimum = sqrt(haversine) < 1.0 ? sqrt(haversine) : 1.0;
-    arcsin = 2 * asin(minimum);
-    distance = EARTH_RADIUS * arcsin;
-
-    return (int) distance;
+void swap_stores(store_s stores_to_visit[], int i, int j){
+    store_s temp = stores_to_visit[i];
+    stores_to_visit[i] = stores_to_visit[j];
+    stores_to_visit[j] = temp;
 }
 
-int calc_distance(coordinates_s cord_base, coordinates_s cord_dest){
+void swap_int(int arr[], int i, int j){
+    int temp = arr[i];
+    arr[i] = arr[j];
+    arr[j] = temp;
+}
+
+double calc_gas_price(double km_price, int dist) {
+    return (km_price * dist) / 1000;
+}
+
+
+/**
+ * distance_user_to_stares() calculates the distance between base and store coordinates
+ * @param location1 starting point
+ * @param location2 destination
+ * @return the distance in meters (int)
+ */
+// courtesy of https://stackoverflow.com/questions/27126714/c-latitude-and-longitude-distance-calculator
+int calc_distance(coordinates_s location1, coordinates_s location2){
     double EARTH_RADIUS = 6372797.56085; // in meters
     double DEGREES_RADIANS = M_PI / 180; // from degrees to radians
 
     double haversine, arcsin, distance, sin_lat, cos_lat, lon, minimum;
 
     // we convert degrees to radians
-    double lat1 = cord_dest.lat * DEGREES_RADIANS;
-    double lon1 = cord_dest.lon * DEGREES_RADIANS;
-    double lat2 = cord_base.lat * DEGREES_RADIANS;
-    double lon2 = cord_base.lon * DEGREES_RADIANS;
+    double lat1 = location1.lat * DEGREES_RADIANS;
+    double lon1 = location1.lon * DEGREES_RADIANS;
+    double lat2 = location2.lat * DEGREES_RADIANS;
+    double lon2 = location2.lon * DEGREES_RADIANS;
 
     // haversine formula
     sin_lat = pow(sin(0.5 * (lat2 - lat1)), 2);
@@ -169,15 +162,16 @@ cart_item_s calc_cheapest_cart_item(cart_item_s cart[], cart_item_s current_item
     }
 
     // Checks to see if the two items have the same price. if they have the same price, it takes the closest store
-    if (current_item.item.price == cart[cart_index].item.price &&
-        calc_base_to_store(current_item.store) > calc_base_to_store(cart[cart_index].store)) {
+    else if (current_item.item.price == cart[cart_index].item.price &&
+        calc_distance(current_item.store.base_coord, current_item.store.store_coord) >
+        calc_distance(cart[cart_index].store.base_coord, cart[cart_index].store.store_coord)) {
         current_item.item.price = cart[cart_index].item.price;
         strcpy(current_item.store.name, cart[cart_index].store.name);
         copy_coord(&current_item.store, &cart[cart_index].store);
     }
 
     //  Compare prices and transfers the cheapest option to the current item
-    if (current_item.item.price > cart[cart_index].item.price) {
+    else if (current_item.item.price > cart[cart_index].item.price) {
         current_item.item.price = cart[cart_index].item.price;
         strcpy(current_item.store.name, cart[cart_index].store.name);
         copy_coord(&current_item.store, &cart[cart_index].store);
@@ -256,14 +250,14 @@ store_s* load_coordinates(char filename[], int* n_stores, coordinates_s user_loc
         fscanf(f, "%[^,], %lf, %lf\n", store_placeholder[i].name, &store_placeholder[i].store_coord.lat, &store_placeholder[i].store_coord.lon);
         store_placeholder[i].base_coord.lat = user_location.lat;
         store_placeholder[i].base_coord.lon = user_location.lon;
-        if(calc_base_to_store(store_placeholder[i]) <= radius){
+        if(calc_distance(store_placeholder[i].base_coord, store_placeholder[i].store_coord) <= radius){
             n_store_counter++;
         }
     }
 
     store_s* stores = malloc(n_store_counter * sizeof(store_s));
     for (int i = 0; i < *n_stores; i++) {
-        if(calc_base_to_store(store_placeholder[i]) <= radius){
+        if(calc_distance(store_placeholder[i].base_coord, store_placeholder[i].store_coord) <= radius){
             strcpy(stores[store_index].name, store_placeholder[i].name);
             stores[store_index].store_coord.lat = store_placeholder[i].store_coord.lat;
             stores[store_index].store_coord.lon = store_placeholder[i].store_coord.lon;
@@ -471,7 +465,7 @@ void calc_per_store(cart_item_s cart_item[], int n_shopping_list, int n_stores, 
         cart[i].item_sum = sum[i]; //copies the item price from the array
         strcpy(cart[i].store.name, stores[i].name); //copies the name of the stores into the new struct
         copy_coord(&cart[i].store, &stores[i]);
-        cart[i].total_sum = calc_gas_price(km_price, calc_base_to_store(cart[i].store)) + cart[i].item_sum;
+        cart[i].total_sum = calc_gas_price(km_price, calc_distance(cart[i].store.base_coord, cart[i].store.store_coord)) + cart[i].item_sum;
     }
 
     qsort(cart, n_stores, sizeof(cart_sum_s), compare_cart);
@@ -492,7 +486,7 @@ void calc_per_store(cart_item_s cart_item[], int n_shopping_list, int n_stores, 
         printf("  ------------------------------------------------------------------------------------\n");
         printf("  |Store          |Distance     |Travel expenses    |Item expenses    |Total sum     |\n");
         for (int i = 0; i < n_stores; i++) {
-            base_to_store = calc_base_to_store(cart[i].store);
+            base_to_store = calc_distance(cart[i].store.base_coord, cart[i].store.store_coord);
             travel_expense = calc_gas_price(km_price, base_to_store);
             total_price = travel_expense + cart[i].item_sum;
             printf("  |%-15s%5.4dm      %8.2lf DKK         %8.2lf DKK      %8.2lf DKK    |\n",cart[i].store.name,base_to_store,
@@ -508,7 +502,7 @@ void calc_per_store(cart_item_s cart_item[], int n_shopping_list, int n_stores, 
         printf("            ---------------------------------------------------------------\n");
         printf("            |Store          |Distance                        |Total sum   |\n");
         for (int i = 0; i < n_stores; i++) {
-            base_to_store = calc_base_to_store(cart[i].store);
+            base_to_store = calc_distance(cart[i].store.base_coord, cart[i].store.store_coord);
             total_price = calc_gas_price(km_price, base_to_store) + cart[i].item_sum;
             printf("            |%-15s%5.4dm                            %6.2lf DKK  |\n",
                    cart[i].store.name,
@@ -618,7 +612,7 @@ void shortest_path(cart_item_s cart_across[], int n_shopping_list, int n_stores,
     }
 
     // Calculates the distance from the last store to home and adds it to the total distance.
-    int dist_last_store_to_home = calc_base_to_store(stores_to_visit[n_locations-1]);
+    int dist_last_store_to_home = calc_distance(stores_to_visit[n_locations-1].base_coord, stores_to_visit[n_locations-1].store_coord);
     total_distance += dist_last_store_to_home;
 
     double item_price_sum = 0;
@@ -667,20 +661,4 @@ void shortest_path(cart_item_s cart_across[], int n_shopping_list, int n_stores,
 
 
     }
-}
-
-void swap_stores(store_s stores_to_visit[], int i, int j){
-    store_s temp = stores_to_visit[i];
-    stores_to_visit[i] = stores_to_visit[j];
-    stores_to_visit[j] = temp;
-}
-
-void swap_int(int arr[], int i, int j){
-    int temp = arr[i];
-    arr[i] = arr[j];
-    arr[j] = temp;
-}
-
-double calc_gas_price(double km_price, int dist) {
-    return (km_price * dist) / 1000;
 }
