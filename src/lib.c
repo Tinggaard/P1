@@ -533,11 +533,12 @@ coordinates_s user_input(char user_location_f[], double* km_price, int* radius){
         printf("Do you travel by car (y/n)? \n");
         scanf(" %c",&by_car);
     }
-    //if the user is drivin the km price is entered
+    //if the user is driving the km price is entered
     if(by_car == 'y' || by_car == 'Y'){
         printf("Enter price per. kilometer > \n");
         scanf(" %lf", km_price);
     }
+    fclose(f);
     return user_location;
 }
 
