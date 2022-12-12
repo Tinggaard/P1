@@ -53,3 +53,26 @@ chicken breast
 vare 4
 vare 5
 ```
+
+## Tidstagning
+
+Inde i mappen `compare` ligger en modificeret version af programmet, hvor funktionen `brute_force()` er implementeret,
+som finder den absolut korteste vej, ved at bruteforce alle n! kombinationer.
+
+Når programmet køres printer det automatisk tiden brugt på hver af de to algoritmer. 
+Det er også muligt at tage tid på den samlede eksekvering, ved brug af kommandolinjen i bash:
+
+```bash
+make 
+{ time ./compare/P1_compare > /dev/null ; } 2>&1 | cut -d ' ' -f 4-
+```
+
+Som udgangspunkt er der 10 butikker, som alle skal besøges, i dette eksempel.
+Det er dog muligt at generere flere butikker automatisk vha. scriptet `compare/generate.py`, som er skrevet i Python.
+
+Variablen `N` sættes blot til det ønskede antal stores, hvorefter filen køres (skal køres fra `compare` mappen, idet filstierne er relative.)
+
+```bash
+cd compare
+./generate.py
+```
