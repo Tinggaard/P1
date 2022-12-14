@@ -23,7 +23,7 @@ cmake --build .
 make
 ```
 
-Nu kan det kompilerede program findes i `src` mappen.
+Nu kan det kompilerede program findes i [src](src/) mappen.
 
 ```bash
 cd src
@@ -43,7 +43,7 @@ make clean
 ### Filstruktur
 
 `src/files/shopping_list.txt`: Filen betår af de varer som ønskes handlet - én vare pr. linje.
-Disse varer *skal* fremgå i filen `src/files/normal_prices.txt`, ellers terminerer programmet, idet der ønskes en vare som ikke findes.
+Disse varer *skal* fremgå i filen [src/files/normal_prices.csv](src/files/normal_prices.csv), ellers terminerer programmet, idet der ønskes en vare som ikke findes.
 
 Filen har format som følger:
 ```
@@ -54,9 +54,12 @@ vare 4
 vare 5
 ```
 
+Hver vare kan maskimalt have 14 karakterer, idet størrelsen af de structs som holder på vareinformationen er begrænset af dette.
+Alternativt skal `MAX_NAME_SIZE` ændres i [src/lib.h](src/lib.h).
+
 ## Tidstagning
 
-Inde i mappen `compare` ligger en modificeret version af programmet, hvor funktionen `brute_force()` er implementeret,
+Inde i mappen [compare/](compare/) ligger en modificeret version af programmet, hvor funktionen `brute_force()` er implementeret,
 som finder den absolut korteste vej, ved at bruteforce alle n! kombinationer.
 
 Når programmet køres printer det automatisk tiden brugt på hver af de to algoritmer. 
@@ -64,15 +67,16 @@ Det er også muligt at tage tid på den samlede eksekvering, ved brug af kommand
 
 ```bash
 make 
-{ time ./compare/P1_compare > /dev/null ; } 2>&1 | cut -d ' ' -f 4-
+cd compare
+{ time ./P1_compare > /dev/null ; } 2>&1 | cut -d ' ' -f 4-
 ```
 
 Som udgangspunkt er der 10 butikker, som alle skal besøges, i dette eksempel.
-Det er dog muligt at generere flere butikker automatisk vha. scriptet `compare/generate.py`, som er skrevet i Python.
 
-Variablen `N` sættes blot til det ønskede antal stores, hvorefter filen køres (skal køres fra `compare` mappen, idet filstierne er relative.)
+Det er dog muligt at generere flere butikker automatisk vha. scriptet [compare/generate.py](compare/generate.py), som er skrevet i Python.
+Variablen `N` sættes blot til det ønskede antal stores, hvorefter filen køres (*skal* køres fra `compare/` mappen, idet filstierne er relative.)
+Ønkes færre butikker til testen, slettes en enkelt vare blot fra indkøbslisten, da hver vare indikerer en ny butik.
 
 ```bash
-cd compare
 ./generate.py
 ```
