@@ -438,7 +438,7 @@ void calc_across_stores(shopping_list_s shopping_list[], cart_item_s cart[], int
 
     }
     // Calculates the shortest path and prints the new shopping list
-    shortest_path(cart_across, n_shopping_list, n_stores, km_price);
+    nearest_neighbor(cart_across, n_shopping_list, n_stores, km_price);
 }
 
 
@@ -560,13 +560,13 @@ coordinates_s user_input(char filename[], double* km_price, int* radius){
 
 
 /**
- * shortest_path calculates the shortest path and outputs the new shopping list
+ * nearest_neighbor calculates the nearest_neighbor and outputs the new shopping list
  * @param cart_across The cart with the cheapest option across stores
  * @param n_shopping_list amount of items in shopping list
  * @param n_stores amount of stores
  * @param km_price price pr km driven
  */
-void shortest_path(cart_item_s cart_across[], int n_shopping_list, int n_stores, double km_price) {
+void nearest_neighbor(cart_item_s cart_across[], int n_shopping_list, int n_stores, double km_price) {
     // sort the array, according to store names
     qsort(cart_across, n_shopping_list, sizeof(cart_item_s), compare_store_name);
 
@@ -599,6 +599,7 @@ void shortest_path(cart_item_s cart_across[], int n_shopping_list, int n_stores,
     int n_stores_visited = 0;  // number of stores already visited
     int distances[n_stores];   // array of distances between each location, which is stored for later use in printf()
     int total_distance = 0;
+
     // while loop runs until every store has been visited, in each iteration of the while loop we find the nearest store
     while (n_stores_visited < n_locations) {
         distance_to_nearest = calc_distance(current_location, stores_to_visit[n_stores_visited].store_coord);
