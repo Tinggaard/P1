@@ -51,6 +51,47 @@ Denne pris medregnes nu i de samlede omkostninger for indkøbet, alt efter hvor 
 
 **OBS**: Hvis der angives en radius, inden for hvilken, der ikke ligger nogen butikker, vil programmet ikke give et brugbart output.
 
+## Programmets output
+Programmet giver et output to forskellige formater. Det ene format tager udgangspunkt i, at brugeren er villig til at 
+tage en længere rute, for at spare mest mulig på sin indkøbsliste. Den andet format tager udgangspunkt i at alle varer
+købes i en butik.
+
+### På tværs af butikker
+Den første oversigt viser hvilke varer der skal købes i hver butik, for
+at opnå den billigste indkøbsliste. Butikkerne udskrives i den rækkefølge som anbefales at besøge butikkerne for at minimere
+den tilbagelagte afstand. I "distance" kolonnen foran hver butik udskrives afstanden fra den forrige lokation. 
+Hvis der skal handles flere vare i en butik udskrives det som følgende:
+```
+---------------------------------------------------------------
+|           Your absolute cheapest shopping list              |
+|   Follow the order of stores to achieve the shortest route  |
+---------------------------------------------------------------
+|Store          |Distance     |Item           |Price          |
+|Butik1          1629m         vare1           12.00 DKK      |
+|                              vare2           10.00 DKK      |
+|Butik2          3762m         vare3            5.00 DKK      |
+---------------------------------------------------------------
+```
+Dette output betyder at både *vare1* og *vare2* skal købes i *butik1* og *vare3* skal købes i *butik2*
+
+Til sidst udskrives den totale afstand, den totale pris ekskl. transport, transportprisen og den totale pris inkl. transport.
+
+### Enkelt butik
+Det andet format som programmet kan vise antager at alle varer handles i samme butik. Dette udskrives som følgende:
+```
+  ------------------------------------------------------------------------------------
+  |                        If you want to shop in one store only,                    |
+  |                  we have sorted a list of cheapest stores for you.               |
+  ------------------------------------------------------------------------------------
+  |Store          |Distance     |Travel expenses    |Item expenses    |Total sum     |
+  |Butik1          2566m         5.13 DKK            108.00 DKK        110.57 DKK    |
+  |Butik2          3360m         6.72 DKK            116.00 DKK        119.36 DKK    |
+  ------------------------------------------------------------------------------------
+```
+Outputtet ovenfor viser at det er billigst at handle alle varer i *butik1*. Butikkerne sorteres og udskrives således, at
+de billigste butikker printes øverst.
+
+
 ### Filstruktur og ændring af standarder
 
 Filen [src/files/shopping_list.csv](src/files/shopping_list.csv) består af de varer som ønskes handlet - én vare pr. linje.
