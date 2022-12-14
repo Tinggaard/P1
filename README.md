@@ -53,7 +53,7 @@ Denne pris medregnes nu i de samlede omkostninger for indkøbet, alt efter hvor 
 
 ### Filstruktur og ændring af standarder
 
-Filen [src/files/shopping_list.csv](src/files/shopping_list.csv) betår af de varer som ønskes handlet - én vare pr. linje.
+Filen [src/files/shopping_list.csv](src/files/shopping_list.csv) består af de varer som ønskes handlet - én vare pr. linje.
 Disse varer *skal* fremgå i filen [src/files/normal_prices.csv](src/files/normal_prices.csv),
 ellers terminerer programmet, idet der ønskes en vare som ikke findes i datasættet.
 
