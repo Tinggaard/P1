@@ -443,13 +443,13 @@ cart_item_s* calc_across_stores(shopping_list_s shopping_list[], cart_item_s car
 
 
 /**
- * shortest_path calculates the shortest path and outputs the new shopping list
+ * nearest_neighbor calculates the shortest path and outputs the new shopping list
  * @param cart_across The cart with the cheapest option across stores
  * @param n_shopping_list amount of items in shopping list
  * @param n_stores amount of stores
  * @param km_price price pr km driven
  */
-void shortest_path(cart_item_s cart_across[], int n_shopping_list, int n_stores) {
+void nearest_neighbor(cart_item_s cart_across[], int n_shopping_list, int n_stores) {
     // sort the array, according to store names
     qsort(cart_across, n_shopping_list, sizeof(cart_item_s), compare_store_name);
 
