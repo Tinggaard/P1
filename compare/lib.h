@@ -49,7 +49,7 @@ void swap_int(int arr[], int index_1, int index_2);
 
 
 cart_item_s calc_cheapest_cart_item(cart_item_s current_item, cart_item_s other_item);
-void shortest_path(cart_item_s cart_across[], int n_shopping_list, int n_stores);
+void nearest_neighbor(cart_item_s cart_across[], int n_shopping_list, int n_stores);
 void brute_force(cart_item_s cart_across[], int n_shopping_list, int n_stores);
 int binary_search(item_s itemlist[], const char x[], int n_items);
 // open_file function not in header as it returns FILE ptr, which is not defined here.

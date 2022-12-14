@@ -44,7 +44,7 @@ int main(void) {
     t1 = clock();
     brute_force(cart, n_shopping_list, n_stores);
     t2 = clock();
-    shortest_path(cart, n_shopping_list, n_stores);
+    nearest_neighbor(cart, n_shopping_list, n_stores);
     t3 = clock();
     printf("Time taken by brute force: %lfs\n", (double)(t2-t1) / CLOCKS_PER_SEC);
     printf("Time taken by nearest neighbor: %lfs\n", (double)(t3-t2) / CLOCKS_PER_SEC);
