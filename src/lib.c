@@ -473,7 +473,7 @@ void calc_per_store(cart_item_s cart_item[], store_s stores[], int n_shopping_li
         copy_coord(&cart[i].store, &stores[i]);
 
         distance = calc_distance(cart[i].store.base_coord, cart[i].store.store_coord);
-        cart[i].total_sum = calc_gas_price(km_price, distance) + cart[i].item_sum;
+        cart[i].total_sum = 2*calc_gas_price(km_price, distance) + cart[i].item_sum;
     }
 
     qsort(cart, n_stores, sizeof(cart_sum_s), compare_cart);
