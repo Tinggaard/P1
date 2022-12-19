@@ -141,7 +141,7 @@ double calc_gas_price(double km_price, int dist) {
  */
 // courtesy of https://stackoverflow.com/questions/27126714/c-latitude-and-longitude-distance-calculator
 int calc_distance(coordinates_s location1, coordinates_s location2) {
-    double EARTH_RADIUS = 6372797.56085; // in meters
+    double EARTH_RADIUS = 6372797; // in meters
     double DEGREES_RADIANS = M_PI / 180; // from degrees to radians
 
     double haversine, arcsin, distance, sin_lat, cos_lat, lon, minimum;
@@ -159,8 +159,7 @@ int calc_distance(coordinates_s location1, coordinates_s location2) {
     haversine = sin_lat+ (cos_lat* lon);
 
     minimum = sqrt(haversine) < 1.0 ? sqrt(haversine) : 1.0;
-    arcsin = 2 * asin(minimum);
-    distance = EARTH_RADIUS * arcsin;
+    distance = 2 * EARTH_RADIUS * asin(minimum);
 
     return (int) distance;
 }
