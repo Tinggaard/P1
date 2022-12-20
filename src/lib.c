@@ -489,7 +489,7 @@ void calc_per_store(cart_item_s cart_item[], store_s stores[], int n_shopping_li
 
         printf("  ------------------------------------------------------------------------------------\n");
         printf("  |                        If you want to shop in one store only,                    |\n");
-        printf("  |                  here is sorted a list of cheapest stores for you.               |\n");
+        printf("  |                    here is a sorted list of the cheapest options.                |\n");
         printf("  ------------------------------------------------------------------------------------\n");
         printf("  |Store          |Distance     |Travel expenses    |Item expenses    |Total sum     |\n");
 
@@ -507,7 +507,7 @@ void calc_per_store(cart_item_s cart_item[], store_s stores[], int n_shopping_li
 
         printf("            ---------------------------------------------------------------\n");
         printf("            |            If you want to shop in one store only,           |\n");
-        printf("            |      here is sorted a list of cheapest stores for you.      |\n");
+        printf("            |        here is a sorted lit of the cheapest options.        |\n");
         printf("            ---------------------------------------------------------------\n");
         printf("            |Store          |Distance                        |Total sum   |\n");
 
