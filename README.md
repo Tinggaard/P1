@@ -81,7 +81,7 @@ Det andet format som programmet kan vise antager at alle varer handles i samme b
 ```
   ------------------------------------------------------------------------------------
   |                        If you want to shop in one store only,                    |
-  |                  we have sorted a list of cheapest stores for you.               |
+  |                  here is sorted a list of cheapest stores for you.               |
   ------------------------------------------------------------------------------------
   |Store          |Distance     |Travel expenses    |Item expenses    |Total sum     |
   |Butik1          2566m         5.13 DKK            108.00 DKK        110.57 DKK    |
